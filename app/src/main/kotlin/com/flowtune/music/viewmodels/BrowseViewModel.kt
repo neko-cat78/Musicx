@@ -32,7 +32,7 @@ class BrowseViewModel @Inject constructor(
                     
                     title.value = result.title
  
-                    val allItems = result.items.flatMap { it.items }
+                    val allItems = result.items.flatMap(BrowseResult.Item::items)
                     items.value = allItems
                 }.onFailure {
                     reportException(it)
