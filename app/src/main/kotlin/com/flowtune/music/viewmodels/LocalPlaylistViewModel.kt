@@ -71,8 +71,8 @@ constructor(
                     filteredSongs
                         .sortedWith(compareBy(collator) { song -> song.song.artists.joinToString("") { it.name } })
                         .groupBy { it.song.album?.title }
-                        .flatMap { entry ->
-                            entry.value.sortedBy {
+                        .flatMap { (_, songsByAlbum) ->
+                            songsByAlbum.sortedBy {
                                 it.song.artists.joinToString(
                                     ""
                                 ) { it.name }
