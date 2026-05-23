@@ -115,7 +115,6 @@
     <string name="show_cached_playlist">Mostrar llista \"En memòria cau\"</string>
     <string name="show_uploaded_playlist">Mostrar llista \"Pujades\"</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Inicia sessió amb un token</string>
     <string name="show_wrapped_card">Mostrar targeta Recopilació</string>
     <string name="shuffle_playlist_first">Mescla llista/àlbum primer</string>
@@ -147,8 +146,6 @@
     <string name="proxy_username">Usuari de proxy</string>
     <string name="proxy_password">Contrasenya de proxy</string>
     <string name="enable_authentication">Habilitar autentificació</string>
-    <string name="discord_use_details">Utilitza els detalls en lloc de l\'estat</string>
-    <string name="discord_use_details_description">Mostra el nom de la cançó de manera destacada en lloc dels noms dels artistes</string>
     <string name="audio_quality_max">Màxima (beta)</string>
     <string name="enable_similar_content">Habilitar contingut similar</string>
     <string name="similar_content_desc">Afegir automàticament més cançons similars quan s\'aplegue a la fi de la cua</string>
@@ -235,16 +232,7 @@
     <string name="integrations">Integracions</string>
     <string name="username">Nom d\'usuari</string>
     <string name="password">Contrasenya</string>
-    <string name="lastfm_integration">Integració amb Last.fm</string>
-    <string name="enable_scrobbling">Habilitar scrobbling</string>
-    <string name="lastfm_now_playing">Enviar Reproducció Actual</string>
-    <string name="last_fm_send_likes">Enviar Agrada/No m\'agrada</string>
-    <string name="last_fm_send_likes_description">Indicar que M\'agrada/No m\'agrada a Last.fm en indicar M\'agrada/No m\'agrada a Flowtune</string>
     <string name="logging_in">Iniciant sessió…</string>
-    <string name="scrobbling_configuration">Configuració de scrobbling</string>
-    <string name="scrobble_min_track_duration">Fer scrobble a cançons més llargues de</string>
-    <string name="scrobble_delay_percent">Percentatge del retard de scrobble</string>
-    <string name="scrobble_delay_minutes">Minuts de retard de scrobble</string>
     <string name="hide_video_songs">Amaga vídeos de les cançons</string>
     <string name="details_desc">Veure la informació de la cançó</string>
     <string name="edit_desc">Canviar títol o artista</string>

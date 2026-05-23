@@ -9,9 +9,7 @@ import com.flowtune.innertube.models.PlaylistItem
 import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.utils.completed
 import com.flowtune.innertube.utils.parseCookieString
-import com.flowtune.lastfm.LastFM
 import com.flowtune.music.constants.InnerTubeCookieKey
-import com.flowtune.music.constants.LastFMUseSendLikes
 import com.flowtune.music.constants.LastFullSyncKey
 import com.flowtune.music.constants.SYNC_COOLDOWN
 import com.flowtune.music.db.MusicDatabase
@@ -102,8 +100,6 @@ class SyncUtils @Inject constructor(
     private val _syncState = MutableStateFlow(SyncState())
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
-    private var lastfmSendLikes = false
-
     companion object {
         private const val MAX_RETRIES = 3
         private const val INITIAL_RETRY_DELAY_MS = 1000L
@@ -111,13 +107,6 @@ class SyncUtils @Inject constructor(
     }
 
     init {
-        context.dataStore.data
-            .map { it[LastFMUseSendLikes] ?: false }
-            .distinctUntilChanged()
-            .collectLatest(syncScope) {
-                lastfmSendLikes = it
-            }
-
         startProcessingQueue()
     }
 
@@ -389,18 +378,6 @@ class SyncUtils @Inject constructor(
             Timber.e(e, "Failed to like song on YouTube: ${s.id}")
         }
 
-        if (lastfmSendLikes) {
-            try {
-                val dbSong = database.song(s.id).firstOrNull()
-                LastFM.setLoveStatus(
-                    artist = dbSong?.artists?.joinToString { a -> a.name } ?: "",
-                    track = s.title,
-                    love = s.liked
-                )
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to update LastFM love status")
-            }
-        }
     }
 
     private suspend fun executeSyncLikedSongs() = withContext(Dispatchers.IO) {

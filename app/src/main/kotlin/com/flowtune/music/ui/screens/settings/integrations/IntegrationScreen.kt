@@ -20,8 +20,6 @@ import androidx.navigation.NavController
 import com.flowtune.music.LocalPlayerAwareWindowInsets
 import com.flowtune.music.R
 import com.flowtune.music.ui.component.IconButton
-import com.flowtune.music.ui.component.IntegrationCard
-import com.flowtune.music.ui.component.IntegrationCardItem
 import com.flowtune.music.ui.utils.backToMain
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,25 +34,6 @@ fun IntegrationScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
     ) {
-        IntegrationCard(
-            title = stringResource(R.string.general),
-            items = listOf(
-                IntegrationCardItem(
-                    icon = painterResource(R.drawable.discord),
-                    title = { Text(stringResource(R.string.discord_integration)) },
-                    onClick = {
-                        navController.navigate("settings/integrations/discord")
-                    }
-                ),
-                IntegrationCardItem(
-                    icon = painterResource(R.drawable.music_note),
-                    title = { Text(stringResource(R.string.lastfm_integration)) },
-                    onClick = {
-                        navController.navigate("settings/integrations/lastfm")
-                    }
-                )
-            )
-        )
     }
 
     TopAppBar(

@@ -67,7 +67,6 @@
     <string name="show_top_playlist">Mostra la playlist dei migliori brani</string>
     <string name="show_cached_playlist">Mostra la playlist dei brani in cache</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Accedi con il token</string>
     <string name="token_hidden">Tocca per mostrare il token</string>
     <string name="token_shown">Tocca ancora per copiarlo o modificarlo</string>
@@ -205,8 +204,6 @@
     <string name="filter_uploaded">Caricato</string>
     <string name="uploaded_playlist">Caricato</string>
     <string name="show_uploaded_playlist">Mostra la playlist dei brani caricati</string>
-    <string name="discord_use_details">Usa i dettagli al posto dello stato</string>
-    <string name="discord_use_details_description">Mostra il titolo della canzone prominente al posto dei nomi degli artisti</string>
     <string name="updater">Aggiornamenti</string>
     <string name="check_for_updates">Controlla automaticamente se ci sono aggiornamenti</string>
     <string name="update_notifications">Attiva le notifiche sugli aggiornamenti</string>
@@ -214,19 +211,10 @@
     <string name="update_channel_name">Aggiornamenti dell\'app</string>
     <string name="update_channel_desc">Notifiche sulle nuove versioni</string>
     <string name="lyrics_romanize_macedonian">Romanizza testo in macedone</string>
-    <string name="enable_scrobbling">Attiva scrobbling</string>
-    <string name="lastfm_now_playing">Invia l\'ascolto attuale</string>
-    <string name="scrobbling_configuration">Configurazione dello scrobbling</string>
-    <string name="scrobble_min_track_duration">Invia brani più lunghi di</string>
-    <string name="scrobble_delay_percent">Percentuale del ritardo sull\'invio</string>
-    <string name="scrobble_delay_minutes">Minuti di ritardo sull\'invio</string>
     <string name="integrations">Integrazioni</string>
     <string name="username">Nome utente</string>
     <string name="password">Password</string>
-    <string name="lastfm_integration">Integrazione di last.fm</string>
     <string name="swipe_song_to_remove">Scorri il brano per rimuoverlo dalla playlist</string>
-    <string name="last_fm_send_likes">Invia Mi piace/Non mi piace</string>
-    <string name="last_fm_send_likes_description">Brani che ami/ che non ami in Last.fm quando vengono apprezzate/non apprezzate in Flowtune</string>
     <string name="lyrics_romanize_chinese">Romanizza testo in cinese</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Attiva l\'invio dell\'audio a Chromecast e altri dispositivi</string>

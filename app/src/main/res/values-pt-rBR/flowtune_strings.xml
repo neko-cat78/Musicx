@@ -36,7 +36,6 @@
     <string name="slim">Pequeno</string>
     <string name="slim_navbar">Barra de navegação inferior pequena</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="general">Geral</string>
     <string name="proxy">Proxy</string>
     <string name="default_lib_chips">Alterar tela da biblioteca padrão</string>
@@ -212,18 +211,9 @@
     <string name="update_available_title">Atualização disponível</string>
     <string name="update_channel_name">Atualizações do aplicativo</string>
     <string name="update_channel_desc">Notificações sobre novas versões</string>
-    <string name="discord_use_details">Usar detalhes ao invés do estado</string>
-    <string name="discord_use_details_description">Mostrar o título da música destacadamente em vez do nome do artista</string>
     <string name="integrations">Integrações</string>
     <string name="username">Nome do usuário</string>
     <string name="password">Senha</string>
-    <string name="lastfm_integration">Integração com o Last.fm</string>
-    <string name="enable_scrobbling">Ativar scrobbling</string>
-    <string name="lastfm_now_playing">Enviar reprodução atual</string>
-    <string name="scrobbling_configuration">Configuração de scrobbling</string>
-    <string name="scrobble_min_track_duration">Fazer scrobble de músicas mais longas que</string>
-    <string name="scrobble_delay_percent">Porcentagem do atraso de Scrobble</string>
-    <string name="scrobble_delay_minutes">Minutos do atraso do Scrobble</string>
     <string name="swipe_song_to_remove">Deslizar música para removê-la da lista</string>
     <string name="primary_color_style">Cor primária</string>
     <string name="tertiary_color_style">Cor terciária</string>
@@ -231,8 +221,6 @@
     <string name="lyrics_romanize_chinese">Romanizar letras em Chinês</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Habilitar transmissão de áudio para o Chromecast e outros dispositivos compatíveis</string>
-    <string name="last_fm_send_likes">Enviar Likes/Deslikes</string>
-    <string name="last_fm_send_likes_description">Curtir/Descurtir músicas no Last.fm quanto são Curtidas/Descurtidas no Flowtune</string>
     <string name="logging_in">Fazendo login…</string>
     <string name="hide_video_songs">Ocultar videoclipes</string>
     <string name="details_desc">Ver as informações da música</string>

@@ -98,7 +98,6 @@
     <string name="show_cached_playlist">Syn «Snarlagra»-spelelista</string>
     <string name="show_uploaded_playlist">Syn «Oppladde»-spelelista</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Logg inn med lykel</string>
     <string name="token_hidden">Trykk for å syna lykelen</string>
     <string name="token_shown">Trykk att for å kopiera eller brigda</string>
@@ -127,8 +126,6 @@
     <string name="proxy_username">Proxytenarbrukarnamn</string>
     <string name="proxy_password">Proxytenarpassord</string>
     <string name="enable_authentication">Slå på autentisering</string>
-    <string name="discord_use_details">Nøyt detaljar i staden for ein tilstand</string>
-    <string name="discord_use_details_description">Syn songtittel fremst i staden for artistnamn</string>
     <string name="audio_quality_max">Max (beta)</string>
     <string name="enable_similar_content">Slå på liknande innhald</string>
     <string name="similar_content_desc">Legg automatisk til fleire liknande songar når køen tek slutt</string>
@@ -254,16 +251,7 @@
     <string name="integrations">Hopflettingar</string>
     <string name="username">Nøytarnamn</string>
     <string name="password">Passord</string>
-    <string name="lastfm_integration">Hopfletting med Last.fm</string>
-    <string name="enable_scrobbling">Slå på scrobbling</string>
-    <string name="lastfm_now_playing">Send «Spelar no»</string>
-    <string name="last_fm_send_likes">Send likar/mislikar</string>
-    <string name="last_fm_send_likes_description">Elska/avelska songar i Last.fm når dei vert lika/mislika i Flowtune</string>
     <string name="logging_in">Loggar inn…</string>
-    <string name="scrobbling_configuration">Scrobblingsoppset</string>
-    <string name="scrobble_min_track_duration">Scrobbla songar lengre en</string>
-    <string name="scrobble_delay_percent">Skrobblingsforseinking i prosent</string>
-    <string name="scrobble_delay_minutes">Skrobblingsforseinking i minutt</string>
     <string name="hide_video_songs">Gøym videosongar</string>
     <string name="details_desc">Syn songopplysingar</string>
     <string name="edit_desc">Brigda tittel eller artist</string>

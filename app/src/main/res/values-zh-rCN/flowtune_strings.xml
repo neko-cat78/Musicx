@@ -64,7 +64,6 @@
     <string name="slim_navbar">更细的底部导航栏</string>
     <string name="show_cached_playlist">显示缓存歌单</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">高级登录 (token)</string>
     <string name="token_hidden">点击显示 token</string>
     <string name="token_shown">再次点击以复制或编辑</string>
@@ -197,8 +196,6 @@
     <string name="uploaded_playlist">已上传</string>
     <string name="filter_uploaded">已上传</string>
     <string name="show_uploaded_playlist">展示“已上传”歌单</string>
-    <string name="discord_use_details">使用详细信息代替状态</string>
-    <string name="discord_use_details_description">突出显示歌曲标题，而非艺术家姓名</string>
     <string name="updater">更新器</string>
     <string name="check_for_updates">自动检查更新</string>
     <string name="update_notifications">启用更新通知</string>
@@ -210,14 +207,7 @@
     <string name="integrations">集成</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
-    <string name="lastfm_integration">Last.fm 集成</string>
     <string name="lyrics_romanize_macedonian">使用马其顿语（罗马音）</string>
-    <string name="enable_scrobbling">启用记录</string>
-    <string name="lastfm_now_playing">发送正在播放的歌曲</string>
-    <string name="scrobbling_configuration">Scrobbling记录设置</string>
-    <string name="scrobble_min_track_duration">记录比…长的歌曲</string>
-    <string name="scrobble_delay_minutes">记录所需已听时间（分钟）</string>
-    <string name="scrobble_delay_percent">记录所需已听占比</string>
     <string name="swipe_song_to_remove">滑动歌曲将其从播放列表中删除</string>
     <string name="other_results">其他</string>
     <string name="top_result">最佳结果</string>
@@ -240,8 +230,6 @@
     <string name="lyrics_romanize_chinese">使用中文（罗马音）</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">启用向 Chromecast 和其他支持投屏功能的设备投屏音频</string>
-    <string name="last_fm_send_likes">发送点赞/取消点赞</string>
-    <string name="last_fm_send_likes_description">Last.fm上的歌曲在Flowtune上被点赞/取消点赞时,也会被标记为喜欢/不喜欢</string>
     <string name="logging_in">正在登入…</string>
     <string name="hide_video_songs">隐藏带视频歌曲</string>
     <string name="details_desc">查看歌曲信息</string>

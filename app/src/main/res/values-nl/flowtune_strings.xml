@@ -54,7 +54,6 @@
     <string name="default_style">Standaard</string>
     <string name="secondary_color_style">Secundaire kleur</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Login met token</string>
     <string name="token_hidden">Klik om token te tonen</string>
     <string name="token_shown">Klik opnieuw om te kopiëren of te wijzigen</string>
@@ -182,9 +181,6 @@
     <string name="integrations">Integraties</string>
     <string name="username">Gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
-    <string name="lastfm_integration">Last.fm Integratie</string>
-    <string name="enable_scrobbling">Scrobbling aanzetten</string>
-    <string name="scrobbling_configuration">Scrobbling Configuratie</string>
     <string name="lyrics_romanize_chinese">Chinees romaniseren</string>
     <string name="hide_video_songs">Video nummers verbergen</string>
     <string name="primary_color_style">Primaire kleur</string>

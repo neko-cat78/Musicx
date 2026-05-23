@@ -85,7 +85,6 @@
     <string name="show_top_playlist">Prikaži seznam predvajanja \"Top\"</string>
     <string name="show_cached_playlist">Prikaži seznam predvajanja \"Predpomnjeno\"</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Prijava s tokenom</string>
     <string name="token_hidden">Tapnite za prikaz tokena</string>
     <string name="token_shown">Ponovno tapnite za kopiranje ali urejanje</string>
