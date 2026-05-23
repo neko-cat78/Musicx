@@ -45,7 +45,7 @@ object NetworkConfig {
                 writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 retryOnConnectionFailure(true)
                 if (enableCache) {
-                    val cacheDirectory = cacheDir ?: File(System.getProperty("java.io.tmpdir"), "metrolist_http_cache")
+                    val cacheDirectory = cacheDir ?: File(System.getProperty("java.io.tmpdir"), "flowtune_http_cache")
                     cache(okhttp3.Cache(cacheDirectory, CACHE_SIZE_MB))
                 }
             }
