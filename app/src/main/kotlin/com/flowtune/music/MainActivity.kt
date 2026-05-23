@@ -166,6 +166,7 @@ import com.flowtune.music.ui.theme.LocalHomeGradientColors
 import com.flowtune.music.ui.theme.FlowtuneTheme
 import com.flowtune.music.ui.theme.extractThemeColor
 import com.flowtune.music.ui.utils.appBarScrollBehavior
+import com.flowtune.music.ui.utils.resetHeightOffset
 import com.flowtune.music.utils.SyncUtils
 import com.flowtune.music.utils.Updater
 import com.flowtune.music.utils.dataStore
