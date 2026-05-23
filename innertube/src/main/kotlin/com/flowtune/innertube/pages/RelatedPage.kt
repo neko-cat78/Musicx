@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -9,6 +10,7 @@ import com.flowtune.innertube.models.PlaylistItem
 import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.oddElements
+
 data class RelatedPage(
     val songs: List<SongItem>,
     val albums: List<AlbumItem>,
@@ -56,6 +58,7 @@ data class RelatedPage(
                 }?.toggleMenuServiceItemRenderer, "LIBRARY_REMOVE")
             )
         }
+
         fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): YTItem? {
             return when {
                 renderer.isAlbum ->

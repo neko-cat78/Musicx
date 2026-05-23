@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
@@ -97,6 +98,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 @Composable
 fun SongMenu(
     originalSong: Song,
@@ -118,12 +120,15 @@ fun SongMenu(
     val syncUtils = LocalSyncUtils.current
     val scope = rememberCoroutineScope()
     var refetchIconDegree by remember { mutableFloatStateOf(0f) }
+
     val cacheViewModel = hiltViewModel<CachePlaylistViewModel>()
+
     val rotationAnimation by animateFloatAsState(
         targetValue = refetchIconDegree,
         animationSpec = tween(durationMillis = 800),
         label = "",
     )
+
     val orderedArtists by produceState(initialValue = emptyList<ArtistEntity>(), song) {
         withContext(Dispatchers.IO) {
             val artistMaps = database.songArtistMap(song.id).sortedBy { it.position }
@@ -133,19 +138,24 @@ fun SongMenu(
             value = sorted
         }
     }
+
     var showEditDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val TextFieldValueSaver: Saver<TextFieldValue, *> = Saver(
         save = { it.text },
         restore = { text -> TextFieldValue(text, TextRange(text.length)) }
     )
+
     var titleField by rememberSaveable(stateSaver = TextFieldValueSaver) {
         mutableStateOf(TextFieldValue(song.song.title))
     }
+
     var artistField by rememberSaveable(stateSaver = TextFieldValueSaver) {
         mutableStateOf(TextFieldValue(song.artists.firstOrNull()?.name.orEmpty()))
     }
+
     if (showEditDialog) {
         TextFieldDialog(
             icon = {
@@ -168,6 +178,7 @@ fun SongMenu(
             onDoneMultiple = { values ->
                 val newTitle = values[0]
                 val newArtist = values[1]
+
                 coroutineScope.launch {
                     database.query {
                         update(song.song.copy(title = newTitle))
@@ -176,6 +187,7 @@ fun SongMenu(
                             update(artist.copy(name = newArtist))
                         }
                     }
+
                     showEditDialog = false
                     onDismiss()
                 }
@@ -183,12 +195,15 @@ fun SongMenu(
             onDismiss = { showEditDialog = false }
         )
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showErrorPlaylistAddDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -203,6 +218,7 @@ fun SongMenu(
             showChoosePlaylistDialog = false
         },
     )
+
     if (showErrorPlaylistAddDialog) {
         ListDialog(
             onDismiss = {
@@ -224,14 +240,17 @@ fun SongMenu(
                     modifier = Modifier.clickable { showErrorPlaylistAddDialog = false },
                 )
             }
+
             items(listOf(song)) { song ->
                 SongListItem(song = song)
             }
         }
     }
+
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showSelectArtistDialog) {
         ListDialog(
             onDismiss = { showSelectArtistDialog = false },
@@ -277,6 +296,7 @@ fun SongMenu(
             }
         }
     }
+
     SongListItem(
         song = song,
         badges = {},
@@ -298,11 +318,15 @@ fun SongMenu(
             }
         },
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -379,7 +403,9 @@ fun SongMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -408,11 +434,13 @@ fun SongMenu(
                                 val isInLibrary = currentSong.inLibrary != null
                                 val token =
                                     if (isInLibrary) currentSong.libraryRemoveToken else currentSong.libraryAddToken
+
                                 token?.let {
                                     coroutineScope.launch {
                                         YouTube.feedback(listOf(it))
                                     }
                                 }
+
                                 database.query {
                                     update(song.song.toggleLibrary())
                                 }
@@ -493,7 +521,9 @@ fun SongMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -570,7 +600,9 @@ fun SongMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -26,6 +27,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HistoryViewModel
@@ -35,10 +37,13 @@ constructor(
     val database: MusicDatabase,
 ) : ViewModel() {
     var historySource = MutableStateFlow(HistorySource.LOCAL)
+
     private val today = LocalDate.now()
     private val thisMonday = today.with(DayOfWeek.MONDAY)
     private val lastMonday = thisMonday.minusDays(7)
+
     val historyPage = MutableStateFlow<HistoryPage?>(null)
+
     val events =
         context.dataStore.data
             .map { it[HideVideoSongsKey] ?: false }
@@ -74,9 +79,11 @@ constructor(
                             }
                     }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyMap())
+
     init {
         fetchRemoteHistory()
     }
+
     fun fetchRemoteHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             YouTube.musicHistory().onSuccess {
@@ -87,11 +94,16 @@ constructor(
         }
     }
 }
+
 sealed class DateAgo {
     data object Today : DateAgo()
+
     data object Yesterday : DateAgo()
+
     data object ThisWeek : DateAgo()
+
     data object LastWeek : DateAgo()
+
     class Other(
         val date: LocalDate,
     ) : DateAgo() {
@@ -99,6 +111,7 @@ sealed class DateAgo {
             if (other is Other) return date == other.date
             return super.equals(other)
         }
+
         override fun hashCode(): Int = date.hashCode()
     }
 }

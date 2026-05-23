@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.basicMarquee
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 @Composable
 fun NewActionButton(
     icon: @Composable () -> Unit,
@@ -51,18 +53,22 @@ fun NewActionButton(
         animationSpec = tween(200),
         label = "background"
     )
+    
     val animatedContent by animateColorAsState(
         targetValue = if (enabled) contentColor else contentColor.copy(alpha = 0.5f),
         animationSpec = tween(200),
         label = "content"
     )
+
     var performAction by remember { mutableStateOf(false) }
+
     if (performAction) {
         onClick()
         LaunchedEffect(Unit) {
             performAction = false
         }
     }
+
     Card(
         modifier = modifier
             .clickable(enabled = enabled) { performAction = true },
@@ -86,7 +92,9 @@ fun NewActionButton(
             ) {
                 icon()
             }
+            
             Spacer(modifier = Modifier.height(6.dp))
+            
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelMedium,
@@ -99,6 +107,7 @@ fun NewActionButton(
         }
     }
 }
+
 @Composable
 fun NewMenuItem(
     headlineContent: @Composable () -> Unit,
@@ -120,6 +129,7 @@ fun NewMenuItem(
         tonalElevation = 0.dp
     )
 }
+
 @Composable
 fun NewMenuSectionHeader(
     text: String,
@@ -135,6 +145,7 @@ fun NewMenuSectionHeader(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 12.dp)
     )
 }
+
 @Composable
 fun NewActionGrid(
     actions: List<NewAction>,
@@ -142,6 +153,7 @@ fun NewActionGrid(
     columns: Int = 3
 ) {
     val rows = actions.chunked(columns)
+    
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -161,6 +173,7 @@ fun NewActionGrid(
                         contentColor = if (action.contentColor != Color.Unspecified) action.contentColor else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                
                 repeat(columns - row.size) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
@@ -168,6 +181,7 @@ fun NewActionGrid(
         }
     }
 }
+
 data class NewAction(
     val icon: @Composable () -> Unit,
     val text: String,
@@ -176,6 +190,7 @@ data class NewAction(
     val backgroundColor: Color = Color.Unspecified,
     val contentColor: Color = Color.Unspecified
 )
+
 @Composable
 fun NewMenuContent(
     headerContent: @Composable (() -> Unit)? = null,
@@ -187,17 +202,22 @@ fun NewMenuContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        
         headerContent?.invoke()
+        
         actionGrid?.invoke()
+        
         if (headerContent != null && actionGrid != null) {
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 16.dp),
                 color = MaterialTheme.colorScheme.outlineVariant
             )
         }
+        
         menuItems?.invoke()
     }
 }
+
 @Composable
 fun NewIconButton(
     icon: @Composable () -> Unit,
@@ -212,11 +232,13 @@ fun NewIconButton(
         animationSpec = tween(200),
         label = "background"
     )
+    
     val animatedContent by animateColorAsState(
         targetValue = if (enabled) contentColor else contentColor.copy(alpha = 0.5f),
         animationSpec = tween(200),
         label = "content"
     )
+
     Card(
         modifier = modifier
             .clickable(enabled = enabled) { onClick() },
@@ -238,6 +260,7 @@ fun NewIconButton(
         }
     }
 }
+
 @Composable
 fun NewMenuContainer(
     content: @Composable () -> Unit,

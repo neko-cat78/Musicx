@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -79,6 +80,7 @@ import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.DateAgo
 import com.flowtune.music.viewmodels.HistoryViewModel
 import java.time.format.DateTimeFormatter
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HistoryScreen(
@@ -92,6 +94,7 @@ fun HistoryScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<Long>, Long>(
@@ -103,6 +106,7 @@ fun HistoryScreen(
         inSelectMode = false
         selection.clear()
     }
+
     var isSearching by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -121,13 +125,18 @@ fun HistoryScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val historySource by viewModel.historySource.collectAsState()
+
     val historyPage by viewModel.historyPage.collectAsState()
+    
     val events by viewModel.events.collectAsState()
+
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
     }
+
     fun dateAgoToString(dateAgo: DateAgo): String {
         return when (dateAgo) {
             DateAgo.Today -> context.getString(R.string.today)
@@ -137,6 +146,7 @@ fun HistoryScreen(
             is DateAgo.Other -> dateAgo.date.format(DateTimeFormatter.ofPattern("yyyy/MM"))
         }
     }
+
     val filteredEvents = remember(events, query) {
         if (query.text.isEmpty()) {
             events
@@ -154,6 +164,7 @@ fun HistoryScreen(
             }.filterValues { it.isNotEmpty() }
         }
     }
+
     val filteredRemoteContent = remember(historyPage, query) {
         if (query.text.isEmpty()) {
             historyPage?.sections
@@ -168,9 +179,11 @@ fun HistoryScreen(
             }?.filter { it.songs.isNotEmpty() }
         }
     }
+
     val allEvents = remember(filteredEvents) {
         filteredEvents.values.flatten()
     }
+
     LaunchedEffect(allEvents) {
         selection.fastForEachReversed { eventId ->
             if (allEvents.find { it.event.id == eventId } == null) {
@@ -178,7 +191,9 @@ fun HistoryScreen(
             }
         }
     }
+
     val lazyListState = rememberLazyListState()
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             state = lazyListState,
@@ -207,6 +222,7 @@ fun HistoryScreen(
                     }
                 )
             }
+
             if (historySource == HistorySource.REMOTE && isLoggedIn) {
                 filteredRemoteContent?.forEach { section ->
                     stickyHeader {
@@ -217,6 +233,7 @@ fun HistoryScreen(
                                 .background(MaterialTheme.colorScheme.background)
                         )
                     }
+
                     items(
                         items = section.songs,
                         key = { "${section.title}_${it.id}_${section.songs.indexOf(it)}" }
@@ -285,6 +302,7 @@ fun HistoryScreen(
                                 .background(MaterialTheme.colorScheme.surface)
                         )
                     }
+
                     itemsIndexed(
                         items = dateEvents,
                         key = { index, event -> "${dateAgo}_${event.event.id}_$index" }
@@ -296,6 +314,7 @@ fun HistoryScreen(
                                 selection.remove(event.event.id)
                             }
                         }
+
                         SongListItem(
                             song = event.song,
                             isActive = event.song.id == mediaMetadata?.id,
@@ -359,6 +378,7 @@ fun HistoryScreen(
                 }
             }
         }
+
         HideOnScrollFAB(
             visible = if (historySource == HistorySource.REMOTE) {
                 filteredRemoteContent?.any { it.songs.isNotEmpty() } == true
@@ -389,6 +409,7 @@ fun HistoryScreen(
             }
         )
     }
+
     TopAppBar(
         title = {
             if (inSelectMode) {

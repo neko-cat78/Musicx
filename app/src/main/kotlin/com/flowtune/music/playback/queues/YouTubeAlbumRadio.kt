@@ -1,4 +1,5 @@
 package com.flowtune.music.playback.queues
+
 import androidx.media3.common.MediaItem
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.WatchEndpoint
@@ -6,18 +7,22 @@ import com.flowtune.music.extensions.toMediaItem
 import com.flowtune.music.models.MediaMetadata
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+
 class YouTubeAlbumRadio(
     private var playlistId: String,
 ) : Queue {
     override val preloadItem: MediaMetadata? = null
+
     private val endpoint: WatchEndpoint
         get() = WatchEndpoint(
             playlistId = playlistId,
             params = "wAEB"
         )
+
     private var albumSongCount = 0
     private var continuation: String? = null
     private var firstTimeLoaded: Boolean = false
+
     override suspend fun getInitialStatus(): Queue.Status = withContext(IO) {
         val albumSongs = YouTube.albumSongs(playlistId).getOrThrow()
         albumSongCount = albumSongs.size
@@ -27,7 +32,9 @@ class YouTubeAlbumRadio(
             mediaItemIndex = 0
         )
     }
+
     override fun hasNextPage(): Boolean = !firstTimeLoaded || continuation != null
+
     override suspend fun nextPage(): List<MediaItem> = withContext(IO) {
         val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
         continuation = nextResult.continuation

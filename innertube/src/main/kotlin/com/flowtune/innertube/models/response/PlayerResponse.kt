@@ -1,8 +1,10 @@
 package com.flowtune.innertube.models.response
+
 import com.flowtune.innertube.models.ResponseContext
 import com.flowtune.innertube.models.Thumbnails
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class PlayerResponse(
     val responseContext: ResponseContext,
@@ -18,6 +20,7 @@ data class PlayerResponse(
         val status: String,
         val reason: String?,
     )
+
     @Serializable
     data class PlayerConfig(
         val audioConfig: AudioConfig,
@@ -28,6 +31,7 @@ data class PlayerResponse(
             val perceptualLoudnessDb: Double?,
         )
     }
+
     @Serializable
     data class StreamingData(
         val formats: List<Format>?,
@@ -60,6 +64,7 @@ data class PlayerResponse(
                 get() = width == null
             val isOriginal: Boolean
                 get() = audioTrack?.isAutoDubbed == null
+
             @Serializable
             data class AudioTrack(
                 val displayName: String?,
@@ -68,6 +73,7 @@ data class PlayerResponse(
             )
         }
     }
+
     @Serializable
     data class VideoDetails(
         val videoId: String,
@@ -79,6 +85,7 @@ data class PlayerResponse(
         val viewCount: String?,
         val thumbnail: Thumbnails,
     )
+
     @Serializable
     data class PlaybackTracking(
         @SerialName("videostatsPlaybackUrl")

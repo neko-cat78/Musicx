@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.search
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -65,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+
 import com.flowtune.music.LocalPlayerConnection
 import com.flowtune.music.R
 import com.flowtune.music.models.toMediaMetadata
@@ -73,6 +75,7 @@ import com.flowtune.music.ui.menu.YouTubeAlbumMenu
 import com.flowtune.music.ui.menu.YouTubeArtistMenu
 import com.flowtune.music.ui.menu.YouTubePlaylistMenu
 import com.flowtune.music.ui.menu.YouTubeSongMenu
+
 import com.flowtune.innertube.YouTube.SearchFilter.Companion.FILTER_ALBUM
 import com.flowtune.innertube.YouTube.SearchFilter.Companion.FILTER_ARTIST
 import com.flowtune.innertube.YouTube.SearchFilter.Companion.FILTER_SONG
@@ -100,6 +103,7 @@ import com.flowtune.music.viewmodels.OnlineSearchViewModel
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.net.URLEncoder
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OnlineSearchResult(
@@ -112,10 +116,12 @@ fun OnlineSearchResult(
     val haptic = LocalHapticFeedback.current
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+
     val encodedQuery = navController.currentBackStackEntry?.arguments?.getString("query") ?: ""
     val decodedQuery = remember(encodedQuery) {
         try {
@@ -124,9 +130,11 @@ fun OnlineSearchResult(
             encodedQuery
         }
     }
+
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(decodedQuery, TextRange(decodedQuery.length)))
     }
+
     val onSearch: (String) -> Unit = remember {
         { searchQuery ->
             if (searchQuery.isNotEmpty()) {
@@ -139,9 +147,11 @@ fun OnlineSearchResult(
             }
         }
     }
+
     LaunchedEffect(decodedQuery) {
         query = TextFieldValue(decodedQuery, TextRange(decodedQuery.length))
     }
+
     val searchFilter by viewModel.filter.collectAsState()
     val searchSummary = viewModel.summaryPage
     val itemsPage by remember(searchFilter) {
@@ -151,6 +161,7 @@ fun OnlineSearchResult(
             }
         }
     }
+    
     LaunchedEffect(lazyListState) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" }
@@ -159,6 +170,7 @@ fun OnlineSearchResult(
             viewModel.loadMore()
         }
     }
+
     val ytItemContent: @Composable LazyItemScope.(YTItem) -> Unit = { item: YTItem ->
         val longClick = {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -170,17 +182,20 @@ fun OnlineSearchResult(
                             navController = navController,
                             onDismiss = menuState::dismiss,
                         )
+
                     is AlbumItem ->
                         YouTubeAlbumMenu(
                             albumItem = item,
                             navController = navController,
                             onDismiss = menuState::dismiss,
                         )
+
                     is ArtistItem ->
                         YouTubeArtistMenu(
                             artist = item,
                             onDismiss = menuState::dismiss,
                         )
+
                     is PlaylistItem ->
                         YouTubePlaylistMenu(
                             playlist = item,
@@ -226,6 +241,7 @@ fun OnlineSearchResult(
                                     )
                                 }
                             }
+
                             is AlbumItem -> navController.navigate("album/${item.id}")
                             is ArtistItem -> navController.navigate("artist/${item.id}")
                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
@@ -236,12 +252,14 @@ fun OnlineSearchResult(
                 .animateItem(),
         )
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
     ) {
+        
         OutlinedTextField(
             value = query,
             onValueChange = { newQuery ->
@@ -307,6 +325,7 @@ fun OnlineSearchResult(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .focusRequester(focusRequester)
         )
+
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -328,6 +347,7 @@ fun OnlineSearchResult(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier.fillMaxWidth()
@@ -337,12 +357,14 @@ fun OnlineSearchResult(
                         item {
                             NavigationTitle(summary.title)
                         }
+
                         items(
                             items = summary.items,
                             key = { "${summary.title}/${it.id}/${summary.items.indexOf(it)}" },
                             itemContent = ytItemContent,
                         )
                     }
+
                     if (searchSummary?.summaries?.isEmpty() == true) {
                         item {
                             EmptyPlaceholder(
@@ -357,6 +379,7 @@ fun OnlineSearchResult(
                         key = { "filtered_${it.id}" },
                         itemContent = ytItemContent,
                     )
+
                     if (itemsPage?.continuation != null) {
                         item(key = "loading") {
                             ShimmerHost {
@@ -366,6 +389,7 @@ fun OnlineSearchResult(
                             }
                         }
                     }
+
                     if (itemsPage?.items?.isEmpty() == true) {
                         item {
                             EmptyPlaceholder(
@@ -375,6 +399,7 @@ fun OnlineSearchResult(
                         }
                     }
                 }
+
                 if (searchFilter == null && searchSummary == null || searchFilter != null && itemsPage == null) {
                     item {
                         ShimmerHost {
@@ -384,10 +409,12 @@ fun OnlineSearchResult(
                         }
                     }
                 }
+
                 item(key = "bottom_spacer") {
                     Spacer(modifier = Modifier.height(MiniPlayerHeight + MiniPlayerBottomSpacing + NavigationBarHeight))
                 }
             }
         }
     }
+
 }

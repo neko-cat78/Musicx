@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -23,11 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.ui.screens.Screens
+
 @Immutable
 private data class NavItemState(
     val isSelected: Boolean,
     val iconRes: Int
 )
+
 @Stable
 private fun isRouteSelected(currentRoute: String?, screenRoute: String, navigationItems: List<Screens>): Boolean {
     if (currentRoute == null) return false
@@ -35,6 +38,7 @@ private fun isRouteSelected(currentRoute: String?, screenRoute: String, navigati
     return navigationItems.any { it.route == screenRoute } &&
            currentRoute.startsWith("$screenRoute/")
 }
+
 @Composable
 fun AppNavigationRail(
     navigationItems: List<Screens>,
@@ -44,11 +48,13 @@ fun AppNavigationRail(
     pureBlack: Boolean = false
 ) {
     val containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+
     NavigationRail(
         modifier = modifier,
         containerColor = containerColor
     ) {
         Spacer(modifier = Modifier.weight(1f))
+
         navigationItems.forEach { screen ->
             val isSelected = remember(currentRoute, screen.route) {
                 isRouteSelected(currentRoute, screen.route, navigationItems)
@@ -56,6 +62,7 @@ fun AppNavigationRail(
             val iconRes = remember(isSelected, screen) {
                 if (isSelected) screen.iconIdActive else screen.iconIdInactive
             }
+
             NavigationRailItem(
                 selected = isSelected,
                 onClick = { onItemClick(screen, isSelected) },
@@ -67,9 +74,11 @@ fun AppNavigationRail(
                 }
             )
         }
+
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
 @Composable
 fun AppNavigationBar(
     navigationItems: List<Screens>,
@@ -81,7 +90,9 @@ fun AppNavigationBar(
 ) {
     val containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
     val contentColor = if (pureBlack) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+
     Box(modifier = modifier) {
+        
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -106,6 +117,7 @@ fun AppNavigationBar(
                 val iconRes = remember(isSelected, screen) {
                     if (isSelected) screen.iconIdActive else screen.iconIdInactive
                 }
+
                 NavigationBarItem(
                     selected = isSelected,
                     onClick = { onItemClick(screen, isSelected) },

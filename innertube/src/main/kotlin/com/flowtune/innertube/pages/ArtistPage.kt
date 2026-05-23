@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -16,11 +17,13 @@ import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.filterExplicit
 import com.flowtune.innertube.models.getItems
 import com.flowtune.innertube.models.oddElements
+
 data class ArtistSection(
     val title: String,
     val items: List<YTItem>,
     val moreEndpoint: BrowseEndpoint?,
 )
+
 data class ArtistPage(
     val artist: ArtistItem,
     val sections: List<ArtistSection>,
@@ -37,6 +40,7 @@ data class ArtistPage(
                 else -> null
             }
         }
+
         private fun fromMusicShelfRenderer(renderer: MusicShelfRenderer): ArtistSection? {
             return ArtistSection(
                 title = renderer.title?.runs?.firstOrNull()?.text ?: "",
@@ -46,6 +50,7 @@ data class ArtistPage(
                 moreEndpoint = renderer.title?.runs?.firstOrNull()?.navigationEndpoint?.browseEndpoint
             )
         }
+
         private fun fromMusicCarouselShelfRenderer(renderer: MusicCarouselShelfRenderer): ArtistSection? {
             return ArtistSection(
                 title = renderer.header?.musicCarouselShelfBasicHeaderRenderer?.title?.runs?.firstOrNull()?.text ?: return null,
@@ -59,7 +64,9 @@ data class ArtistPage(
                 moreEndpoint = renderer.header.musicCarouselShelfBasicHeaderRenderer.moreContentButton?.buttonRenderer?.navigationEndpoint?.browseEndpoint
             )
         }
+
         private fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): SongItem? {
+            
             val artists = renderer.flexColumns.getOrNull(1)
                 ?.musicResponsiveListItemFlexColumnRenderer?.text?.runs
                 ?.oddElements()?.map {
@@ -68,6 +75,7 @@ data class ArtistPage(
                         id = it.navigationEndpoint?.browseEndpoint?.browseId
                     )
                 }
+            
             val album = renderer.flexColumns.lastOrNull()
                 ?.musicResponsiveListItemFlexColumnRenderer?.text?.runs
                 ?.firstOrNull()?.let {
@@ -78,6 +86,7 @@ data class ArtistPage(
                         )
                     } else null
                 }
+            
             return SongItem(
                 id = renderer.playlistItemData?.videoId ?: return null,
                 title = renderer.flexColumns.firstOrNull()
@@ -101,6 +110,7 @@ data class ArtistPage(
                 }?.toggleMenuServiceItemRenderer, "LIBRARY_REMOVE")
             )
         }
+
         private fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): YTItem? {
             return when {
                 renderer.isSong -> {
@@ -122,6 +132,7 @@ data class ArtistPage(
                         } != null
                     )
                 }
+
                 renderer.isAlbum -> {
                     AlbumItem(
                         browseId = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
@@ -137,7 +148,9 @@ data class ArtistPage(
                         } != null
                     )
                 }
+
                 renderer.isPlaylist -> {
+                    
                     PlaylistItem(
                         id = renderer.navigationEndpoint.browseEndpoint?.browseId?.removePrefix("VL") ?: return null,
                         title = renderer.title.runs?.firstOrNull()?.text ?: return null,
@@ -159,6 +172,7 @@ data class ArtistPage(
                         }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null
                     )
                 }
+
                 renderer.isArtist -> {
                     ArtistItem(
                         id = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
@@ -175,6 +189,7 @@ data class ArtistPage(
                         }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
                     )
                 }
+
                 else -> null
             }
         }

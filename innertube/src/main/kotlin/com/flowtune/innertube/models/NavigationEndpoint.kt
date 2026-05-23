@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class NavigationEndpoint(
     val watchEndpoint: WatchEndpoint? = null,
@@ -19,9 +21,11 @@ data class NavigationEndpoint(
                 ?: searchEndpoint
                 ?: queueAddEndpoint
                 ?: shareEntityEndpoint
+
     val anyWatchEndpoint: WatchEndpoint?
         get() = watchEndpoint
             ?: watchPlaylistEndpoint
+
     val musicVideoType: String?
         get() = anyWatchEndpoint
             ?.watchEndpointMusicSupportedConfigs

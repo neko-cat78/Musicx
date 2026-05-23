@@ -1,6 +1,8 @@
 package com.flowtune.simpmusic.models
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class LyricsData(
     val id: String? = null,
@@ -19,6 +21,7 @@ data class LyricsData(
     val richSyncLyrics: String? = null,
     val vote: Int? = null,
 )
+
 @Serializable
 data class SimpMusicApiResponse(
     val type: String? = null,

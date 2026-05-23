@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped
+
 import android.net.ConnectivityManager
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,6 +53,7 @@ import com.flowtune.music.ui.screens.wrapped.pages.WrappedTopAlbumScreen
 import com.flowtune.music.ui.screens.wrapped.pages.WrappedTop5AlbumsScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+
 sealed class WrappedScreenType {
     object Welcome : WrappedScreenType()
     object MinutesTease : WrappedScreenType()
@@ -68,14 +70,17 @@ sealed class WrappedScreenType {
     object Playlist : WrappedScreenType()
     object Conclusion : WrappedScreenType()
 }
+
 @Composable
 fun WrappedScreen(navController: NavController) {
     val context = LocalContext.current
     val manager = remember { provideWrappedManager(context) }
+
     CompositionLocalProvider(LocalWrappedManager provides manager) {
         WrappedScreenContent(navController = navController)
     }
 }
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WrappedScreenContent(navController: NavController) {
@@ -84,6 +89,7 @@ fun WrappedScreenContent(navController: NavController) {
         navController.popBackStack()
     }
     BackHandler(onBack = onClose)
+
     val messagePairSaver = Saver<MessagePair, List<Any>>(
         save = { listOf(it.range.first, it.range.last, it.tease, it.reveal) },
         restore = {
@@ -99,10 +105,12 @@ fun WrappedScreenContent(navController: NavController) {
     val manager = LocalWrappedManager.current
     val audioService = remember { WrappedAudioService(view.context) }
     val lifecycleOwner = LocalLifecycleOwner.current
+
     DisposableEffect(Unit) {
         val window = (view.context as android.app.Activity).window
         val insetsController = WindowCompat.getInsetsController(window, view)
         insetsController.hide(WindowInsetsCompat.Type.systemBars())
+
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> audioService.pause()
@@ -111,12 +119,14 @@ fun WrappedScreenContent(navController: NavController) {
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             insetsController.show(WindowInsetsCompat.Type.systemBars())
             lifecycleOwner.lifecycle.removeObserver(observer)
             audioService.release()
         }
     }
+
     val screens = remember {
         listOf(
             WrappedScreenType.Welcome,
@@ -141,16 +151,20 @@ fun WrappedScreenContent(navController: NavController) {
     val messagePair = rememberSaveable(state.totalMinutes, saver = messagePairSaver) {
         WrappedRepository.getMessage(state.totalMinutes)
     }
+
     LaunchedEffect(Unit) {
         manager.prepare()
     }
+
     LaunchedEffect(pagerState, state.trackMap) {
         if (state.trackMap.isEmpty()) return@LaunchedEffect
+
         snapshotFlow { pagerState.currentPage }.distinctUntilChanged().collect { page ->
             val screen = screens.getOrNull(page)
             audioService.playTrack(state.trackMap[screen])
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(

@@ -1,4 +1,5 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDateTime
+
 @Immutable
 @Entity(tableName = "playlist")
 data class PlaylistEntity(
@@ -33,17 +35,21 @@ data class PlaylistEntity(
     companion object {
         const val LIKED_PLAYLIST_ID = "LP_LIKED"
         const val DOWNLOADED_PLAYLIST_ID = "LP_DOWNLOADED"
+
         fun generatePlaylistId() = "LP" + RandomStringUtils.insecure().next(8, true, false)
     }
+
     val shareLink: String?
         get() {
             return if (browseId != null)
-                "https:
+                "https://music.youtube.com/playlist?list=$browseId"
             else null
         }
+
     fun localToggleLike() = copy(
         bookmarkedAt = if (bookmarkedAt != null) null else LocalDateTime.now()
     )
+
     fun toggleLike() = localToggleLike().also {
         CoroutineScope(Dispatchers.IO).launch {
             if (browseId != null)

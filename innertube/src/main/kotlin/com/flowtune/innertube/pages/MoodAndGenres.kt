@@ -1,8 +1,10 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.BrowseEndpoint
 import com.flowtune.innertube.models.GridRenderer
 import com.flowtune.innertube.models.MusicNavigationButtonRenderer
 import com.flowtune.innertube.models.SectionListRenderer
+
 data class MoodAndGenres(
     val title: String,
     val items: List<Item>,
@@ -12,6 +14,7 @@ data class MoodAndGenres(
         val stripeColor: Long,
         val endpoint: BrowseEndpoint,
     )
+
     companion object {
         fun fromSectionListRendererContent(content: SectionListRenderer.Content): MoodAndGenres? {
             return MoodAndGenres(
@@ -29,6 +32,7 @@ data class MoodAndGenres(
                         .mapNotNull(::fromMusicNavigationButtonRenderer),
             )
         }
+
         fun fromMusicNavigationButtonRenderer(renderer: MusicNavigationButtonRenderer): Item? {
             return Item(
                 title =

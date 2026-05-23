@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicEditablePlaylistDetailHeaderRenderer(
     val header: Header,
@@ -10,11 +12,13 @@ data class MusicEditablePlaylistDetailHeaderRenderer(
         val musicDetailHeaderRenderer: MusicDetailHeaderRenderer?,
         val musicResponsiveHeaderRenderer: MusicResponsiveHeaderRenderer?
     )
+
     @Serializable
     data class EditHeader(
         val musicPlaylistEditHeaderRenderer: MusicPlaylistEditHeaderRenderer?
     )
 }
+
 @Serializable
 data class MusicDetailHeaderRenderer(
     val title: Runs,
@@ -24,6 +28,7 @@ data class MusicDetailHeaderRenderer(
     val thumbnail: ThumbnailRenderer,
     val menu: Menu,
 )
+
 @Serializable
 data class MusicPlaylistEditHeaderRenderer(
     val editTitle: Runs?

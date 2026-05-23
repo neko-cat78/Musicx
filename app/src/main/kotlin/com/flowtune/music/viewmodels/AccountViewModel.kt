@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flowtune.innertube.YouTube
@@ -12,15 +13,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 enum class AccountContentType {
     PLAYLISTS, ALBUMS, ARTISTS
 }
+
 @HiltViewModel
 class AccountViewModel @Inject constructor() : ViewModel() {
     val playlists = MutableStateFlow<List<PlaylistItem>?>(null)
     val albums = MutableStateFlow<List<AlbumItem>?>(null)
     val artists = MutableStateFlow<List<ArtistItem>?>(null)
+    
     val selectedContentType = MutableStateFlow(AccountContentType.PLAYLISTS)
+
     init {
         viewModelScope.launch {
             YouTube.library("FEmusic_liked_playlists").completed().onSuccess {
@@ -45,6 +50,7 @@ class AccountViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+    
     fun setSelectedContentType(contentType: AccountContentType) {
         selectedContentType.value = contentType
     }

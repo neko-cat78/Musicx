@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -31,15 +32,18 @@ import com.flowtune.music.ui.screens.wrapped.components.AnimatedBackground
 import com.flowtune.music.ui.screens.wrapped.components.ShapeType
 import com.flowtune.music.ui.theme.bbh_bartle
 import kotlinx.coroutines.delay
+
 @Composable
 fun WrappedTop5ArtistsScreen(topArtists: List<Artist>, isVisible: Boolean) {
     var visible by remember { mutableStateOf(false) }
+
     LaunchedEffect(isVisible) {
         if (isVisible) {
             delay(200)
             visible = true
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(elementCount = 15, shapeTypes = listOf(ShapeType.Line))
         Column(
@@ -60,7 +64,9 @@ fun WrappedTop5ArtistsScreen(topArtists: List<Artist>, isVisible: Boolean) {
                     textAlign = TextAlign.Center
                 )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
+
             Column {
                 topArtists.forEachIndexed { index, artist ->
                     AnimatedVisibility(

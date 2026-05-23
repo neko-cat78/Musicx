@@ -1,5 +1,7 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.*
+
 data class ChartsPage(
     val sections: List<ChartSection>,
     val continuation: String?
@@ -9,6 +11,7 @@ data class ChartsPage(
         val items: List<YTItem>,
         val chartType: ChartType
     )
+
     enum class ChartType {
         TRENDING, TOP, GENRE, NEW_RELEASES
     }

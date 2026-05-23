@@ -1,6 +1,8 @@
 package com.flowtune.music.db.entities
+
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
+
 @DatabaseView(
     viewName = "sorted_song_artist_map",
     value = "SELECT * FROM song_artist_map ORDER BY position",

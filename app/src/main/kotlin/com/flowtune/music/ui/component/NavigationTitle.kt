@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.R
+
 @Composable
 fun NavigationTitle(
     title: String,
@@ -41,6 +43,7 @@ fun NavigationTitle(
             .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
         thumbnail?.invoke()
+
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.weight(1f)
@@ -52,6 +55,7 @@ fun NavigationTitle(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
@@ -61,6 +65,7 @@ fun NavigationTitle(
                 maxLines = 1,
             )
         }
+
         if (onClick != null) {
             Icon(
                 painter = painterResource(R.drawable.arrow_forward),

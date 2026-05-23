@@ -1,4 +1,5 @@
 package com.flowtune.music.playback
+
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
@@ -29,6 +30,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.Executor
 import javax.inject.Inject
 import javax.inject.Singleton
+
 @Singleton
 class DownloadUtil
 @Inject
@@ -42,8 +44,11 @@ constructor(
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
     private val audioQuality by enumPreference(context, AudioQualityKey, AudioQuality.AUTO)
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     val downloads = MutableStateFlow<Map<String, Download>>(emptyMap())
+
     private val dataSourceFactory =
         ResolvingDataSource.Factory(
             CacheDataSource
@@ -66,12 +71,15 @@ constructor(
         ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
             val length = if (dataSpec.length >= 0) dataSpec.length else 1
+
             if (playerCache.isCached(mediaId, dataSpec.position, length)) {
                 return@Factory dataSpec
             }
+
             songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                 return@Factory dataSpec.withUri(it.first.toUri())
             }
+
             val playbackData = runBlocking(Dispatchers.IO) {
                 YTPlayerUtils.playerResponseForPlayback(
                     mediaId,
@@ -80,6 +88,7 @@ constructor(
                 )
             }.getOrThrow()
             val format = playbackData.format
+
             database.query {
                 upsert(
                     FormatEntity(
@@ -95,8 +104,10 @@ constructor(
                         playbackUrl = playbackData.playbackTracking?.videostatsPlaybackUrl?.baseUrl
                     ),
                 )
+
                 val now = LocalDateTime.now()
                 val existing = getSongByIdBlocking(mediaId)?.song
+
                 val updatedSong = if (existing != null) {
                     if (existing.dateDownload == null) {
                         existing.copy(dateDownload = now)
@@ -113,16 +124,21 @@ constructor(
                         isDownloaded = false
                     )
                 }
+
                 upsert(updatedSong)
             }
+
             val streamUrl = playbackData.streamUrl.let {
                 "${it}&range=0-${format.contentLength ?: 10000000}"
             }
+
             songUrlCache[mediaId] = streamUrl to (System.currentTimeMillis() + playbackData.streamExpiresInSeconds * 1000L)
             dataSpec.withUri(streamUrl.toUri())
         }
+
     val downloadNotificationHelper =
         DownloadNotificationHelper(context, ExoDownloadService.CHANNEL_ID)
+
     @OptIn(DelicateCoroutinesApi::class)
     val downloadManager: DownloadManager =
         DownloadManager(
@@ -145,6 +161,7 @@ constructor(
                                 set(download.request.id, download)
                             }
                         }
+
                         scope.launch {
                             when (download.state) {
                                 Download.STATE_COMPLETED -> {
@@ -163,6 +180,7 @@ constructor(
                 }
             )
         }
+
     init {
         val result = mutableMapOf<String, Download>()
         val cursor = downloadManager.downloadIndex.getDownloads()
@@ -171,7 +189,9 @@ constructor(
         }
         downloads.value = result
     }
+
     fun getDownload(songId: String): Flow<Download?> = downloads.map { it[songId] }
+
     fun release() {
         scope.cancel()
     }

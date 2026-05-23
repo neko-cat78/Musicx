@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+
 val LocalBottomSheetPageState = compositionLocalOf { BottomSheetPageState() }
+
 @Stable
 class BottomSheetPageState(
     isVisible: Boolean = false,
@@ -32,14 +35,17 @@ class BottomSheetPageState(
 ) {
     var isVisible by mutableStateOf(isVisible)
     var content by mutableStateOf(content)
+
     fun show(content: @Composable ColumnScope.() -> Unit) {
         isVisible = true
         this.content = content
     }
+
     fun dismiss() {
         isVisible = false
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetPage(
@@ -49,6 +55,7 @@ fun BottomSheetPage(
 ) {
     val focusManager = LocalFocusManager.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
     AnimatedBottomSheet(
         isVisible = state.isVisible,
         onDismissRequest = {

@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class Context(
     val client: Client,
@@ -20,15 +22,18 @@ data class Context(
         val hl: String,
         val visitorData: String?,
     )
+
     @Serializable
     data class ThirdParty(
         val embedUrl: String,
     )
+
     @Serializable
     data class Request(
         val internalExperimentFlags: Array<String> = emptyArray(),
         val useSsl: Boolean = true,
     )
+
     @Serializable
     data class User(
         val lockedSafetyMode: Boolean = false,

@@ -1,4 +1,5 @@
 package com.flowtune.music.playback.queues
+
 import androidx.media3.common.MediaItem
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.SongItem
@@ -6,6 +7,7 @@ import com.flowtune.music.extensions.toMediaItem
 import com.flowtune.music.models.MediaMetadata
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+
 class YouTubePlaylistQueue(
     private val playlistId: String,
     private val playlistTitle: String? = null,
@@ -17,6 +19,7 @@ class YouTubePlaylistQueue(
     private var continuation: String? = initialContinuation
     private var retryCount = 0
     private val maxRetries = 3
+
     override suspend fun getInitialStatus(): Queue.Status {
         return withContext(IO) {
             if (initialSongs.isNotEmpty()) {
@@ -36,11 +39,14 @@ class YouTubePlaylistQueue(
             }
         }
     }
+
     override fun hasNextPage(): Boolean = continuation != null
+
     override suspend fun nextPage(): List<MediaItem> {
         return withContext(IO) {
             val currentContinuation = continuation ?: return@withContext emptyList()
             var lastException: Throwable? = null
+            
             for (attempt in 0..maxRetries) {
                 try {
                     val continuationPage = YouTube.playlistContinuation(currentContinuation).getOrThrow()

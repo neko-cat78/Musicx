@@ -1,9 +1,11 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
 import com.flowtune.innertube.models.MusicTwoRowItemRenderer
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
+
 object NewReleaseAlbumPage {
     fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): AlbumItem? {
         return AlbumItem(

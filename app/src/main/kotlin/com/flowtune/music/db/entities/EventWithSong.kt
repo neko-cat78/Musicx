@@ -1,7 +1,9 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
 import androidx.room.Relation
+
 @Immutable
 data class EventWithSong(
     @Embedded

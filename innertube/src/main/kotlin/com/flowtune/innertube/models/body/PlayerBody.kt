@@ -1,6 +1,8 @@
 package com.flowtune.innertube.models.body
+
 import com.flowtune.innertube.models.Context
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class PlayerBody(
     val context: Context,
@@ -20,6 +22,7 @@ data class PlayerBody(
             val signatureTimestamp: Int
         )
     }
+
     @Serializable
     data class ServiceIntegrityDimensions(
         val poToken: String

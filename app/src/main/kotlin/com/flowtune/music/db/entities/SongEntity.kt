@@ -1,4 +1,5 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+
 @Immutable
 @Entity(
     tableName = "song",
@@ -54,6 +56,7 @@ data class SongEntity(
         liked = !liked,
         likedDate = if (!liked) LocalDateTime.now() else null,
     )
+
     fun toggleLike() = copy(
         liked = !liked,
         likedDate = if (!liked) LocalDateTime.now() else null,
@@ -63,11 +66,13 @@ data class SongEntity(
             YouTube.likeVideo(id, !liked)
         }
     }
+
     fun toggleLibrary() = copy(
         liked = if (inLibrary == null) liked else false,
         inLibrary = if (inLibrary == null) LocalDateTime.now() else null,
         likedDate = if (inLibrary == null) likedDate else null
     )
+
     fun toggleUploaded() = copy(
         isUploaded = !isUploaded
     )

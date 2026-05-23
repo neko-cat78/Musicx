@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +41,7 @@ import com.flowtune.music.LocalPlayerAwareWindowInsets
 import com.flowtune.music.R
 import com.flowtune.music.ui.component.IconButton
 import com.flowtune.music.ui.utils.backToMain
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
@@ -47,6 +49,7 @@ fun AboutScreen(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,7 +68,9 @@ fun AboutScreen(
                 )
             )
         )
+
         Spacer(Modifier.height(48.dp))
+
         Image(
             painter = painterResource(R.drawable.small_icon),
             contentDescription = null,
@@ -78,13 +83,17 @@ fun AboutScreen(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainer),
         )
+
         Spacer(Modifier.height(12.dp))
+
         Text(
             text = "Flowtune",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
         )
+
         Spacer(Modifier.height(12.dp))
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = BuildConfig.VERSION_NAME,
@@ -101,7 +110,9 @@ fun AboutScreen(
                         vertical = 2.dp,
                     ),
             )
+
             Spacer(Modifier.width(8.dp))
+
             Text(
                 text = "GPL 3.0 License",
                 style = MaterialTheme.typography.labelSmall,
@@ -118,17 +129,21 @@ fun AboutScreen(
                     ),
             )
         }
+
         Spacer(Modifier.height(16.dp))
+
         Text(
             text = "by abhiram79",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.clickable {
-                uriHandler.openUri("https:
+                uriHandler.openUri("https://github.com/abhiram79/")
             }
         )
+
         Spacer(Modifier.height(32.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.about)) },
         navigationIcon = {

@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicResponsiveHeaderRenderer(
     val thumbnail: ThumbnailRenderer?,

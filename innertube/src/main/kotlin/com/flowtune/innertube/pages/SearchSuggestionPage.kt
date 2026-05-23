@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -8,6 +9,7 @@ import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
+
 object SearchSuggestionPage {
     fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): YTItem? {
         return when {

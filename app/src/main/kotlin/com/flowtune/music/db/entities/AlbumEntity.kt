@@ -1,4 +1,5 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+
 @Immutable
 @Entity(tableName = "album")
 data class AlbumEntity(
@@ -33,12 +35,15 @@ data class AlbumEntity(
     fun localToggleLike() = copy(
         bookmarkedAt = if (bookmarkedAt != null) null else LocalDateTime.now()
     )
+
     fun toggleUploaded() = copy(
         isUploaded = !isUploaded
     )
+
     fun toggleLibrary() = copy(
         inLibrary = if (inLibrary != null) null else LocalDateTime.now()
     )
+
     fun toggleLike() = localToggleLike().also {
         CoroutineScope(Dispatchers.IO).launch {
             if (playlistId != null)

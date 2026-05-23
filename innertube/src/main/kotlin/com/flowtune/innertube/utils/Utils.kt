@@ -1,8 +1,10 @@
 package com.flowtune.innertube.utils
+
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.pages.LibraryPage
 import com.flowtune.innertube.pages.PlaylistPage
 import java.security.MessageDigest
+
 @JvmName("completedLibrary")
 suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching {
     val page = getOrThrow()
@@ -12,13 +14,16 @@ suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching
     var requestCount = 0
     val maxRequests = 50
     var consecutiveEmptyResponses = 0
+    
     while (continuation != null && requestCount < maxRequests) {
         if (continuation in seenContinuations) {
             break
         }
         seenContinuations.add(continuation)
         requestCount++
+        
         val continuationPage = YouTube.playlistContinuation(continuation).getOrNull() ?: break
+        
         if (continuationPage.songs.isEmpty()) {
             consecutiveEmptyResponses++
             if (consecutiveEmptyResponses >= 2) break
@@ -26,6 +31,7 @@ suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching
             consecutiveEmptyResponses = 0
             songs += continuationPage.songs
         }
+        
         continuation = continuationPage.continuation
     }
     PlaylistPage(
@@ -35,6 +41,7 @@ suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching
         continuation = page.continuation
     )
 }
+
 @JvmName("completedPlaylist")
 suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
     val page = getOrThrow()
@@ -44,13 +51,16 @@ suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
     var requestCount = 0
     val maxRequests = 50
     var consecutiveEmptyResponses = 0
+    
     while (continuation != null && requestCount < maxRequests) {
         if (continuation in seenContinuations) {
             break
         }
         seenContinuations.add(continuation)
         requestCount++
+        
         val continuationPage = YouTube.libraryContinuation(continuation).getOrNull() ?: break
+        
         if (continuationPage.items.isEmpty()) {
             consecutiveEmptyResponses++
             if (consecutiveEmptyResponses >= 2) break
@@ -58,6 +68,7 @@ suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
             consecutiveEmptyResponses = 0
             items += continuationPage.items
         }
+        
         continuation = continuationPage.continuation
     }
     LibraryPage(
@@ -65,8 +76,11 @@ suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
         continuation = null
     )
 }
+
 fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
+
 fun sha1(str: String): String = MessageDigest.getInstance("SHA-1").digest(str.toByteArray()).toHex()
+
 fun parseCookieString(cookie: String): Map<String, String> =
     cookie.split("; ")
         .filter { it.isNotEmpty() }
@@ -76,6 +90,7 @@ fun parseCookieString(cookie: String): Map<String, String> =
             else part.substring(0, splitIndex) to part.substring(splitIndex + 1)
         }
         .toMap()
+
 fun String.parseTime(): Int? {
     try {
         val parts = split(":").map { it.toInt() }
@@ -90,6 +105,7 @@ fun String.parseTime(): Int? {
     }
     return null
 }
+
 fun isPrivateId(browseId: String): Boolean {
     return browseId.contains("privately")
 }

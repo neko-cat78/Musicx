@@ -1,4 +1,5 @@
 package com.flowtune.innertube.models
+
 data class AccountInfo(
     val name: String,
     val email: String?,

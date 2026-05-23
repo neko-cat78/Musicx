@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -49,6 +50,7 @@ import com.flowtune.music.ui.component.Material3MenuGroup
 import com.flowtune.music.ui.component.NewAction
 import com.flowtune.music.ui.component.NewActionGrid
 import com.flowtune.music.ui.component.YouTubeListItem
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YouTubeArtistMenu(
@@ -59,14 +61,19 @@ fun YouTubeArtistMenu(
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val libraryArtist by database.artist(artist.id).collectAsState(initial = null)
+
     YouTubeListItem(
         item = artist,
         trailingContent = {},
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -97,6 +104,7 @@ fun YouTubeArtistMenu(
                             )
                         )
                     }
+
                     artist.shuffleEndpoint?.let { watchEndpoint ->
                         add(
                             NewAction(
@@ -116,6 +124,7 @@ fun YouTubeArtistMenu(
                             )
                         )
                     }
+
                     add(
                         NewAction(
                             icon = {
@@ -142,6 +151,7 @@ fun YouTubeArtistMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(

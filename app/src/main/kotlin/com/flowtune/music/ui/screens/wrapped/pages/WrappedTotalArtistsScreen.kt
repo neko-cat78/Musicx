@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -33,6 +34,7 @@ import com.flowtune.music.db.entities.Artist
 import com.flowtune.music.ui.screens.wrapped.components.AnimatedDecorativeElement
 import com.flowtune.music.ui.theme.bbh_bartle
 import kotlin.random.Random
+
 @Composable
 fun WrappedTotalArtistsScreen(
     uniqueArtistCount: Int,
@@ -40,11 +42,13 @@ fun WrappedTotalArtistsScreen(
 ) {
     val animatedArtists = remember { Animatable(0f) }
     val textMeasurer = rememberTextMeasurer()
+
     LaunchedEffect(isVisible, uniqueArtistCount) {
         if (isVisible && uniqueArtistCount > 0) {
             animatedArtists.animateTo(targetValue = uniqueArtistCount.toFloat(), animationSpec = tween(1500, easing = FastOutSlowInEasing))
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.align(Alignment.TopStart)) {
             repeat(5) {
@@ -62,6 +66,7 @@ fun WrappedTotalArtistsScreen(
                 )
             }
         }
+
         Column(
             modifier = Modifier.fillMaxSize().padding(vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

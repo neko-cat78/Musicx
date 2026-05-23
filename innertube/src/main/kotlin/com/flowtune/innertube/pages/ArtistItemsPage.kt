@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -10,6 +11,7 @@ import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
 import com.flowtune.innertube.utils.parseTime
+
 data class ArtistItemsPage(
     val title: String,
     val items: List<YTItem>,
@@ -17,6 +19,7 @@ data class ArtistItemsPage(
 ) {
     companion object {
         fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): SongItem? {
+            
             val artists = renderer.flexColumns.getOrNull(1)
                 ?.musicResponsiveListItemFlexColumnRenderer?.text?.runs
                 ?.oddElements()?.map {
@@ -25,6 +28,7 @@ data class ArtistItemsPage(
                         id = it.navigationEndpoint?.browseEndpoint?.browseId
                     )
                 }
+            
             val album = renderer.flexColumns.lastOrNull()
                 ?.musicResponsiveListItemFlexColumnRenderer?.text?.runs
                 ?.firstOrNull()?.let {
@@ -35,6 +39,7 @@ data class ArtistItemsPage(
                         )
                     } else null
                 }
+            
             return SongItem(
                 id = renderer.playlistItemData?.videoId ?: return null,
                 title = renderer.flexColumns.firstOrNull()
@@ -60,6 +65,7 @@ data class ArtistItemsPage(
                 }?.toggleMenuServiceItemRenderer, "LIBRARY_REMOVE")
             )
         }
+
         fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): YTItem? {
             return when {
                 renderer.isAlbum -> AlbumItem(
@@ -75,6 +81,7 @@ data class ArtistItemsPage(
                         it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                     } != null
                 )
+                
                 renderer.isSong -> SongItem(
                     id = renderer.navigationEndpoint.watchEndpoint?.videoId ?: return null,
                     title = renderer.title.runs?.firstOrNull()?.text ?: return null,

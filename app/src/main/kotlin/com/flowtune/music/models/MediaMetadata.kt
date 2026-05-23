@@ -1,4 +1,5 @@
 package com.flowtune.music.models
+
 import androidx.compose.runtime.Immutable
 import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
@@ -7,6 +8,7 @@ import com.flowtune.music.db.entities.SongEntity
 import com.flowtune.music.ui.utils.resize
 import java.io.Serializable
 import java.time.LocalDateTime
+
 @Immutable
 data class MediaMetadata(
     val id: String,
@@ -26,14 +28,17 @@ data class MediaMetadata(
 ) : Serializable {
     val isVideoSong: Boolean
         get() = musicVideoType != null && musicVideoType != MUSIC_VIDEO_TYPE_ATV
+
     data class Artist(
         val id: String?,
         val name: String,
     ) : Serializable
+
     data class Album(
         val id: String,
         val title: String,
     ) : Serializable
+
     fun toSongEntity() =
         SongEntity(
             id = id,
@@ -51,6 +56,7 @@ data class MediaMetadata(
             isVideo = isVideoSong
         )
 }
+
 fun Song.toMediaMetadata() =
     MediaMetadata(
         id = song.id,
@@ -77,8 +83,10 @@ fun Song.toMediaMetadata() =
             )
         },
         explicit = song.explicit,
+        
         musicVideoType = if (song.isVideo) "MUSIC_VIDEO_TYPE_OMV" else null,
     )
+
 fun SongItem.toMediaMetadata() =
     MediaMetadata(
         id = id,

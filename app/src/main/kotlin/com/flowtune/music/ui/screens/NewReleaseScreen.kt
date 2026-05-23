@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.asPaddingValues
@@ -37,6 +38,7 @@ import com.flowtune.music.ui.component.shimmer.ShimmerHost
 import com.flowtune.music.ui.menu.YouTubeAlbumMenu
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.NewReleaseViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NewReleaseScreen(
@@ -49,9 +51,12 @@ fun NewReleaseScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val newReleaseAlbums by viewModel.newReleaseAlbums.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -85,6 +90,7 @@ fun NewReleaseScreen(
                     ),
             )
         }
+
         if (newReleaseAlbums.isEmpty()) {
             items(8) {
                 ShimmerHost {
@@ -93,6 +99,7 @@ fun NewReleaseScreen(
             }
         }
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.new_release_albums)) },
         navigationIcon = {

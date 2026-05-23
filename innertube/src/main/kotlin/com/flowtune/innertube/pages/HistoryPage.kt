@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.Artist
 import com.flowtune.innertube.models.MusicResponsiveListItemRenderer
@@ -7,6 +8,7 @@ import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.getItems
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.utils.parseTime
+
 data class HistoryPage(
     val sections: List<HistorySection>?,
 ) {
@@ -14,6 +16,7 @@ data class HistoryPage(
         val title: String,
         val songs: List<SongItem>
     )
+
     companion object {
         fun fromMusicShelfRenderer(renderer: MusicShelfRenderer): HistorySection {
             return HistorySection(
@@ -23,6 +26,7 @@ data class HistoryPage(
                 }!!
             )
         }
+
         private fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): SongItem? {
             return SongItem(
                 id = renderer.playlistItemData?.videoId ?: return null,

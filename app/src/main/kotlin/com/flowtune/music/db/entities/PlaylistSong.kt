@@ -1,6 +1,8 @@
 package com.flowtune.music.db.entities
+
 import androidx.room.Embedded
 import androidx.room.Relation
+
 data class PlaylistSong(
     @Embedded val map: PlaylistSongMap,
     @Relation(

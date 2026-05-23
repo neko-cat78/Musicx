@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
@@ -74,6 +75,7 @@ import com.flowtune.music.ui.component.YouTubeListItem
 import com.flowtune.music.utils.reportException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
@@ -88,6 +90,7 @@ fun YouTubeAlbumMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val album by database.albumWithSongs(albumItem.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         database.album(albumItem.id).collect { album ->
             if (album == null) {
@@ -103,9 +106,11 @@ fun YouTubeAlbumMenu(
             }
         }
     }
+
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     LaunchedEffect(album) {
         val songs = album?.songs?.map { it.id } ?: return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -124,15 +129,19 @@ fun YouTubeAlbumMenu(
                 }
         }
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showErrorPlaylistAddDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val notAddedList by remember {
         mutableStateOf(mutableListOf<Song>())
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -147,6 +156,7 @@ fun YouTubeAlbumMenu(
         },
         onDismiss = { showChoosePlaylistDialog = false }
     )
+
     if (showErrorPlaylistAddDialog) {
         ListDialog(
             onDismiss = {
@@ -168,14 +178,17 @@ fun YouTubeAlbumMenu(
                     modifier = Modifier.clickable { showErrorPlaylistAddDialog = false },
                 )
             }
+
             items(notAddedList) { song ->
                 SongListItem(song = song)
             }
         }
     }
+
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showSelectArtistDialog) {
         ListDialog(
             onDismiss = { showSelectArtistDialog = false },
@@ -219,6 +232,7 @@ fun YouTubeAlbumMenu(
             }
         }
     }
+
     YouTubeListItem(
         item = albumItem,
         badges = {},
@@ -238,10 +252,14 @@ fun YouTubeAlbumMenu(
             }
         },
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -368,7 +386,9 @@ fun YouTubeAlbumMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -451,6 +471,7 @@ fun YouTubeAlbumMenu(
                 )
             )
         }
+
         albumItem.artists?.let { artists ->
             item { Spacer(modifier = Modifier.height(12.dp)) }
             item {

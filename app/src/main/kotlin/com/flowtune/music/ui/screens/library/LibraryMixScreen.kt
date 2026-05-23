@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.library
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -75,6 +76,7 @@ import java.text.Collator
 import java.time.LocalDateTime
 import java.util.Locale
 import java.util.UUID
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryMixScreen(
@@ -87,9 +89,12 @@ fun LibraryMixScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val viewType = LibraryViewType.GRID
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
+
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
+
     val likedPlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -99,6 +104,7 @@ fun LibraryMixScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val downloadPlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -108,6 +114,7 @@ fun LibraryMixScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val cachePlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -117,12 +124,15 @@ fun LibraryMixScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
+
     val albums = viewModel.albums.collectAsState()
     val artist = viewModel.artists.collectAsState()
     val playlist = viewModel.playlists.collectAsState()
+
     var allItems = albums.value + artist.value + playlist.value
     allItems = allItems.sortedBy { item ->
         when (item) {
@@ -132,12 +142,15 @@ fun LibraryMixScreen(
             else -> LocalDateTime.now()
         }
     }
+
     val coroutineScope = rememberCoroutineScope()
+
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             when (viewType) {
@@ -147,6 +160,7 @@ fun LibraryMixScreen(
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     LaunchedEffect(Unit) {
          if (ytmSync) {
              withContext(Dispatchers.IO) {
@@ -154,8 +168,10 @@ fun LibraryMixScreen(
              }
          }
     }
+
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -177,6 +193,7 @@ fun LibraryMixScreen(
                     ) {
                         filterContent()
                     }
+
                     if (showLiked) {
                         item(
                             key = "likedPlaylist",
@@ -195,6 +212,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     if (showDownloaded) {
                         item(
                             key = "downloadedPlaylist",
@@ -213,6 +231,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     if (showCached) {
                         item(
                             key = "cachePlaylist",
@@ -231,6 +250,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     items(
                         items = allItems.distinctBy { it.id },
                         key = { it.id },
@@ -279,6 +299,7 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             is Artist -> {
                                 ArtistListItem(
                                     artist = item,
@@ -321,6 +342,7 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             is Album -> {
                                 AlbumListItem(
                                     album = item,
@@ -365,10 +387,12 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             else -> {}
                         }
                     }
                 }
+
             LibraryViewType.GRID ->
                 LazyVerticalGrid(
                     state = lazyGridState,
@@ -385,6 +409,7 @@ fun LibraryMixScreen(
                     ) {
                         filterContent()
                     }
+
                     if (showLiked) {
                         item(
                             key = "likedPlaylist",
@@ -406,6 +431,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     if (showDownloaded) {
                         item(
                             key = "downloadedPlaylist",
@@ -427,6 +453,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     if (showCached) {
                         item(
                             key = "cachePlaylist",
@@ -448,6 +475,7 @@ fun LibraryMixScreen(
                             )
                         }
                     }
+
                     items(
                         items = allItems.distinctBy { it.id },
                         key = { it.id },
@@ -479,6 +507,7 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             is Artist -> {
                                 ArtistGridItem(
                                     artist = item,
@@ -504,6 +533,7 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             is Album -> {
                                 AlbumGridItem(
                                     album = item,
@@ -532,11 +562,13 @@ fun LibraryMixScreen(
                                         .animateItem(),
                                 )
                             }
+
                             else -> {}
                         }
                     }
                 }
         }
+
         Indicator(
             isRefreshing = isRefreshing,
             state = pullRefreshState,

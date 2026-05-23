@@ -1,5 +1,7 @@
 package com.my.kizzy.utils
+
 import com.my.kizzy.rpc.RpcImage
+
 fun String.toRpcImage(): RpcImage? {
     return if (this.isBlank())
         null

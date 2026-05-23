@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.equalizer
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.audiofx.AudioEffect
@@ -26,6 +27,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flowtune.music.eq.data.SavedEQProfile
 import timber.log.Timber
+
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun EqScreen(
@@ -35,16 +37,20 @@ fun EqScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current
+
     var showError by remember { mutableStateOf<String?>(null) }
+
     val activityResultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
+
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
             try {
                 val contentResolver = context.contentResolver
+
                 var fileName = "custom_eq.txt"
                 contentResolver.query(uri, null, null, null, null)?.use { cursor ->
                     if (cursor.moveToFirst()) {
@@ -57,7 +63,9 @@ fun EqScreen(
                         }
                     }
                 }
+
                 val inputStream = contentResolver.openInputStream(uri)
+
                 if (inputStream != null) {
                     viewModel.importCustomProfile(
                         fileName = fileName,
@@ -77,11 +85,13 @@ fun EqScreen(
             }
         }
     }
+
     EqScreenContent(
         profiles = state.profiles,
         activeProfileId = state.activeProfileId,
         onProfileSelected = { viewModel.selectProfile(it) },
         onImportCustomEQ = {
+            
             filePickerLauncher.launch("text/plain")
         },
         onOpenSystemEqualizer = {
@@ -107,6 +117,7 @@ fun EqScreen(
         },
         onDeleteProfile = { viewModel.deleteProfile(it) }
     )
+
     if (showError != null) {
         AlertDialog(
             onDismissRequest = { showError = null },
@@ -123,6 +134,7 @@ fun EqScreen(
             }
         )
     }
+
     if (state.error != null) {
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
@@ -140,6 +152,7 @@ fun EqScreen(
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EqScreenContent(
@@ -160,6 +173,7 @@ private fun EqScreenContent(
             .padding(vertical = 24.dp) 
     ) {
         Column {
+            
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -197,17 +211,21 @@ private fun EqScreenContent(
                     }
                 }
             }
+
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
+                
                 item {
                     NoEqualizationItem(
                         isSelected = activeProfileId == null,
                         onSelected = { onProfileSelected(null) }
                     )
                 }
+
                 val customProfiles = profiles.filter { it.isCustom }
+
                 if (customProfiles.isNotEmpty()) {
                     items(customProfiles) { profile ->
                         EQProfileItem(
@@ -218,6 +236,7 @@ private fun EqScreenContent(
                         )
                     }
                 }
+
                 if (customProfiles.isEmpty()) {
                     item {
                         Box(
@@ -257,6 +276,7 @@ private fun EqScreenContent(
         }
     }
 }
+
 @Composable
 private fun NoEqualizationItem(
     isSelected: Boolean,
@@ -280,6 +300,7 @@ private fun NoEqualizationItem(
             .padding(horizontal = 8.dp) 
     )
 }
+
 @Composable
 private fun EQProfileItem(
     profile: SavedEQProfile,
@@ -288,6 +309,7 @@ private fun EQProfileItem(
     onDelete: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+
     ListItem(
         headlineContent = {
             Text(
@@ -323,6 +345,7 @@ private fun EQProfileItem(
             .clickable(onClick = onSelected)
             .padding(horizontal = 8.dp)
     )
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

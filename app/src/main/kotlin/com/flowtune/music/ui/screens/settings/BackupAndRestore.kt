@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import com.flowtune.music.viewmodels.BackupRestoreViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupAndRestore(
@@ -55,9 +57,11 @@ fun BackupAndRestore(
     var showChoosePlaylistDialogOnline by rememberSaveable {
         mutableStateOf(false)
     }
+
     var isProgressStarted by rememberSaveable {
         mutableStateOf(false)
     }
+
     var progressPercentage by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -80,6 +84,7 @@ fun BackupAndRestore(
             val result = viewModel.importPlaylistFromCsv(context, uri)
             importedSongs.clear()
             importedSongs.addAll(result)
+
             if (importedSongs.isNotEmpty()) {
                 showChoosePlaylistDialogOnline = true
             }
@@ -89,10 +94,12 @@ fun BackupAndRestore(
         val result = viewModel.loadM3UOnline(context, uri)
         importedSongs.clear()
         importedSongs.addAll(result)
+
         if (importedSongs.isNotEmpty()) {
             showChoosePlaylistDialogOnline = true
         }
     }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
@@ -106,6 +113,7 @@ fun BackupAndRestore(
                 )
             )
         )
+
         Material3SettingsGroup(
             items = listOf(
                 Material3SettingsItem(
@@ -144,6 +152,7 @@ fun BackupAndRestore(
             )
         )
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.backup_restore)) },
         navigationIcon = {
@@ -167,6 +176,7 @@ fun BackupAndRestore(
         onProgressStart = { newVal -> isProgressStarted = newVal },
         onPercentageChange = { newPercentage -> progressPercentage = newPercentage }
     )
+
     LaunchedEffect(progressPercentage, isProgressStarted) {
         if (isProgressStarted && progressPercentage == 99) {
             delay(10000)
@@ -176,6 +186,7 @@ fun BackupAndRestore(
             }
         }
     }
+
     LoadingScreen(
         isVisible = isProgressStarted,
         value = progressPercentage,

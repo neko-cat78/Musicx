@@ -1,4 +1,5 @@
 package com.flowtune.music.extensions
+
 fun <T> tryOrNull(block: () -> T): T? =
     try {
         block()

@@ -1,4 +1,5 @@
 package com.flowtune.music.widget
+
 object MusicWidgetActions {
     const val ACTION_PLAY_PAUSE = "com.flowtune.music.ACTION_PLAY"
     const val ACTION_NEXT = "com.flowtune.music.ACTION_NEXT"

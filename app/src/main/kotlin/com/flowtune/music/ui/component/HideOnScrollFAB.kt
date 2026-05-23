@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.LocalPlayerAwareWindowInsets
 import com.flowtune.music.ui.utils.isScrollingUp
+
 @Composable
 fun BoxScope.HideOnScrollFAB(
     visible: Boolean = true,
@@ -50,6 +52,7 @@ fun BoxScope.HideOnScrollFAB(
         }
     }
 }
+
 @Composable
 fun BoxScope.HideOnScrollFAB(
     visible: Boolean = true,
@@ -80,6 +83,7 @@ fun BoxScope.HideOnScrollFAB(
         }
     }
 }
+
 @Composable
 fun BoxScope.HideOnScrollFAB(
     visible: Boolean = true,

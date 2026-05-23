@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class TwoColumnBrowseResultsRenderer(
     val secondaryContents: SecondaryContents?,
@@ -9,6 +11,7 @@ data class TwoColumnBrowseResultsRenderer(
     data class SecondaryContents(
         val sectionListRenderer: SectionListRenderer?
     )
+
     @Serializable
     data class SectionListRenderer(
         val contents: List<Content>?,

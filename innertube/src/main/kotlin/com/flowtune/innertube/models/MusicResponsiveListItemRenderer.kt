@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
+
 package com.flowtune.innertube.models
+
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ALBUM
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ARTIST
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_AUDIOBOOK
@@ -8,6 +10,7 @@ import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupport
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+
 @Serializable
 data class MusicResponsiveListItemRenderer(
     val badges: List<Badges>?,
@@ -29,6 +32,7 @@ data class MusicResponsiveListItemRenderer(
     val isArtist: Boolean
         get() = navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs?.browseEndpointContextMusicConfig?.pageType == MUSIC_PAGE_TYPE_ARTIST
                 || navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs?.browseEndpointContextMusicConfig?.pageType == MUSIC_PAGE_TYPE_LIBRARY_ARTIST
+
     val musicVideoType: String?
         get() =
             overlay
@@ -38,6 +42,7 @@ data class MusicResponsiveListItemRenderer(
                 ?.playNavigationEndpoint
                 ?.musicVideoType
                 ?: navigationEndpoint?.musicVideoType
+
     @Serializable
     data class FlexColumn(
         @JsonNames("musicResponsiveListItemFixedColumnRenderer")
@@ -48,11 +53,13 @@ data class MusicResponsiveListItemRenderer(
             val text: Runs?,
         )
     }
+
     @Serializable
     data class PlaylistItemData(
         val playlistSetVideoId: String?,
         val videoId: String,
     )
+
     @Serializable
     data class Overlay(
         val musicItemThumbnailOverlayRenderer: MusicItemThumbnailOverlayRenderer,

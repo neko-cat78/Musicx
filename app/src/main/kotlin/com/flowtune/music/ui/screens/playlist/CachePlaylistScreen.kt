@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.playlist
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -102,6 +103,7 @@ import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.CachePlaylistViewModel
 import java.time.LocalDateTime
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CachePlaylistScreen(
@@ -114,15 +116,18 @@ fun CachePlaylistScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val haptic = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
+
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val cachedSongs by viewModel.cachedSongs.collectAsState()
+
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         SongSortTypeKey,
         SongSortType.CREATE_DATE
     )
     val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+
     val sortedSongs = remember(cachedSongs, sortType, sortDescending) {
         val sorted = when (sortType) {
             SongSortType.CREATE_DATE -> cachedSongs.sortedBy { it.song.dateDownload ?: LocalDateTime.MIN }
@@ -134,6 +139,7 @@ fun CachePlaylistScreen(
         }
         if (sortDescending) sorted.reversed() else sorted
     }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -145,15 +151,18 @@ fun CachePlaylistScreen(
         inSelectMode = false
         selection.clear()
     }
+
     var isSearching by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf(TextFieldValue()) }
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
+
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
         }
     }
+
     if (isSearching) {
         BackHandler {
             isSearching = false
@@ -162,6 +171,7 @@ fun CachePlaylistScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val filteredSongs = remember(sortedSongs, query) {
         if (query.text.isEmpty()) sortedSongs
         else sortedSongs.filter { song ->
@@ -169,6 +179,7 @@ fun CachePlaylistScreen(
                 song.artists.any { it.name.contains(query.text, true) }
         }
     }
+
     LaunchedEffect(filteredSongs) {
         selection.fastForEachReversed { songId ->
             if (filteredSongs.find { it.id == songId } == null) {
@@ -176,6 +187,7 @@ fun CachePlaylistScreen(
             }
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -192,6 +204,7 @@ fun CachePlaylistScreen(
                     )
                 }
             }
+
             if (filteredSongs.isEmpty() && isSearching) {
                 item(key = "no_results") {
                     EmptyPlaceholder(
@@ -211,6 +224,7 @@ fun CachePlaylistScreen(
                         )
                     }
                 }
+
                 if (filteredSongs.isNotEmpty()) {
                     item(key = "sort_header") {
                         Row(
@@ -237,6 +251,7 @@ fun CachePlaylistScreen(
                         }
                     }
                 }
+
                 itemsIndexed(filteredSongs, key = { _, song -> song.id }) { index, song ->
                     val onCheckedChange: (Boolean) -> Unit = {
                         if (it) {
@@ -245,6 +260,7 @@ fun CachePlaylistScreen(
                             selection.remove(song.id)
                         }
                     }
+
                     SongListItem(
                         song = song,
                         isActive = song.id == mediaMetadata?.id,
@@ -306,6 +322,7 @@ fun CachePlaylistScreen(
                 }
             }
         }
+
         DraggableScrollbar(
             modifier = Modifier
                 .padding(
@@ -316,6 +333,7 @@ fun CachePlaylistScreen(
             scrollState = lazyListState,
             headerItems = 2
         )
+
         TopAppBar(
             title = {
                 when {
@@ -428,6 +446,7 @@ fun CachePlaylistScreen(
         )
     }
 }
+
 @Composable
 private fun CachePlaylistHeader(
     songs: List<Song>,
@@ -436,12 +455,14 @@ private fun CachePlaylistHeader(
     modifier: Modifier = Modifier
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
+    
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        
         Box(
             modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
         ) {
@@ -463,6 +484,7 @@ private fun CachePlaylistHeader(
                 )
             }
         }
+
         Text(
             text = stringResource(R.string.cached_playlist),
             style = MaterialTheme.typography.headlineSmall,
@@ -472,13 +494,17 @@ private fun CachePlaylistHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             text = pluralStringResource(R.plurals.n_song, songs.size, songs.size),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -486,6 +512,7 @@ private fun CachePlaylistHeader(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             androidx.compose.material3.Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -510,6 +537,7 @@ private fun CachePlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -535,6 +563,7 @@ private fun CachePlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     menuState.show {
@@ -546,6 +575,7 @@ private fun CachePlaylistHeader(
                                 )
                             },
                             onDownload = {
+                                
                                 songs.forEach { song ->
                                     val downloadRequest = DownloadRequest
                                         .Builder(song.song.id, song.song.id.toUri())

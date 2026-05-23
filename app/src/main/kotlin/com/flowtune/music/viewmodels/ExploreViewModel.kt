@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class ExploreViewModel
 @Inject
@@ -25,6 +27,7 @@ constructor(
     val database: MusicDatabase,
 ) : ViewModel() {
     val explorePage = MutableStateFlow<ExplorePage?>(null)
+
     private suspend fun load() {
         YouTube
             .explore()
@@ -62,6 +65,7 @@ constructor(
                 reportException(it)
             }
     }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             load()

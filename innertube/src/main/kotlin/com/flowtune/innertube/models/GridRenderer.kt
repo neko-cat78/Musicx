@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class GridRenderer(
     val header: Header?,
@@ -15,6 +17,7 @@ data class GridRenderer(
             val title: Runs,
         )
     }
+
     @Serializable
     data class Item(
         val musicNavigationButtonRenderer: MusicNavigationButtonRenderer?,

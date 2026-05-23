@@ -1,4 +1,5 @@
 package com.flowtune.music.widget
+
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -56,14 +57,18 @@ import com.flowtune.music.R
 import com.flowtune.music.playback.MusicService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 class MusicWidget : GlanceAppWidget() {
+
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
+    
     override val sizeMode = SizeMode.Responsive(
         setOf(
             COMPACT_SIZE,
             NORMAL_SIZE
         )
     )
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             GlanceTheme {
@@ -76,13 +81,16 @@ class MusicWidget : GlanceAppWidget() {
             }
         }
     }
+
     @Composable
     private fun CompactMusicWidgetContent(context: Context) {
         val prefs = currentState<Preferences>()
         val title = prefs[PREF_TITLE] ?: context.getString(R.string.no_song_playing)
         val artist = prefs[PREF_ARTIST] ?: context.getString(R.string.tap_to_open)
         val isPlaying = prefs[PREF_IS_PLAYING] ?: false
+        
         val albumArtBitmap = cachedAlbumArtBitmap
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -96,6 +104,7 @@ class MusicWidget : GlanceAppWidget() {
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                
                 Box(
                     modifier = GlanceModifier
                         .size(40.dp)
@@ -120,7 +129,9 @@ class MusicWidget : GlanceAppWidget() {
                         )
                     }
                 }
+
                 Spacer(modifier = GlanceModifier.width(8.dp))
+
                 Column(
                     modifier = GlanceModifier.defaultWeight(),
                     verticalAlignment = Alignment.CenterVertically
@@ -145,10 +156,13 @@ class MusicWidget : GlanceAppWidget() {
                         modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>())
                     )
                 }
+
                 Spacer(modifier = GlanceModifier.width(4.dp))
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    
                     ControlButton(
                         context = context,
                         iconRes = R.drawable.ic_widget_skip_previous,
@@ -156,7 +170,9 @@ class MusicWidget : GlanceAppWidget() {
                         action = MusicWidgetActions.ACTION_PREV,
                         size = 28
                     )
+
                     Spacer(modifier = GlanceModifier.width(2.dp))
+
                     Box(
                         modifier = GlanceModifier
                             .size(36.dp)
@@ -173,7 +189,9 @@ class MusicWidget : GlanceAppWidget() {
                             modifier = GlanceModifier.size(20.dp)
                         )
                     }
+
                     Spacer(modifier = GlanceModifier.width(2.dp))
+
                     ControlButton(
                         context = context,
                         iconRes = R.drawable.ic_widget_skip_next,
@@ -185,6 +203,7 @@ class MusicWidget : GlanceAppWidget() {
             }
         }
     }
+
     @Composable
     private fun MusicWidgetContent(context: Context) {
         val prefs = currentState<Preferences>()
@@ -192,7 +211,9 @@ class MusicWidget : GlanceAppWidget() {
         val artist = prefs[PREF_ARTIST] ?: context.getString(R.string.tap_to_open)
         val isPlaying = prefs[PREF_IS_PLAYING] ?: false
         val isLiked = prefs[PREF_IS_LIKED] ?: false
+        
         val albumArtBitmap = cachedAlbumArtBitmap
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -206,6 +227,7 @@ class MusicWidget : GlanceAppWidget() {
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                
                 Box(
                     modifier = GlanceModifier
                         .size(88.dp)
@@ -230,18 +252,22 @@ class MusicWidget : GlanceAppWidget() {
                         )
                     }
                 }
+
                 Spacer(modifier = GlanceModifier.width(12.dp))
+
                 Column(
                     modifier = GlanceModifier
                         .defaultWeight(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalAlignment = Alignment.Start
                 ) {
+                    
                     Row(
                         modifier = GlanceModifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        
                         Text(
                             text = title,
                             style = TextStyle(
@@ -254,14 +280,18 @@ class MusicWidget : GlanceAppWidget() {
                                 .defaultWeight()
                                 .clickable(actionStartActivity<MainActivity>())
                         )
+                        
                         Spacer(modifier = GlanceModifier.width(8.dp))
+                        
                         Image(
                             provider = ImageProvider(R.mipmap.ic_launcher),
                             contentDescription = context.getString(R.string.app_name),
                             modifier = GlanceModifier.size(20.dp).cornerRadius(5.dp)
                         )
                     }
+
                     Spacer(modifier = GlanceModifier.height(2.dp))
+
                     Text(
                         text = artist,
                         style = TextStyle(
@@ -271,12 +301,15 @@ class MusicWidget : GlanceAppWidget() {
                         maxLines = 1,
                         modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>())
                     )
+
                     Spacer(modifier = GlanceModifier.height(10.dp))
+
                     Row(
                         modifier = GlanceModifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        
                         ControlButton(
                             context = context,
                             iconRes = R.drawable.ic_widget_share,
@@ -284,7 +317,9 @@ class MusicWidget : GlanceAppWidget() {
                             action = MusicWidgetActions.ACTION_SHARE,
                             size = 32
                         )
+
                         Spacer(modifier = GlanceModifier.width(4.dp))
+
                         ControlButton(
                             context = context,
                             iconRes = R.drawable.ic_widget_skip_previous,
@@ -292,7 +327,9 @@ class MusicWidget : GlanceAppWidget() {
                             action = MusicWidgetActions.ACTION_PREV,
                             size = 36
                         )
+
                         Spacer(modifier = GlanceModifier.width(4.dp))
+
                         Box(
                             modifier = GlanceModifier
                                 .size(44.dp)
@@ -309,7 +346,9 @@ class MusicWidget : GlanceAppWidget() {
                                 modifier = GlanceModifier.size(24.dp)
                             )
                         }
+
                         Spacer(modifier = GlanceModifier.width(4.dp))
+
                         ControlButton(
                             context = context,
                             iconRes = R.drawable.ic_widget_skip_next,
@@ -317,7 +356,9 @@ class MusicWidget : GlanceAppWidget() {
                             action = MusicWidgetActions.ACTION_NEXT,
                             size = 36
                         )
+
                         Spacer(modifier = GlanceModifier.width(4.dp))
+
                         ControlButton(
                             context = context,
                             iconRes = if (isLiked) R.drawable.ic_widget_heart else R.drawable.ic_widget_heart_outline,
@@ -330,6 +371,7 @@ class MusicWidget : GlanceAppWidget() {
             }
         }
     }
+
     @Composable
     private fun ControlButton(
         context: Context,
@@ -352,22 +394,27 @@ class MusicWidget : GlanceAppWidget() {
             )
         }
     }
+
     private fun getServiceAction(context: Context, action: String): Action {
         val intent = Intent(context, MusicService::class.java).apply {
             this.action = action
         }
         return actionStartService(intent)
     }
+
     companion object {
         private val COMPACT_SIZE = DpSize(280.dp, 56.dp)
         private val NORMAL_SIZE = DpSize(280.dp, 100.dp)
+        
         private val PREF_TITLE = stringPreferencesKey("title")
         private val PREF_ARTIST = stringPreferencesKey("artist")
         private val PREF_IS_PLAYING = booleanPreferencesKey("is_playing")
         private val PREF_IS_LIKED = booleanPreferencesKey("is_liked")
         private val PREF_ALBUM_ART_URL = stringPreferencesKey("album_art_url")
+        
         private var cachedAlbumArtBitmap: Bitmap? = null
         private var cachedAlbumArtUrl: String? = null
+
         suspend fun updateWidget(
             context: Context,
             title: String,
@@ -379,6 +426,7 @@ class MusicWidget : GlanceAppWidget() {
             try {
                 val manager = GlanceAppWidgetManager(context)
                 val glanceIds = manager.getGlanceIds(MusicWidget::class.java)
+                
                 if (albumArtUrl != null && albumArtUrl != cachedAlbumArtUrl) {
                     try {
                         val bitmap = withContext(Dispatchers.IO) {
@@ -402,8 +450,10 @@ class MusicWidget : GlanceAppWidget() {
                             cachedAlbumArtUrl = albumArtUrl
                         }
                     } catch (e: Exception) {
+                        
                     }
                 }
+
                 glanceIds.forEach { glanceId ->
                     updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
                         prefs.toMutablePreferences().apply {
@@ -417,11 +467,14 @@ class MusicWidget : GlanceAppWidget() {
                     MusicWidget().update(context, glanceId)
                 }
             } catch (e: Exception) {
+                
             }
         }
+        
         fun getCachedAlbumArt(): Bitmap? = cachedAlbumArtBitmap
     }
 }
+
 class MusicWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = MusicWidget()
 }

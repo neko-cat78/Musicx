@@ -6,9 +6,7 @@ on:
     branches: ["**"]
     paths-ignore:
       - "README.md"
-      - "fastlane/**"
-      - "assets/**"
-      - ".github/**/*.md"
+      - "fastlane*.md"
       - ".github/FUNDING.yml"
       - ".github/ISSUE_TEMPLATE/**"
 

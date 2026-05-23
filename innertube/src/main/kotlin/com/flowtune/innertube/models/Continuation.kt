@@ -1,7 +1,9 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class Continuation(
@@ -13,5 +15,6 @@ data class Continuation(
         val continuation: String,
     )
 }
+
 fun List<Continuation>.getContinuation() =
     firstOrNull()?.nextContinuationData?.continuation

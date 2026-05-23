@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component.shimmer
+
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import com.valentinilk.shimmer.defaultShimmerTheme
 import com.valentinilk.shimmer.shimmer
+
 @Composable
 fun ShimmerHost(
     modifier: Modifier = Modifier,
@@ -40,6 +42,7 @@ fun ShimmerHost(
         content = content,
     )
 }
+
 val ShimmerTheme =
     defaultShimmerTheme.copy(
         animationSpec =

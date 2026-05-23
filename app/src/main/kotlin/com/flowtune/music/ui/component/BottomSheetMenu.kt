@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
 val LocalMenuState = compositionLocalOf { MenuState() }
+
 @Stable
 class MenuState(
     isVisible: Boolean = false,
@@ -41,14 +44,17 @@ class MenuState(
 ) {
     var isVisible by mutableStateOf(isVisible)
     var content by mutableStateOf(content)
+
     fun show(content: @Composable ColumnScope.() -> Unit) {
         isVisible = true
         this.content = content
     }
+
     fun dismiss() {
         isVisible = false
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimatedBottomSheet(
@@ -68,11 +74,13 @@ fun AnimatedBottomSheet(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var lastContent by remember { mutableStateOf(content) }
+
     LaunchedEffect(content) {
         if (isVisible) {
             lastContent = content
         }
     }
+
     LaunchedEffect(isVisible) {
         if (isVisible) {
             sheetState.show()
@@ -80,9 +88,11 @@ fun AnimatedBottomSheet(
             sheetState.hide()
         }
     }
+
     if (!sheetState.isVisible && !isVisible) {
         return
     }
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
@@ -99,6 +109,7 @@ fun AnimatedBottomSheet(
         content = lastContent,
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetMenu(
@@ -108,6 +119,7 @@ fun BottomSheetMenu(
 ) {
     val focusManager = LocalFocusManager.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     AnimatedBottomSheet(
         isVisible = state.isVisible,
         onDismissRequest = {

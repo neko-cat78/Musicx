@@ -1,11 +1,14 @@
 package com.flowtune.innertube.models
+
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ALBUM
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ARTIST
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_PLAYLIST
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_AUDIOBOOK
 import kotlinx.serialization.Serializable
+
 @Serializable
 sealed class Endpoint
+
 @Serializable
 data class WatchEndpoint(
     val videoId: String? = null,
@@ -15,6 +18,7 @@ data class WatchEndpoint(
     val index: Int? = null,
     val watchEndpointMusicSupportedConfigs: WatchEndpointMusicSupportedConfigs? = null,
 ) : Endpoint() {
+
     @Serializable
     data class WatchEndpointMusicSupportedConfigs(
         val watchEndpointMusicConfig: WatchEndpointMusicConfig,
@@ -31,6 +35,7 @@ data class WatchEndpoint(
         }
     }
 }
+
 @Serializable
 data class BrowseEndpoint(
     val browseId: String,
@@ -44,6 +49,7 @@ data class BrowseEndpoint(
                 browseEndpointContextSupportedConfigs?.browseEndpointContextMusicConfig?.pageType == MUSIC_PAGE_TYPE_AUDIOBOOK
     val isPlaylistEndpoint: Boolean
         get() = browseEndpointContextSupportedConfigs?.browseEndpointContextMusicConfig?.pageType == MUSIC_PAGE_TYPE_PLAYLIST
+
     @Serializable
     data class BrowseEndpointContextSupportedConfigs(
         val browseEndpointContextMusicConfig: BrowseEndpointContextMusicConfig,
@@ -65,15 +71,18 @@ data class BrowseEndpoint(
         }
     }
 }
+
 @Serializable
 data class SearchEndpoint(
     val params: String?,
     val query: String,
 ) : Endpoint()
+
 @Serializable
 data class FeedbackEndpoint(
     val feedbackToken: String
 ) : Endpoint()
+
 @Serializable
 data class QueueAddEndpoint(
     val queueInsertPosition: String,
@@ -85,10 +94,12 @@ data class QueueAddEndpoint(
         val playlistId: String? = null,
     )
 }
+
 @Serializable
 data class ShareEntityEndpoint(
     val serializedShareEntity: String,
 ) : Endpoint()
+
 @Serializable
 data class DefaultServiceEndpoint(
     var subscribeEndpoint: SubscribeEndpoint?,
@@ -100,6 +111,7 @@ data class DefaultServiceEndpoint(
         val params: String? = null,
     ) : Endpoint()
 }
+
 @Serializable
 data class ToggledServiceEndpoint(
     var feedbackEndpoint: FeedbackEndpoint?

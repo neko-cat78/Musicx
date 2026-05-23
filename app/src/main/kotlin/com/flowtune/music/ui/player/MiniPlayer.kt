@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.player
+
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -93,6 +94,7 @@ import com.flowtune.music.utils.rememberPreference
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+
 import android.os.Build
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.graphicsLayer
@@ -104,6 +106,7 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.exposureAdjustment
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
+
 @Stable
 class ProgressState(
     private val positionState: MutableLongState,
@@ -115,6 +118,7 @@ class ProgressState(
             return if (duration > 0) (positionState.longValue.toFloat() / duration).coerceIn(0f, 1f) else 0f
         }
 }
+
 @Composable
 fun MiniPlayer(
     positionState: MutableLongState,
@@ -123,11 +127,14 @@ fun MiniPlayer(
     backdrop: Backdrop,
 ) {
     val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
+    
     val progressState = remember { ProgressState(positionState, durationState) }
+
     val configuration = LocalConfiguration.current
     val isTabletLandscape = remember(configuration.screenWidthDp, configuration.orientation) {
         configuration.screenWidthDp >= 600 && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
+
     if (useNewMiniPlayerDesign) {
         NewMiniPlayer(
             progressState = progressState,
@@ -143,6 +150,7 @@ fun MiniPlayer(
         }
     }
 }
+
 @Composable
 private fun NewMiniPlayer(
     progressState: ProgressState,
@@ -150,40 +158,51 @@ private fun NewMiniPlayer(
     backdrop: Backdrop,
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
+    
     val pureBlack by rememberPreference(PureBlackMiniPlayerKey, defaultValue = true)
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.ON)
     val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
+    
     val playbackState by playerConnection.playbackState.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
+    
     val castHandler = remember { playerConnection.service.castConnectionHandler }
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
+
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
     val swipeThumbnail by rememberPreference(SwipeThumbnailKey, true)
+    
     val layoutDirection = LocalLayoutDirection.current
     val coroutineScope = rememberCoroutineScope()
+    
     val configuration = LocalConfiguration.current
     val isTabletLandscape = remember(configuration.screenWidthDp, configuration.orientation) {
         configuration.screenWidthDp >= 600 && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
+
     val offsetXAnimatable = remember { Animatable(0f) }
     var dragStartTime by remember { mutableLongStateOf(0L) }
     var totalDragDistance by remember { mutableFloatStateOf(0f) }
+
     val animationSpec = remember {
         spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)
     }
+
     val autoSwipeThreshold = remember(swipeSensitivity) {
         (600 / (1f + kotlin.math.exp(-(-11.44748 * swipeSensitivity + 9.04945)))).roundToInt()
     }
+    
     val backgroundColor = if (pureBlack && useDarkTheme) Color.Black else MaterialTheme.colorScheme.surfaceContainer
     val primaryColor = MaterialTheme.colorScheme.primary
     val outlineColor = MaterialTheme.colorScheme.outline
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     val errorColor = MaterialTheme.colorScheme.error
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -212,9 +231,11 @@ private fun NewMiniPlayer(
                                 val tryingToSwipeLeft = adjustedDragAmount < 0
                                 val allowLeft = tryingToSwipeLeft && canSkipNext
                                 val allowRight = tryingToSwipeRight && canSkipPrevious
+
                                 val canReturnToCenter =
                                     (tryingToSwipeRight && !canSkipPrevious && offsetXAnimatable.value < 0) ||
                                             (tryingToSwipeLeft && !canSkipNext && offsetXAnimatable.value > 0)
+
                                 if (allowLeft || allowRight || canReturnToCenter) {
                                     totalDragDistance += kotlin.math.abs(adjustedDragAmount)
                                     coroutineScope.launch {
@@ -228,8 +249,10 @@ private fun NewMiniPlayer(
                                 val currentOffset = offsetXAnimatable.value
                                 val minDistanceThreshold = 50f
                                 val velocityThreshold = (swipeSensitivity * -8.25f) + 8.5f
+
                                 val shouldChangeSong = (kotlin.math.abs(currentOffset) > minDistanceThreshold && velocity > velocityThreshold) ||
                                     (kotlin.math.abs(currentOffset) > autoSwipeThreshold)
+
                                 if (shouldChangeSong) {
                                     if (currentOffset > 0 && canSkipPrevious) {
                                         playerConnection.player.seekToPreviousMediaItem()
@@ -246,6 +269,7 @@ private fun NewMiniPlayer(
                 } else baseModifier
             }
     ) {
+
         val glassColor = if (useDarkTheme) {
                          Color.Black.copy(alpha = 0.35f)
                        } else {
@@ -284,6 +308,7 @@ private fun NewMiniPlayer(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
             ) {
+                
                 NewMiniPlayerPlayButton(
                     progressState = progressState,
                     playbackState = playbackState,
@@ -294,14 +319,18 @@ private fun NewMiniPlayer(
                     primaryColor = primaryColor,
                     outlineColor = outlineColor
                 )
+
                 Spacer(modifier = Modifier.width(16.dp))
+
                 NewMiniPlayerSongInfo(
                     mediaMetadata = mediaMetadata,
                     onSurfaceColor = onSurfaceColor,
                     errorColor = errorColor,
                     modifier = Modifier.weight(1f)
                 )
+
                 Spacer(modifier = Modifier.width(12.dp))
+                
                 if (isCasting) {
                     Icon(
                         painter = painterResource(R.drawable.cast_connected),
@@ -311,15 +340,19 @@ private fun NewMiniPlayer(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                 }
+
                 mediaMetadata?.artists?.firstOrNull()?.id?.let { artistId ->
                     SubscribeButton(artistId = artistId, metadata = mediaMetadata!!)
                 }
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 mediaMetadata?.let { FavoriteButton(songId = it.id) }
             }
         }
     }
 }
+
 @Composable
 private fun NewMiniPlayerPlayButton(
     progressState: ProgressState,
@@ -334,20 +367,24 @@ private fun NewMiniPlayerPlayButton(
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
     val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+    
     val trackColor = outlineColor.copy(alpha = 0.3f)
     val strokeWidth = 3.5.dp
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(48.dp)
             .drawWithContent {
                 drawContent()
+                
                 val progress = progressState.progress
                 val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
                 val startAngle = -90f
                 val sweepAngle = 360f * progress
                 val diameter = size.minDimension
                 val topLeft = Offset((size.width - diameter) / 2, (size.height - diameter) / 2)
+                
                 drawArc(
                     color = trackColor,
                     startAngle = 0f,
@@ -357,6 +394,7 @@ private fun NewMiniPlayerPlayButton(
                     size = Size(diameter, diameter),
                     style = stroke
                 )
+                
                 drawArc(
                     color = primaryColor,
                     startAngle = startAngle,
@@ -368,6 +406,7 @@ private fun NewMiniPlayerPlayButton(
                 )
             }
     ) {
+        
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -397,6 +436,7 @@ private fun NewMiniPlayerPlayButton(
                     modifier = Modifier.fillMaxSize().clip(CircleShape)
                 )
             }
+
             if (!effectiveIsPlaying || playbackState == Player.STATE_ENDED) {
                 Box(
                     modifier = Modifier
@@ -415,6 +455,7 @@ private fun NewMiniPlayerPlayButton(
         }
     }
 }
+
 @Composable
 private fun NewMiniPlayerSongInfo(
     mediaMetadata: MediaMetadata?,
@@ -423,6 +464,7 @@ private fun NewMiniPlayerSongInfo(
     modifier: Modifier = Modifier
 ) {
     val error by LocalPlayerConnection.current?.error?.collectAsState() ?: remember { mutableStateOf(null) }
+    
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center
@@ -453,6 +495,7 @@ private fun NewMiniPlayerSongInfo(
                     )
                 }
             }
+
             AnimatedVisibility(visible = error != null, enter = fadeIn(), exit = fadeOut()) {
                 Text(
                     text = stringResource(R.string.error_playing),
@@ -465,6 +508,7 @@ private fun NewMiniPlayerSongInfo(
         }
     }
 }
+
 @Composable
 private fun LegacyMiniPlayer(
     progressState: ProgressState,
@@ -472,31 +516,41 @@ private fun LegacyMiniPlayer(
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val pureBlack by rememberPreference(PureBlackMiniPlayerKey, defaultValue = true)
+    
     val playbackState by playerConnection.playbackState.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
+    
     val castHandler = remember { playerConnection.service.castConnectionHandler }
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
+
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
     val swipeThumbnail by rememberPreference(SwipeThumbnailKey, true)
+
     val layoutDirection = LocalLayoutDirection.current
     val coroutineScope = rememberCoroutineScope()
+    
     val configuration = LocalConfiguration.current
     val isTabletLandscape = remember(configuration.screenWidthDp, configuration.orientation) {
         configuration.screenWidthDp >= 600 && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
+
     val offsetXAnimatable = remember { Animatable(0f) }
     var dragStartTime by remember { mutableLongStateOf(0L) }
     var totalDragDistance by remember { mutableFloatStateOf(0f) }
+
     val animationSpec = remember {
         spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)
     }
+
     val autoSwipeThreshold = remember(swipeSensitivity) {
         (600 / (1f + kotlin.math.exp(-(-11.44748 * swipeSensitivity + 9.04945)))).roundToInt()
     }
+    
     val primaryColor = MaterialTheme.colorScheme.primary
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
+
     Box(
         modifier = modifier
             .then(if (isTabletLandscape) Modifier.width(500.dp) else Modifier.fillMaxWidth())
@@ -527,9 +581,11 @@ private fun LegacyMiniPlayer(
                                 val tryingToSwipeLeft = adjustedDragAmount < 0
                                 val allowLeft = tryingToSwipeLeft && canSkipNext
                                 val allowRight = tryingToSwipeRight && canSkipPrevious
+
                                 val canReturnToCenter =
                                     (tryingToSwipeRight && !canSkipPrevious && offsetXAnimatable.value < 0) ||
                                             (tryingToSwipeLeft && !canSkipNext && offsetXAnimatable.value > 0)
+
                                 if (allowLeft || allowRight || canReturnToCenter) {
                                     totalDragDistance += kotlin.math.abs(adjustedDragAmount)
                                     coroutineScope.launch {
@@ -543,8 +599,10 @@ private fun LegacyMiniPlayer(
                                 val currentOffset = offsetXAnimatable.value
                                 val minDistanceThreshold = 50f
                                 val velocityThreshold = (swipeSensitivity * -8.25f) + 8.5f
+
                                 val shouldChangeSong = (kotlin.math.abs(currentOffset) > minDistanceThreshold && velocity > velocityThreshold) ||
                                     (kotlin.math.abs(currentOffset) > autoSwipeThreshold)
+
                                 if (shouldChangeSong) {
                                     if (currentOffset > 0 && canSkipPrevious) {
                                         playerConnection.player.seekToPreviousMediaItem()
@@ -559,6 +617,7 @@ private fun LegacyMiniPlayer(
                 } else baseModifier
             }
     ) {
+        
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -570,6 +629,7 @@ private fun LegacyMiniPlayer(
                     drawRect(primaryColor, size = Size(size.width * progress, size.height))
                 }
         )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -586,12 +646,14 @@ private fun LegacyMiniPlayer(
                     )
                 }
             }
+
             LegacyPlayPauseButton(
                 playbackState = playbackState,
                 isCasting = isCasting,
                 castHandler = castHandler,
                 playerConnection = playerConnection
             )
+
             IconButton(
                 enabled = canSkipNext,
                 onClick = playerConnection::seekToNext,
@@ -599,6 +661,7 @@ private fun LegacyMiniPlayer(
                 Icon(painter = painterResource(R.drawable.skip_next), contentDescription = null)
             }
         }
+
         if (offsetXAnimatable.value.absoluteValue > 50f) {
             Box(
                 modifier = Modifier
@@ -619,6 +682,7 @@ private fun LegacyMiniPlayer(
         }
     }
 }
+
 @Composable
 private fun LegacyPlayPauseButton(
     playbackState: Int,
@@ -629,6 +693,7 @@ private fun LegacyPlayPauseButton(
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
     val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+
     IconButton(
         onClick = {
             if (isCasting) {
@@ -653,6 +718,7 @@ private fun LegacyPlayPauseButton(
         )
     }
 }
+
 @Composable
 private fun LegacyMiniMediaInfo(
     mediaMetadata: MediaMetadata,
@@ -660,6 +726,7 @@ private fun LegacyMiniMediaInfo(
     modifier: Modifier = Modifier,
 ) {
     val error by LocalPlayerConnection.current?.error?.collectAsState() ?: remember { mutableStateOf(null) }
+    
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
@@ -675,6 +742,7 @@ private fun LegacyMiniMediaInfo(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             )
+
             val thumbnailUrl = remember(mediaMetadata.thumbnailUrl) {
                 mediaMetadata.thumbnailUrl?.resize(144, 144)
             }
@@ -686,6 +754,7 @@ private fun LegacyMiniMediaInfo(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(ThumbnailCornerRadius)),
             )
+
             androidx.compose.animation.AnimatedVisibility(visible = error != null, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     Modifier
@@ -704,6 +773,7 @@ private fun LegacyMiniMediaInfo(
                 }
             }
         }
+
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -718,6 +788,7 @@ private fun LegacyMiniMediaInfo(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.basicMarquee(),
             )
+
             if (mediaMetadata.artists.any { it.name.isNotBlank() }) {
                 Text(
                     text = mediaMetadata.artists.joinToString { it.name },
@@ -730,6 +801,7 @@ private fun LegacyMiniMediaInfo(
         }
     }
 }
+
 @Composable
 private fun SubscribeButton(
     artistId: String,
@@ -738,9 +810,11 @@ private fun SubscribeButton(
     val database = LocalDatabase.current
     val libraryArtist by database.artist(artistId).collectAsState(initial = null)
     val isSubscribed = libraryArtist?.artist?.bookmarkedAt != null
+    
     val primaryColor = MaterialTheme.colorScheme.primary
     val outlineColor = MaterialTheme.colorScheme.outline
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -783,15 +857,18 @@ private fun SubscribeButton(
         )
     }
 }
+
 @Composable
 private fun FavoriteButton(songId: String) {
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val librarySong by database.song(songId).collectAsState(initial = null)
     val isLiked = librarySong?.song?.liked == true
+    
     val errorColor = MaterialTheme.colorScheme.error
     val outlineColor = MaterialTheme.colorScheme.outline
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier

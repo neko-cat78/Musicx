@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component.shimmer
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import com.flowtune.music.constants.GridThumbnailHeight
 import com.flowtune.music.constants.SmallGridThumbnailHeight
 import com.flowtune.music.constants.ThumbnailCornerRadius
 import com.flowtune.music.utils.rememberEnumPreference
+
 @Composable
 fun GridItemPlaceHolder(
     modifier: Modifier = Modifier,
@@ -29,6 +31,7 @@ fun GridItemPlaceHolder(
 ) {
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
     val gridHeight = if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
+    
     Column(
         modifier =
         if (fillMaxWidth) {
@@ -51,8 +54,11 @@ fun GridItemPlaceHolder(
                 .clip(thumbnailShape)
                 .background(MaterialTheme.colorScheme.onSurface),
         )
+
         Spacer(modifier = Modifier.height(6.dp))
+
         TextPlaceholder()
+
         TextPlaceholder()
     }
 }

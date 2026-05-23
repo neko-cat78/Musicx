@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.playlist
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -169,6 +170,7 @@ import io.ktor.client.plugins.ClientRequestException
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import java.time.LocalDateTime
+
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -184,6 +186,7 @@ fun LocalPlaylistScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val playlist by viewModel.playlist.collectAsState()
     val songs by viewModel.playlistSongs.collectAsState()
     val mutableSongs = remember { mutableStateListOf<PlaylistSong>() }
@@ -200,12 +203,16 @@ fun LocalPlaylistScreen(
         true
     )
     var locked by rememberPreference(PlaylistEditLockKey, defaultValue = true)
+
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
     var isSearching by rememberSaveable { mutableStateOf(false) }
+
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
+
     val filteredSongs =
         remember(songs, query) {
             if (query.text.isEmpty()) {
@@ -219,12 +226,14 @@ fun LocalPlaylistScreen(
                 }
             }
         }
+
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
         }
     }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<Int>, Int>(
@@ -236,6 +245,7 @@ fun LocalPlaylistScreen(
         inSelectMode = false
         selection.clear()
     }
+
     if (isSearching) {
         BackHandler {
             isSearching = false
@@ -244,11 +254,14 @@ fun LocalPlaylistScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val downloadUtil = LocalDownloadUtil.current
     var downloadState by remember {
         mutableStateOf(Download.STATE_STOPPED)
     }
+
     val editable: Boolean = playlist?.playlist?.isEditable == true
+
     LaunchedEffect(songs) {
         selection.fastForEachReversed { mapId ->
             if (songs.find { it.map.id == mapId } == null) {
@@ -256,6 +269,7 @@ fun LocalPlaylistScreen(
             }
         }
     }
+
     LaunchedEffect(songs) {
         mutableSongs.apply {
             clear()
@@ -278,9 +292,11 @@ fun LocalPlaylistScreen(
                 }
         }
     }
+
     var showEditDialog by remember {
         mutableStateOf(false)
     }
+
     if (showEditDialog) {
         playlist?.playlist?.let { playlistEntity ->
             TextFieldDialog(
@@ -312,9 +328,11 @@ fun LocalPlaylistScreen(
             )
         }
     }
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -334,6 +352,7 @@ fun LocalPlaylistScreen(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -357,6 +376,7 @@ fun LocalPlaylistScreen(
             },
         )
     }
+
     var showDeletePlaylistDialog by remember {
         mutableStateOf(false)
     }
@@ -398,6 +418,7 @@ fun LocalPlaylistScreen(
             }
         )
     }
+
     val headerItems = 2
     val lazyListState = rememberLazyListState()
     var dragInfo by remember {
@@ -414,20 +435,24 @@ fun LocalPlaylistScreen(
             } else {
                 currentDragInfo.first to (to.index - headerItems)
             }
+
             mutableSongs.move(from.index - headerItems, to.index - headerItems)
         }
     }
+
     LaunchedEffect(reorderableState.isAnyItemDragging) {
         if (!reorderableState.isAnyItemDragging) {
             dragInfo?.let { (from, to) ->
                 database.transaction {
                     move(viewModel.playlistId, from, to)
                 }
+
                 if (viewModel.playlist.value?.playlist?.browseId != null) {
                     viewModel.viewModelScope.launch(Dispatchers.IO) {
                         val playlistSongMap = database.playlistSongMaps(viewModel.playlistId, 0)
                         val successorIndex = if (from > to) to else to + 1
                         val successorSetVideoId = playlistSongMap.getOrNull(successorIndex)?.setVideoId
+
                         playlistSongMap.getOrNull(from)?.setVideoId?.let { setVideoId ->
                             YouTube.moveSongPlaylist(
                                 viewModel.playlist.value?.playlist?.browseId!!,
@@ -437,15 +462,18 @@ fun LocalPlaylistScreen(
                         }
                     }
                 }
+
                 dragInfo = null
             }
         }
     }
+
     val showTopBarTitle by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex > 0
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -477,6 +505,7 @@ fun LocalPlaylistScreen(
                             )
                         }
                     }
+
                     item(key = "controls_row") {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -515,6 +544,7 @@ fun LocalPlaylistScreen(
                     }
                 }
             }
+
             itemsIndexed(
                 items = if (isSearching) filteredSongs else mutableSongs,
                 key = { _, song -> song.map.id },
@@ -524,6 +554,7 @@ fun LocalPlaylistScreen(
                     key = song.map.id,
                 ) {
                     val currentItem by rememberUpdatedState(song)
+
                     fun deleteFromPlaylist() {
                         database.transaction {
                             coroutineScope.launch {
@@ -546,6 +577,7 @@ fun LocalPlaylistScreen(
                             delete(currentItem.map.copy(position = Int.MAX_VALUE))
                         }
                     }
+
                     val swipeRemoveEnabled by rememberPreference(SwipeToRemoveSongKey, defaultValue = false)
                     val dismissBoxState =
                         rememberSwipeToDismissBoxState(
@@ -566,6 +598,7 @@ fun LocalPlaylistScreen(
                             processedDismiss = false
                         }
                     }
+
                     val onCheckedChange: (Boolean) -> Unit = {
                         if (it) {
                             selection.add(song.map.id)
@@ -573,6 +606,7 @@ fun LocalPlaylistScreen(
                             selection.remove(Integer.valueOf(song.map.id))
                         }
                     }
+
                     val content: @Composable () -> Unit = {
                         SongListItem(
                             song = song.song,
@@ -604,6 +638,7 @@ fun LocalPlaylistScreen(
                                             contentDescription = null,
                                         )
                                     }
+
                                     if (sortType == PlaylistSongSortType.CUSTOM && !locked && !inSelectMode && !isSearching && editable) {
                                         IconButton(
                                             onClick = { },
@@ -646,6 +681,7 @@ fun LocalPlaylistScreen(
                                 ),
                         )
                     }
+
                     if (locked || inSelectMode || !swipeRemoveEnabled) {
                         Box(modifier = Modifier.animateItem()) {
                             content()
@@ -662,6 +698,7 @@ fun LocalPlaylistScreen(
                 }
             }
         }
+
         DraggableScrollbar(
             modifier = Modifier
                 .padding(
@@ -672,6 +709,7 @@ fun LocalPlaylistScreen(
             scrollState = lazyListState,
             headerItems = 2
         )
+
         TopAppBar(
             title = {
                 if (inSelectMode) {
@@ -771,6 +809,7 @@ fun LocalPlaylistScreen(
                         )
                     }
                 } else if (!isSearching) {
+                    
                     IconButton(
                         onClick = { isSearching = true }
                     ) {
@@ -782,6 +821,7 @@ fun LocalPlaylistScreen(
                 }
             }
         )
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier =
@@ -791,6 +831,7 @@ fun LocalPlaylistScreen(
         )
     }
 }
+
 @Composable
 fun LocalPlaylistHeader(
     playlist: Playlist,
@@ -808,35 +849,44 @@ fun LocalPlaylistHeader(
     val menuState = LocalMenuState.current
     val syncUtils = LocalSyncUtils.current
     val scope = rememberCoroutineScope()
+
     val playlistLength =
         remember(songs) {
             songs.fastSumBy { it.song.song.duration }
         }
+
     val downloadUtil = LocalDownloadUtil.current
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     val liked = playlist.playlist.bookmarkedAt != null
     val editable: Boolean = playlist.playlist.isEditable
+
     val overrideThumbnail = remember {mutableStateOf<String?>(null)}
     var isCustomThumbnail: Boolean = playlist.thumbnails.firstOrNull()?.let {
-        it.contains("studio_square_thumbnail") || it.contains("content:
+        it.contains("studio_square_thumbnail") || it.contains("content://com.flowtune.music")
     } ?: false
+
     val result = remember { mutableStateOf<Uri?>(null) }
     var pendingCropDestUri by remember { mutableStateOf<Uri?>(null) }
     var showEditNoteDialog by remember { mutableStateOf(false) }
+
     val cropLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
         if (res.resultCode == android.app.Activity.RESULT_OK) {
             val output = res.data?.let { UCrop.getOutput(it) } ?: pendingCropDestUri
             if (output != null) result.value = output
         }
     }
+
     val (darkMode, _) = rememberEnumPreference(
         DarkModeKey,
         defaultValue = DarkMode.ON
     )
+
     val cropColor = MaterialTheme.colorScheme
     val darkTheme = darkMode == DarkMode.ON || (darkMode == DarkMode.AUTO && isSystemInDarkTheme())
+
     val pickLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -844,17 +894,21 @@ fun LocalPlaylistHeader(
             val destFile = java.io.File(context.cacheDir, "playlist_cover_crop_${System.currentTimeMillis()}.jpg")
             val destUri = FileProvider.getUriForFile(context, "${context.packageName}.FileProvider", destFile)
             pendingCropDestUri = destUri
+    
             val options = UCrop.Options().apply {
                 setCompressionFormat(Bitmap.CompressFormat.JPEG)
                 setCompressionQuality(90)
                 setHideBottomControls(true)
                 setToolbarTitle(context.getString(R.string.edit_playlist_cover))
+                
                 setStatusBarLight(!darkTheme)
+
                 setToolbarColor(cropColor.surface.toArgb())
                 setToolbarWidgetColor(cropColor.inverseSurface.toArgb())
                 setRootViewBackgroundColor(cropColor.surface.toArgb())
                 setLogoColor(cropColor.surface.toArgb())
             }
+
             val intent = UCrop.of(sourceUri, destUri)
                 .withAspectRatio(1f, 1f)
                 .withOptions(options)
@@ -864,6 +918,7 @@ fun LocalPlaylistHeader(
             cropLauncher.launch(intent)
         }
     }
+
     LaunchedEffect(result.value) {
         val uri = result.value ?: return@LaunchedEffect
         withContext(Dispatchers.IO) {
@@ -871,10 +926,12 @@ fun LocalPlaylistHeader(
                 playlist.playlist.browseId == null -> {
                     overrideThumbnail.value = uri.toString()
                     isCustomThumbnail = true
+
                     database.query {
                         update(playlist.playlist.copy(thumbnailUrl = uri.toString()))
                     }
                 }
+
                 else -> {
                     val bytes = uriToByteArray(context, uri)
                     YouTube.uploadCustomThumbnailLink(
@@ -883,6 +940,7 @@ fun LocalPlaylistHeader(
                     ).onSuccess { newThumbnailUrl ->
                         overrideThumbnail.value = newThumbnailUrl
                         isCustomThumbnail = true
+
                         database.query {
                             update(playlist.playlist.copy(thumbnailUrl = newThumbnailUrl))
                         }
@@ -896,6 +954,7 @@ fun LocalPlaylistHeader(
             }
         }
     }
+
     LaunchedEffect(songs) {
         if (songs.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -914,6 +973,7 @@ fun LocalPlaylistHeader(
                 }
         }
     }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -946,6 +1006,7 @@ fun LocalPlaylistHeader(
                 )
             }
         }
+        
         Box(
             modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
         ) {
@@ -1113,6 +1174,7 @@ fun LocalPlaylistHeader(
                 }
             }
         }
+
         Text(
             text = playlist.playlist.name,
             style = MaterialTheme.typography.headlineSmall,
@@ -1122,7 +1184,9 @@ fun LocalPlaylistHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         val songCount = if (playlist.songCount == 0 && playlist.playlist.remoteSongCount != null) {
             playlist.playlist.remoteSongCount
         } else {
@@ -1139,7 +1203,9 @@ fun LocalPlaylistHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1147,6 +1213,7 @@ fun LocalPlaylistHeader(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -1171,6 +1238,7 @@ fun LocalPlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -1196,6 +1264,7 @@ fun LocalPlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     menuState.show {
@@ -1288,6 +1357,7 @@ fun LocalPlaylistHeader(
         }
     }
 }
+
 @Composable
 private fun MetadataChip(
     icon: Int,
@@ -1319,6 +1389,7 @@ private fun MetadataChip(
         }
     }
 }
+
 fun uriToByteArray(context: Context, uri: Uri): ByteArray? {
     return try {
         context.contentResolver.openInputStream(uri)?.use { it.readBytes() }

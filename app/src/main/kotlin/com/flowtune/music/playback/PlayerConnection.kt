@@ -1,4 +1,5 @@
 package com.flowtune.music.playback
+
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerConnection(
     context: Context,
@@ -34,6 +36,7 @@ class PlayerConnection(
 ) : Player.Listener {
     val service = binder.service
     val player = service.player
+
     val playbackState = MutableStateFlow(player.playbackState)
     private val playWhenReady = MutableStateFlow(player.playWhenReady)
     val isPlaying =
@@ -44,6 +47,7 @@ class PlayerConnection(
             SharingStarted.Lazily,
             player.playWhenReady && player.playbackState != STATE_ENDED
         )
+    
     val isEffectivelyPlaying = combine(
         isPlaying,
         service.castConnectionHandler?.isCasting ?: MutableStateFlow(false),
@@ -55,6 +59,7 @@ class PlayerConnection(
         SharingStarted.Lazily,
         player.playWhenReady && player.playbackState != STATE_ENDED
     )
+    
     val mediaMetadata = MutableStateFlow(player.currentMetadata)
     val currentSong =
         mediaMetadata.flatMapLatest {
@@ -67,18 +72,24 @@ class PlayerConnection(
         mediaMetadata.flatMapLatest { mediaMetadata ->
             database.format(mediaMetadata?.id)
         }
+
     val queueTitle = MutableStateFlow<String?>(null)
     val queueWindows = MutableStateFlow<List<Timeline.Window>>(emptyList())
     val currentMediaItemIndex = MutableStateFlow(-1)
     val currentWindowIndex = MutableStateFlow(-1)
+
     val shuffleModeEnabled = MutableStateFlow(false)
     val repeatMode = MutableStateFlow(REPEAT_MODE_OFF)
+
     val canSkipPrevious = MutableStateFlow(true)
     val canSkipNext = MutableStateFlow(true)
+
     val error = MutableStateFlow<PlaybackException?>(null)
     val waitingForNetworkConnection = service.waitingForNetworkConnection
+
     init {
         player.addListener(this)
+
         playbackState.value = player.playbackState
         playWhenReady.value = player.playWhenReady
         mediaMetadata.value = player.currentMetadata
@@ -89,23 +100,31 @@ class PlayerConnection(
         shuffleModeEnabled.value = player.shuffleModeEnabled
         repeatMode.value = player.repeatMode
     }
+
     fun playQueue(queue: Queue) {
         service.playQueue(queue)
     }
+
     fun startRadioSeamlessly() {
         service.startRadioSeamlessly()
     }
+
     fun playNext(item: MediaItem) = playNext(listOf(item))
+
     fun playNext(items: List<MediaItem>) {
         service.playNext(items)
     }
+
     fun addToQueue(item: MediaItem) = addToQueue(listOf(item))
+
     fun addToQueue(items: List<MediaItem>) {
         service.addToQueue(items)
     }
+
     fun toggleLike() {
         service.toggleLike()
     }
+
     fun togglePlayPause() {
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
@@ -118,6 +137,7 @@ class PlayerConnection(
             player.togglePlayPause()
         }
     }
+    
     fun play() {
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
@@ -129,6 +149,7 @@ class PlayerConnection(
             player.playWhenReady = true
         }
     }
+    
     fun pause() {
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
@@ -137,6 +158,7 @@ class PlayerConnection(
             player.playWhenReady = false
         }
     }
+
     fun seekTo(position: Long) {
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
@@ -145,7 +167,9 @@ class PlayerConnection(
             player.seekTo(position)
         }
     }
+
     fun seekToNext() {
+        
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
             castHandler.skipToNext()
@@ -155,7 +179,9 @@ class PlayerConnection(
         player.prepare()
         player.playWhenReady = true
     }
+
     fun seekToPrevious() {
+        
         val castHandler = service.castConnectionHandler
         if (castHandler?.isCasting?.value == true) {
             castHandler.skipToPrevious()
@@ -165,16 +191,19 @@ class PlayerConnection(
         player.prepare()
         player.playWhenReady = true
     }
+
     override fun onPlaybackStateChanged(state: Int) {
         playbackState.value = state
         error.value = player.playerError
     }
+
     override fun onPlayWhenReadyChanged(
         newPlayWhenReady: Boolean,
         reason: Int,
     ) {
         playWhenReady.value = newPlayWhenReady
     }
+
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -184,6 +213,7 @@ class PlayerConnection(
         currentWindowIndex.value = player.getCurrentQueueIndex()
         updateCanSkipPreviousAndNext()
     }
+
     override fun onTimelineChanged(
         timeline: Timeline,
         reason: Int,
@@ -194,22 +224,26 @@ class PlayerConnection(
         currentWindowIndex.value = player.getCurrentQueueIndex()
         updateCanSkipPreviousAndNext()
     }
+
     override fun onShuffleModeEnabledChanged(enabled: Boolean) {
         shuffleModeEnabled.value = enabled
         queueWindows.value = player.getQueueWindows()
         currentWindowIndex.value = player.getCurrentQueueIndex()
         updateCanSkipPreviousAndNext()
     }
+
     override fun onRepeatModeChanged(mode: Int) {
         repeatMode.value = mode
         updateCanSkipPreviousAndNext()
     }
+
     override fun onPlayerErrorChanged(playbackError: PlaybackException?) {
         if (playbackError != null) {
             reportException(playbackError)
         }
         error.value = playbackError
     }
+
     private fun updateCanSkipPreviousAndNext() {
         if (!player.currentTimeline.isEmpty) {
             val window =
@@ -225,6 +259,7 @@ class PlayerConnection(
             canSkipNext.value = false
         }
     }
+
     fun dispose() {
         player.removeListener(this)
     }

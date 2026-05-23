@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.search
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun OnlineSearchScreen(
@@ -55,13 +57,18 @@ fun OnlineSearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
+
     val scope = rememberCoroutineScope()
+
     val haptic = LocalHapticFeedback.current
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val viewState by viewModel.viewState.collectAsState()
+
     val lazyListState = rememberLazyListState()
+
     LaunchedEffect(Unit) {
         snapshotFlow { lazyListState.firstVisibleItemScrollOffset }
             .drop(1)
@@ -69,11 +76,13 @@ fun OnlineSearchScreen(
                 keyboardController?.hide()
             }
     }
+
     LaunchedEffect(query) {
         snapshotFlow { query }.debounce(300L).collectLatest {
             viewModel.query.value = it
         }
     }
+
     LazyColumn(
         state = lazyListState,
         contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(),
@@ -101,6 +110,7 @@ fun OnlineSearchScreen(
                 pureBlack = pureBlack
             )
         }
+
         items(viewState.suggestions, key = { "suggestion_$it" }) { query ->
             SuggestionItem(
                 query = query,
@@ -116,6 +126,7 @@ fun OnlineSearchScreen(
                 pureBlack = pureBlack
             )
         }
+
         if (viewState.items.isNotEmpty() && viewState.history.size + viewState.suggestions.size > 0) {
             item(key = "search_divider") {
                 HorizontalDivider(
@@ -126,6 +137,7 @@ fun OnlineSearchScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
+
         items(viewState.items, key = { "item_${it.id}" }) { item ->
             YouTubeListItem(
                 item = item,
@@ -254,6 +266,7 @@ fun OnlineSearchScreen(
         }
     }
 }
+
 @Composable
 fun SuggestionItem(
     modifier: Modifier = Modifier,
@@ -278,12 +291,14 @@ fun SuggestionItem(
             contentDescription = null,
             modifier = Modifier.padding(horizontal = 16.dp).alpha(0.5f)
         )
+
         Text(
             text = query,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
+
         if (!online) {
             IconButton(
                 onClick = onDelete,
@@ -295,6 +310,7 @@ fun SuggestionItem(
                 )
             }
         }
+
         IconButton(
             onClick = onFillTextField,
             modifier = Modifier.alpha(0.5f),

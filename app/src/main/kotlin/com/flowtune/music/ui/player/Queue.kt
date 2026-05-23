@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.player
+
 import androidx.activity.compose.BackHandler
 import android.annotation.SuppressLint
 import android.text.format.Formatter
@@ -54,7 +55,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.OutlinedIconButton
+
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -69,6 +72,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -132,6 +136,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.math.roundToInt
 import com.flowtune.music.constants.PlayerBackgroundStyle
+
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -155,17 +160,23 @@ fun Queue(
     val clipboardManager = LocalClipboard.current
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
+
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val repeatMode by playerConnection.repeatMode.collectAsState()
+
     val currentWindowIndex by playerConnection.currentWindowIndex.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val currentFormat by playerConnection.currentFormat.collectAsState(initial = null)
+
     val selectedSongs = remember { mutableStateListOf<MediaMetadata>() }
     val selectedItems = remember { mutableStateListOf<Timeline.Window>() }
+
     val castHandler = playerConnection.service.castConnectionHandler
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -180,13 +191,17 @@ fun Queue(
     if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     var locked by rememberPreference(QueueEditLockKey, defaultValue = true)
+
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
         defaultValue = false
     )
+
     val snackbarHostState = remember { SnackbarHostState() }
     var dismissJob: Job? by remember { mutableStateOf(null) }
+
     BottomSheet(
         state = state,
         background = {
@@ -195,6 +210,7 @@ fun Queue(
         modifier = modifier,
         collapsedContent = {
             if (useNewPlayerDesign) {
+                
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -218,6 +234,7 @@ fun Queue(
                         topStart = 5.dp, bottomStart = 5.dp,
                         topEnd = 50.dp, bottomEnd = 50.dp
                     )
+
                     PlayerQueueButton(
                         icon = R.drawable.queue_music,
                         onClick = { state.expandSoft() },
@@ -230,6 +247,7 @@ fun Queue(
                         textBackgroundColor = TextBackgroundColor,
                         playerBackground = playerBackground
                     )
+
                     val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsState()
                     PlayerQueueButton(
                         icon = R.drawable.shuffle,
@@ -243,6 +261,7 @@ fun Queue(
                         textBackgroundColor = TextBackgroundColor,
                         playerBackground = playerBackground
                     )
+
                     PlayerQueueButton(
                         icon = R.drawable.lyrics,
                         onClick = { onToggleLyrics() },
@@ -255,6 +274,7 @@ fun Queue(
                         textBackgroundColor = TextBackgroundColor,
                         playerBackground = playerBackground
                     )
+
                     PlayerQueueButton(
                         icon = when (repeatMode) {
                             Player.REPEAT_MODE_ALL -> R.drawable.repeat
@@ -271,7 +291,9 @@ fun Queue(
                         textBackgroundColor = TextBackgroundColor,
                         playerBackground = playerBackground
                     )
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     Box(
                         modifier = Modifier
                             .size(buttonSize)
@@ -305,6 +327,7 @@ fun Queue(
                     }
                 }
             } else {
+                
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -342,6 +365,7 @@ fun Queue(
                             )
                         }
                     }
+
                     TextButton(
                         onClick = { onToggleLyrics() },
                         modifier = Modifier.weight(1f)
@@ -370,6 +394,7 @@ fun Queue(
                     }
                 }
             }
+
         },
     ) {
         val queueTitle by playerConnection.queueTitle.collectAsState()
@@ -380,15 +405,19 @@ fun Queue(
             remember(queueWindows) {
                 queueWindows.sumOf { it.mediaItem.metadata!!.duration }
             }
+
         val coroutineScope = rememberCoroutineScope()
+
         val headerItems = 1
         val lazyListState = rememberLazyListState()
         var dragInfo by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+
         val currentPlayingUid = remember(currentWindowIndex, queueWindows) {
             if (currentWindowIndex in queueWindows.indices) {
                 queueWindows[currentWindowIndex].uid
             } else null
         }
+
         val reorderableState = rememberReorderableLazyListState(
             lazyListState = lazyListState,
             scrollThresholdPadding = WindowInsets.systemBars.add(
@@ -404,15 +433,19 @@ fun Queue(
             } else {
                 currentDragInfo.first to to.index
             }
+
             val safeFrom = (from.index - headerItems).coerceIn(0, mutableQueueWindows.lastIndex)
             val safeTo = (to.index - headerItems).coerceIn(0, mutableQueueWindows.lastIndex)
+
             mutableQueueWindows.move(safeFrom, safeTo)
         }
+
         LaunchedEffect(reorderableState.isAnyItemDragging) {
             if (!reorderableState.isAnyItemDragging) {
                 dragInfo?.let { (from, to) ->
                     val safeFrom = (from - headerItems).coerceIn(0, queueWindows.lastIndex)
                     val safeTo = (to - headerItems).coerceIn(0, queueWindows.lastIndex)
+
                     if (!playerConnection.player.shuffleModeEnabled) {
                         playerConnection.player.moveMediaItem(safeFrom, safeTo)
                     } else {
@@ -430,17 +463,20 @@ fun Queue(
                 }
             }
         }
+
         LaunchedEffect(queueWindows) {
             mutableQueueWindows.apply {
                 clear()
                 addAll(queueWindows)
             }
         }
+
         LaunchedEffect(mutableQueueWindows) {
             if (currentWindowIndex != -1) {
                 lazyListState.scrollToItem(currentWindowIndex)
             }
         }
+
         Box(
             modifier =
             Modifier
@@ -467,6 +503,7 @@ fun Queue(
                             .height(if (inSelectMode) 48.dp else 0.dp),
                     )
                 }
+
                 itemsIndexed(
                     items = mutableQueueWindows,
                     key = { _, item -> item.uid.hashCode() },
@@ -481,6 +518,7 @@ fun Queue(
                             rememberSwipeToDismissBoxState(
                                 positionalThreshold = { totalDistance -> totalDistance }
                             )
+
                         var processedDismiss by remember { mutableStateOf(false) }
                         LaunchedEffect(dismissBoxState.currentValue) {
                             val dv = dismissBoxState.currentValue
@@ -514,6 +552,7 @@ fun Queue(
                                 processedDismiss = false
                             }
                         }
+
                         val onCheckedChange: (Boolean) -> Unit = {
                             if (it) {
                                 selection.add(window.mediaItem.mediaId)
@@ -521,6 +560,7 @@ fun Queue(
                                 selection.remove(window.mediaItem.mediaId)
                             }
                         }
+
                         val content: @Composable () -> Unit = {
                             Row(
                                 horizontalArrangement = Arrangement.Center,
@@ -621,6 +661,7 @@ fun Queue(
                                 )
                             }
                         }
+
                         if (locked) {
                             content()
                         } else {
@@ -633,6 +674,7 @@ fun Queue(
                         }
                     }
                 }
+
                 if (automix.isNotEmpty()) {
                     item(key = "automix_divider") {
                         HorizontalDivider(
@@ -640,11 +682,13 @@ fun Queue(
                                 .padding(vertical = 8.dp, horizontal = 4.dp)
                                 .animateItem(),
                         )
+
                         Text(
                             text = stringResource(R.string.similar_content),
                             modifier = Modifier.padding(start = 16.dp),
                         )
                     }
+
                     itemsIndexed(
                         items = automix,
                         key = { _, it -> it.mediaId },
@@ -712,6 +756,7 @@ fun Queue(
                 }
             }
         }
+
         Column(
             modifier =
             Modifier
@@ -745,6 +790,7 @@ fun Queue(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
+
                 AnimatedVisibility(
                     visible = !inSelectMode,
                     enter = fadeIn() + slideInVertically { it },
@@ -754,6 +800,7 @@ fun Queue(
                     }
                 }
             }
+
             AnimatedVisibility(
                 visible = inSelectMode,
                 enter = fadeIn() + expandVertically(),
@@ -823,7 +870,9 @@ fun Queue(
                     HorizontalDivider()
             }
         }
+
         val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsState()
+
         Box(
             modifier =
             Modifier
@@ -856,6 +905,7 @@ fun Queue(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier =
@@ -871,6 +921,7 @@ fun Queue(
         )
     }
 }
+
 @Composable
 private fun PlayerQueueButton(
     icon: Int,
@@ -888,6 +939,7 @@ private fun PlayerQueueButton(
     val buttonModifier = Modifier
         .clip(shape)
         .clickable(onClick = onClick)
+
     Box(
         modifier = if (isActive) {
             modifier.then(buttonModifier.background(textButtonColor))

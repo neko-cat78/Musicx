@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -32,11 +33,13 @@ import com.flowtune.music.ui.screens.wrapped.components.ShapeType
 import com.flowtune.music.ui.theme.bbh_bartle
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+
 @Composable
 fun PlaylistPage() {
     val manager = LocalWrappedManager.current
     val state by manager.state.collectAsState()
     val playlistCreationState = state.playlistCreationState
+
     val (playlistImageRes, playlistImageName) = remember {
         if (Random.nextBoolean()) {
             Pair(R.drawable.wrapped_playlistv1, "wrapped_playlistv1")
@@ -44,15 +47,18 @@ fun PlaylistPage() {
             Pair(R.drawable.wrapped_playlistv2, "wrapped_playlistv2")
         }
     }
+
     var startAnimation by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(200)
         startAnimation = true
     }
+
     val contentAlpha by animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0f,
         animationSpec = tween(durationMillis = 800, delayMillis = 200)
     )
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(shapeTypes = listOf(ShapeType.Circle))
         Column(

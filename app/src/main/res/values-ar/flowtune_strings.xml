@@ -234,7 +234,7 @@
     <string name="scrobble_delay_percent">نسبة تأخير سكرابل</string>
     <string name="scrobble_delay_minutes">دقائق تأخير سكرابل</string>
     <string name="swipe_song_to_remove">مرر الأغنية لإزالتها من قائمة التشغيل</string>
-    <string name="last_fm_send_likes_description">عندما تعجبك أغنية أو تلغي إعجابك بها في flowtune سيتم تلقائيًا وضع علامة (أحببت) أو (غير محبوب) على نفس الأغنية في Last.fm</string>
+    <string name="last_fm_send_likes_description">عندما تعجبك أغنية أو تلغي إعجابك بها في Flowtune سيتم تلقائيًا وضع علامة (أحببت) أو (غير محبوب) على نفس الأغنية في Last.fm</string>
     <string name="last_fm_send_likes">إرسال الإعجابات/إلغاء الإعجابات</string>
     <string name="lyrics_romanize_chinese">كلمات الأغاني الصينية بالحروف اللاتينية</string>
     <string name="hide_video_songs">إخفاء أغاني الفيديو</string>
@@ -330,7 +330,7 @@
     <string name="progress_percent">التقدم %s%%</string>
     <string name="listening_to_flowtune">الاستماع إلى متروليست</string>
     <string name="listen_on_youtube_music">استمع عبر يوتيوب ميوزك</string>
-    <string name="visit_flowtune">قم بزيارة flowtune</string>
+    <string name="visit_flowtune">قم بزيارة Flowtune</string>
     <string name="open">فتح</string>
     <string name="failed_to_create_image">فشل إنشاء الصورة: %s</string>
     <string name="failed_to_parse_proxy">فشل تحليل عنوان URL للوكيل.</string>

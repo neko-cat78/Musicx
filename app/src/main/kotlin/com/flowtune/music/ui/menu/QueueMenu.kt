@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
@@ -75,6 +76,7 @@ import com.flowtune.music.ui.component.NewActionGrid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+
 @Composable
 fun QueueMenu(
     mediaMetadata: MediaMetadata?,
@@ -89,21 +91,26 @@ fun QueueMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
+
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
+
     var refetchIconDegree by remember { mutableFloatStateOf(0f) }
     val rotationAnimation by animateFloatAsState(
         targetValue = refetchIconDegree,
         animationSpec = tween(durationMillis = 800),
         label = "",
     )
+
     val artists = remember(mediaMetadata.artists) {
         mediaMetadata.artists.filter { it.id != null }
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -119,9 +126,11 @@ fun QueueMenu(
             showChoosePlaylistDialog = false
         }
     )
+
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showSelectArtistDialog) {
         ListDialog(
             onDismiss = { showSelectArtistDialog = false },
@@ -165,6 +174,7 @@ fun QueueMenu(
             }
         }
     }
+
     MediaMetadataListItem(
         mediaMetadata = mediaMetadata,
         trailingContent = {
@@ -199,10 +209,14 @@ fun QueueMenu(
             }
         },
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -211,6 +225,7 @@ fun QueueMenu(
             bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
         ),
     ) {
+        
         item {
             NewActionGrid(
                 actions = listOf(
@@ -260,7 +275,7 @@ fun QueueMenu(
                                 type = "text/plain"
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    "https:
+                                    "https://music.youtube.com/watch?v=${mediaMetadata.id}"
                                 )
                             }
                             context.startActivity(Intent.createChooser(intent, null))
@@ -270,6 +285,7 @@ fun QueueMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -312,7 +328,9 @@ fun QueueMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -339,6 +357,7 @@ fun QueueMenu(
                                 }
                             )
                         }
+
                         Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.downloading)) },
@@ -358,6 +377,7 @@ fun QueueMenu(
                                 }
                             )
                         }
+
                         else -> {
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.action_download)) },
@@ -392,7 +412,9 @@ fun QueueMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -455,7 +477,9 @@ fun QueueMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

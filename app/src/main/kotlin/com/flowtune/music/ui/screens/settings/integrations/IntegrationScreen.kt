@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings.integrations
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +23,7 @@ import com.flowtune.music.ui.component.IconButton
 import com.flowtune.music.ui.component.IntegrationCard
 import com.flowtune.music.ui.component.IntegrationCardItem
 import com.flowtune.music.ui.utils.backToMain
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntegrationScreen(
@@ -54,6 +56,7 @@ fun IntegrationScreen(
             )
         )
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.integrations)) },
         navigationIcon = {

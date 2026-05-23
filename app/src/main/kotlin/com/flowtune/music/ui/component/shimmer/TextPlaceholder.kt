@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component.shimmer
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
+
 @Composable
 fun TextPlaceholder(
     modifier: Modifier = Modifier,

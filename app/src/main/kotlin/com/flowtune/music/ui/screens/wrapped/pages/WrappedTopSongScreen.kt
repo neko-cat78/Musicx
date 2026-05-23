@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -36,6 +37,7 @@ import com.flowtune.music.R
 import com.flowtune.music.db.entities.SongWithStats
 import com.flowtune.music.ui.screens.wrapped.components.AnimatedDecorativeElement
 import kotlin.random.Random
+
 @Composable
 fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
     var visible by remember { mutableStateOf(false) }
@@ -44,6 +46,7 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
             visible = true
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.align(Alignment.TopStart)) {
             repeat(3) {
@@ -61,6 +64,7 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                 )
             }
         }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,7 +83,9 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                     textAlign = TextAlign.Center
                 )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(1000, delayMillis = 400)) + slideInVertically(animationSpec = tween(1000, delayMillis = 400))
@@ -95,7 +101,9 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                     contentScale = ContentScale.Crop
                 )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(1000, delayMillis = 600)) + slideInVertically(animationSpec = tween(1000, delayMillis = 600))
@@ -108,7 +116,9 @@ fun WrappedTopSongScreen(topSong: SongWithStats?, isVisible: Boolean) {
                     textAlign = TextAlign.Center
                 )
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(1000, delayMillis = 1000)) + slideInVertically(animationSpec = tween(1000, delayMillis = 1000))

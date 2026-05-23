@@ -1,5 +1,7 @@
 package com.flowtune.music.eq.data
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class ParametricEQBand(
     val frequency: Double,                      
@@ -8,6 +10,7 @@ data class ParametricEQBand(
     val filterType: FilterType = FilterType.PK, 
     val enabled: Boolean = true                 
 )
+
 @Serializable
 data class ParametricEQ(
     val preamp: Double,                         

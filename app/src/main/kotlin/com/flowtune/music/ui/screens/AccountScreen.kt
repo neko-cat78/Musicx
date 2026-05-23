@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.asPaddingValues
@@ -41,6 +42,7 @@ import com.flowtune.music.ui.menu.YouTubePlaylistMenu
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.AccountViewModel
 import com.flowtune.music.viewmodels.AccountContentType
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun AccountScreen(
@@ -50,12 +52,15 @@ fun AccountScreen(
 ) {
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
+
     val coroutineScope = rememberCoroutineScope()
+
     val playlists by viewModel.playlists.collectAsState()
     val albums by viewModel.albums.collectAsState()
     val artists by viewModel.artists.collectAsState()
     val selectedContentType by viewModel.selectedContentType.collectAsState()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -71,6 +76,7 @@ fun AccountScreen(
                 onValueUpdate = { viewModel.setSelectedContentType(it) },
             )
         }
+
         when (selectedContentType) {
             AccountContentType.PLAYLISTS -> {
                 items(
@@ -98,6 +104,7 @@ fun AccountScreen(
                             ),
                     )
                 }
+
                 if (playlists == null) {
                     items(8) {
                         ShimmerHost {
@@ -106,6 +113,7 @@ fun AccountScreen(
                     }
                 }
             }
+
             AccountContentType.ALBUMS -> {
                 items(
                     items = albums.orEmpty().distinctBy { it.id },
@@ -132,6 +140,7 @@ fun AccountScreen(
                             )
                     )
                 }
+
                 if (albums == null) {
                     items(8) {
                         ShimmerHost {
@@ -140,6 +149,7 @@ fun AccountScreen(
                     }
                 }
             }
+
             AccountContentType.ARTISTS -> {
                 items(
                     items = artists.orEmpty().distinctBy { it.id },
@@ -165,6 +175,7 @@ fun AccountScreen(
                             )
                     )
                 }
+
                 if (artists == null) {
                     items(8) {
                         ShimmerHost {
@@ -175,6 +186,7 @@ fun AccountScreen(
             }
         }
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.account)) },
         navigationIcon = {

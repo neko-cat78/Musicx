@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,10 +23,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.R
+
 data class LinkSegment(
     val text: String,
     val url: String? = null,
 )
+
 @Composable
 fun ExpandableText(
     text: String = "",
@@ -38,6 +41,7 @@ fun ExpandableText(
     val uriHandler = LocalUriHandler.current
     val linkColor = MaterialTheme.colorScheme.primary
     val bodyColor = MaterialTheme.colorScheme.onSurfaceVariant
+
     val annotatedText: AnnotatedString = remember(text, runs, linkColor) {
         if (runs.isNullOrEmpty()) {
             AnnotatedString(text)
@@ -57,6 +61,7 @@ fun ExpandableText(
             }
         }
     }
+
     Column(
         modifier = modifier.animateContentSize()
     ) {
@@ -80,6 +85,7 @@ fun ExpandableText(
                 }
             }
         )
+        
         if (hasOverflow) {
             Text(
                 text = stringResource(if (isExpanded) R.string.show_less else R.string.show_more),

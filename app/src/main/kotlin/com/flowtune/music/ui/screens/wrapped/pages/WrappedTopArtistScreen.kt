@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -34,6 +35,7 @@ import coil3.request.ImageRequest
 import com.flowtune.music.R
 import com.flowtune.music.db.entities.Artist
 import kotlinx.coroutines.delay
+
 @Composable
 fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
     var visible by remember { mutableStateOf(false) }
@@ -42,6 +44,7 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
             visible = true
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +63,9 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                 textAlign = TextAlign.Center
             )
         }
+
         Spacer(modifier = Modifier.height(32.dp))
+
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(animationSpec = tween(1000, delayMillis = 400)) + slideInVertically(animationSpec = tween(1000, delayMillis = 400))
@@ -76,7 +81,9 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                 contentScale = ContentScale.Crop
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(animationSpec = tween(1000, delayMillis = 600)) + slideInVertically(animationSpec = tween(1000, delayMillis = 600))
@@ -89,6 +96,7 @@ fun WrappedTopArtistScreen(topArtist: Artist?, isVisible: Boolean) {
                 textAlign = TextAlign.Center
             )
         }
+
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(animationSpec = tween(1000, delayMillis = 800)) + slideInVertically(animationSpec = tween(1000, delayMillis = 800))

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class NewReleaseViewModel
 @Inject
@@ -26,6 +28,7 @@ constructor(
 ) : ViewModel() {
     private val _newReleaseAlbums = MutableStateFlow<List<AlbumItem>>(emptyList())
     val newReleaseAlbums = _newReleaseAlbums.asStateFlow()
+
     init {
         viewModelScope.launch {
             YouTube

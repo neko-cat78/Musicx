@@ -31,7 +31,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.Flowtune""
+        android:theme="@style/Theme.Flowtune"
         tools:targetApi="tiramisu">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -41,7 +41,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
-android:theme="@style/Theme.Flowtune"
+            android:theme="@style/Theme.Flowtune"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -163,7 +163,7 @@ android:theme="@style/Theme.Flowtune"
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="fullSensor"
             android:exported="false"
-            android:theme="@style/Theme.Flowtune".Light.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
             android:name=".playback.MusicService"

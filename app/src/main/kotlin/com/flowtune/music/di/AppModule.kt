@@ -1,4 +1,5 @@
 package com.flowtune.music.di
+
 import android.content.Context
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -21,20 +22,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Provides
     @Singleton
     @ApplicationScope
     fun provideApplicationScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
+
     @Singleton
     @Provides
     fun provideDao(
         database: InternalDatabase,
     ) = database.dao
+
     @Singleton
     @Provides
     fun provideInternalDatabase(
@@ -42,16 +47,19 @@ object AppModule {
     ): InternalDatabase = Room
         .databaseBuilder(context, InternalDatabase::class.java, InternalDatabase.DB_NAME)
         .build()
+
     @Singleton
     @Provides
     fun provideDatabase(
         internalDatabase: InternalDatabase,
     ): MusicDatabase = MusicDatabase(internalDatabase)
+
     @Singleton
     @Provides
     fun provideDatabaseProvider(
         @ApplicationContext context: Context,
     ): DatabaseProvider = StandaloneDatabaseProvider(context)
+
     @Singleton
     @Provides
     @PlayerCache
@@ -69,6 +77,7 @@ object AppModule {
             databaseProvider,
         )
     }
+
     @Singleton
     @Provides
     @DownloadCache

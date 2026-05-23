@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.artist
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -57,6 +58,7 @@ import com.flowtune.music.ui.menu.YouTubePlaylistMenu
 import com.flowtune.music.ui.menu.YouTubeSongMenu
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.ArtistItemsViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistItemsScreen(
@@ -69,12 +71,15 @@ fun ArtistItemsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+
     val title by viewModel.title.collectAsState()
     val itemsPage by viewModel.itemsPage.collectAsState()
+
     LaunchedEffect(lazyListState) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" }
@@ -83,6 +88,7 @@ fun ArtistItemsScreen(
             viewModel.loadMore()
         }
     }
+
     LaunchedEffect(lazyGridState) {
         snapshotFlow {
             lazyGridState.layoutInfo.visibleItemsInfo.any { it.key == "loading" }
@@ -91,6 +97,7 @@ fun ArtistItemsScreen(
             viewModel.loadMore()
         }
     }
+
     if (itemsPage == null) {
         ShimmerHost(
             modifier = Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current),
@@ -100,6 +107,7 @@ fun ArtistItemsScreen(
             }
         }
     }
+
     if (itemsPage?.items?.firstOrNull() is SongItem) {
         LazyColumn(
             state = lazyListState,
@@ -129,17 +137,20 @@ fun ArtistItemsScreen(
                                                 navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
+
                                         is AlbumItem ->
                                             YouTubeAlbumMenu(
                                                 albumItem = item,
                                                 navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
+
                                         is ArtistItem ->
                                             YouTubeArtistMenu(
                                                 artist = item,
                                                 onDismiss = menuState::dismiss,
                                             )
+
                                         is PlaylistItem ->
                                             YouTubePlaylistMenu(
                                                 playlist = item,
@@ -172,6 +183,7 @@ fun ArtistItemsScreen(
                                         )
                                     }
                                 }
+
                                 is AlbumItem -> navController.navigate("album/${item.id}")
                                 is ArtistItem -> navController.navigate("artist/${item.id}")
                                 is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
@@ -179,6 +191,7 @@ fun ArtistItemsScreen(
                         },
                 )
             }
+
             if (itemsPage?.continuation != null) {
                 item(key = "loading") {
                     ShimmerHost {
@@ -219,6 +232,7 @@ fun ArtistItemsScreen(
                                             item.toMediaMetadata()
                                         )
                                     )
+
                                     is AlbumItem -> navController.navigate("album/${item.id}")
                                     is ArtistItem -> navController.navigate("artist/${item.id}")
                                     is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
@@ -233,15 +247,18 @@ fun ArtistItemsScreen(
                                             navController = navController,
                                             onDismiss = menuState::dismiss
                                         )
+
                                         is AlbumItem -> YouTubeAlbumMenu(
                                             albumItem = item,
                                             navController = navController,
                                             onDismiss = menuState::dismiss
                                         )
+
                                         is ArtistItem -> YouTubeArtistMenu(
                                             artist = item,
                                             onDismiss = menuState::dismiss
                                         )
+
                                         is PlaylistItem -> YouTubePlaylistMenu(
                                             playlist = item,
                                             coroutineScope = coroutineScope,
@@ -254,6 +271,7 @@ fun ArtistItemsScreen(
                         .animateItem()
                 )
             }
+
             if (itemsPage?.continuation != null) {
                 item(key = "loading") {
                     ShimmerHost(Modifier.animateItem()) {
@@ -263,6 +281,7 @@ fun ArtistItemsScreen(
             }
         }
     }
+
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {

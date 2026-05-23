@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import com.flowtune.music.db.entities.Playlist
 import com.flowtune.music.db.entities.PlaylistSong
 import com.flowtune.music.ui.component.Material3MenuGroup
 import com.flowtune.music.ui.component.Material3MenuItemData
+
 @Composable
 fun LocalPlaylistMenu(
     playlist: Playlist,
@@ -73,7 +75,9 @@ fun LocalPlaylistMenu(
             }
         )
     }
+
     val isYouTubePlaylist = playlist.playlist.browseId != null
+
     val menuItems = buildList {
         add(
             Material3MenuItemData(
@@ -91,7 +95,9 @@ fun LocalPlaylistMenu(
                 }
             )
         )
+
         add(downloadMenuItem)
+
         add(
             Material3MenuItemData(
                 title = { Text(stringResource(R.string.delete)) },
@@ -109,8 +115,10 @@ fun LocalPlaylistMenu(
             )
         )
     }
+
     Material3MenuGroup(items = menuItems)
 }
+
 @Composable
 fun AutoPlaylistMenu(
     downloadState: Int,
@@ -162,6 +170,7 @@ fun AutoPlaylistMenu(
             }
         )
     }
+
     Material3MenuGroup(
         items = listOf(
             Material3MenuItemData(
@@ -182,6 +191,7 @@ fun AutoPlaylistMenu(
         )
     )
 }
+
 @Composable
 fun TopPlaylistMenu(
     downloadState: Int,
@@ -233,6 +243,7 @@ fun TopPlaylistMenu(
             }
         )
     }
+
     Material3MenuGroup(
         items = listOf(
             Material3MenuItemData(
@@ -253,6 +264,7 @@ fun TopPlaylistMenu(
         )
     )
 }
+
 @Composable
 fun CachePlaylistMenu(
     downloadState: Int,
@@ -304,6 +316,7 @@ fun CachePlaylistMenu(
             }
         )
     }
+
     Material3MenuGroup(
         items = listOf(
             Material3MenuItemData(

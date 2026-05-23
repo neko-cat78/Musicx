@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.player
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -39,6 +40,7 @@ import androidx.media3.common.PlaybackException
 import com.flowtune.music.BuildConfig
 import com.flowtune.music.LocalPlayerConnection
 import com.flowtune.music.R
+
 @Composable
 fun PlaybackError(
     error: PlaybackException,
@@ -47,16 +49,19 @@ fun PlaybackError(
     val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current
     val mediaMetadata by playerConnection?.mediaMetadata?.collectAsState() ?: return
+    
     val errorMessage = error.cause?.cause?.message 
         ?: error.cause?.message 
         ?: error.message 
         ?: stringResource(R.string.error_unknown)
+    
     val songId = mediaMetadata?.id ?: "Unknown"
     val songTitle = mediaMetadata?.title ?: "Unknown"
     val songArtists = mediaMetadata?.artists?.joinToString(", ") { it.name } ?: "Unknown"
-    val songLink = "https:
+    val songLink = "https://music.youtube.com/watch?v=$songId"
+    
     val detailedErrorInfo = buildString {
-        appendLine("=== flowtune Error Report ===")
+        appendLine("=== Flowtune Error Report ===")
         appendLine()
         appendLine("App Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         appendLine("Architecture: ${BuildConfig.ARCHITECTURE}")
@@ -88,6 +93,7 @@ fun PlaybackError(
             appendLine("  ... and ${error.stackTrace.size - 5} more")
         }
     }
+    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -95,20 +101,25 @@ fun PlaybackError(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
+        
         Icon(
             painter = painterResource(R.drawable.error),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(48.dp)
         )
+        
         Spacer(modifier = Modifier.height(12.dp))
+        
         Text(
             text = stringResource(R.string.error_playback_failed),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center
         )
+        
         Spacer(modifier = Modifier.height(8.dp))
+        
         Text(
             text = errorMessage,
             style = MaterialTheme.typography.bodyMedium,
@@ -117,7 +128,9 @@ fun PlaybackError(
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
+        
         Spacer(modifier = Modifier.height(4.dp))
+        
         Text(
             text = "Code: ${getErrorCodeName(error.errorCode)} (${error.errorCode})",
             style = MaterialTheme.typography.bodySmall.copy(
@@ -127,11 +140,14 @@ fun PlaybackError(
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
         )
+        
         Spacer(modifier = Modifier.height(16.dp))
+        
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             Button(
                 onClick = retry,
                 shape = RoundedCornerShape(20.dp),
@@ -147,10 +163,11 @@ fun PlaybackError(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(text = stringResource(R.string.retry))
             }
+            
             OutlinedButton(
                 onClick = {
                     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("flowtune Error Report", detailedErrorInfo)
+                    val clip = ClipData.newPlainText("Flowtune Error Report", detailedErrorInfo)
                     clipboardManager.setPrimaryClip(clip)
                     Toast.makeText(context, context.getString(R.string.error_copied), Toast.LENGTH_SHORT).show()
                 },
@@ -165,7 +182,9 @@ fun PlaybackError(
                 Text(text = stringResource(R.string.copy_error))
             }
         }
+        
         Spacer(modifier = Modifier.height(8.dp))
+        
         Text(
             text = stringResource(R.string.error_copy_hint),
             style = MaterialTheme.typography.bodySmall,
@@ -174,6 +193,7 @@ fun PlaybackError(
         )
     }
 }
+
 private fun getErrorCodeName(errorCode: Int): String {
     return when (errorCode) {
         PlaybackException.ERROR_CODE_UNSPECIFIED -> "UNSPECIFIED"

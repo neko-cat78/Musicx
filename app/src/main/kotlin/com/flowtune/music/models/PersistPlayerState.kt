@@ -1,5 +1,7 @@
 package com.flowtune.music.models
+
 import java.io.Serializable
+
 data class PersistPlayerState(
     val playWhenReady: Boolean,
     val repeatMode: Int,

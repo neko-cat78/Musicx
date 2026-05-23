@@ -1,7 +1,9 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.filterExplicit
 import com.flowtune.innertube.models.filterVideoSongs
+
 data class BrowseResult(
     val title: String?,
     val items: List<Item>,
@@ -10,6 +12,7 @@ data class BrowseResult(
         val title: String?,
         val items: List<YTItem>,
     )
+
     fun filterExplicit(enabled: Boolean = true) =
         if (enabled) {
             copy(
@@ -26,6 +29,7 @@ data class BrowseResult(
         } else {
             this
         }
+
     fun filterVideoSongs(disableVideos: Boolean = false) =
         if (disableVideos) {
             copy(

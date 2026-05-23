@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.flowtune.music.R
 import kotlin.math.roundToInt
+
 @Composable
 fun PreferenceEntry(
     modifier: Modifier = Modifier,
@@ -71,8 +73,10 @@ fun PreferenceEntry(
             ) {
                 icon()
             }
+
             Spacer(Modifier.width(12.dp))
         }
+
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.weight(1f),
@@ -80,6 +84,7 @@ fun PreferenceEntry(
             ProvideTextStyle(MaterialTheme.typography.titleMedium) {
                 title()
             }
+
             if (description != null) {
                 Text(
                     text = description,
@@ -87,14 +92,18 @@ fun PreferenceEntry(
                     color = MaterialTheme.colorScheme.secondary,
                 )
             }
+
             content?.invoke()
         }
+
         if (trailingContent != null) {
             Spacer(Modifier.width(12.dp))
+
             trailingContent()
         }
     }
 }
+
 @Composable
 fun <T> ListPreference(
     modifier: Modifier = Modifier,
@@ -128,6 +137,7 @@ fun <T> ListPreference(
                         selected = value == selectedValue,
                         onClick = null,
                     )
+
                     Text(
                         text = valueText(value),
                         style = MaterialTheme.typography.bodyLarge,
@@ -137,6 +147,7 @@ fun <T> ListPreference(
             }
         }
     }
+
     PreferenceEntry(
         modifier = modifier,
         title = title,
@@ -146,6 +157,7 @@ fun <T> ListPreference(
         isEnabled = isEnabled,
     )
 }
+
 @Composable
 inline fun <reified T : Enum<T>> EnumListPreference(
     modifier: Modifier = Modifier,
@@ -167,6 +179,7 @@ inline fun <reified T : Enum<T>> EnumListPreference(
         isEnabled = isEnabled,
     )
 }
+
 @Composable
 fun SwitchPreference(
     modifier: Modifier = Modifier,
@@ -202,6 +215,7 @@ fun SwitchPreference(
         isEnabled = isEnabled
     )
 }
+
 @Composable
 fun EditTextPreference(
     modifier: Modifier = Modifier,
@@ -216,6 +230,7 @@ fun EditTextPreference(
     var showDialog by remember {
         mutableStateOf(false)
     }
+
     if (showDialog) {
         TextFieldDialog(
             initialTextFieldValue =
@@ -229,6 +244,7 @@ fun EditTextPreference(
             onDismiss = { showDialog = false },
         )
     }
+
     PreferenceEntry(
         modifier = modifier,
         title = title,
@@ -238,6 +254,7 @@ fun EditTextPreference(
         isEnabled = isEnabled,
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SliderPreference(
@@ -251,9 +268,11 @@ fun SliderPreference(
     var showDialog by remember {
         mutableStateOf(false)
     }
+
     var sliderValue by remember {
         mutableFloatStateOf(value)
     }
+
     if (showDialog) {
         ActionPromptDialog(
             titleBar = {
@@ -291,7 +310,9 @@ fun SliderPreference(
                         ),
                         style = MaterialTheme.typography.bodyLarge,
                     )
+
                     Spacer(Modifier.height(16.dp))
+
                     Slider(
                         value = sliderValue,
                         onValueChange = { sliderValue = it },
@@ -302,6 +323,7 @@ fun SliderPreference(
             }
         )
     }
+
     PreferenceEntry(
         modifier = modifier,
         title = title,
@@ -311,6 +333,7 @@ fun SliderPreference(
         isEnabled = isEnabled,
     )
 }
+
 @Composable
 fun PreferenceGroupTitle(
     title: String,

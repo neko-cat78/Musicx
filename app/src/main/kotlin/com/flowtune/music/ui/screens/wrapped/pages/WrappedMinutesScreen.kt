@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -38,6 +39,7 @@ import com.flowtune.music.ui.screens.wrapped.MessagePair
 import com.flowtune.music.ui.screens.wrapped.components.AnimatedDecorativeElement
 import com.flowtune.music.ui.theme.bbh_bartle
 import kotlin.random.Random
+
 @Composable
 fun WrappedMinutesScreen(
     messagePair: MessagePair?, totalMinutes: Long,
@@ -45,12 +47,15 @@ fun WrappedMinutesScreen(
 ) {
     val animatedMinutes = remember { Animatable(0f) }
     val textMeasurer = rememberTextMeasurer()
+
     LaunchedEffect(isVisible, totalMinutes) {
         if (isVisible && totalMinutes > 0) {
             animatedMinutes.animateTo(targetValue = totalMinutes.toFloat(), animationSpec = tween(1500, easing = FastOutSlowInEasing))
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
+        
         Box(modifier = Modifier.align(Alignment.TopStart)) {
             repeat(5) {
                 AnimatedDecorativeElement(
@@ -83,6 +88,7 @@ fun WrappedMinutesScreen(
                 )
             }
         }
+
         Column(
             modifier = Modifier.fillMaxSize().padding(vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,6 +131,7 @@ fun WrappedMinutesScreen(
         }
     }
 }
+
 @Composable
 fun FormattedText(text: String, modifier: Modifier = Modifier, style: androidx.compose.ui.text.TextStyle) {
     val annotatedString = buildAnnotatedString {

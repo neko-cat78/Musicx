@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -20,6 +21,7 @@ import com.flowtune.music.ui.screens.wrapped.LocalWrappedManager
 import com.flowtune.music.ui.screens.wrapped.MessagePair
 import com.flowtune.music.ui.theme.bbh_bartle
 import kotlinx.coroutines.delay
+
 @Composable
 fun WrappedMinutesTease(
     messagePair: MessagePair?,

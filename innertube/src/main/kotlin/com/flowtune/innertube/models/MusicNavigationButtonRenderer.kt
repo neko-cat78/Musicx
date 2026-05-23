@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicNavigationButtonRenderer(
     val buttonText: Runs,
@@ -11,6 +13,7 @@ data class MusicNavigationButtonRenderer(
     data class Solid(
         val leftStripeColor: Long,
     )
+
     @Serializable
     data class IconStyle(
         val icon: Icon,

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -24,6 +25,7 @@ import com.flowtune.music.ui.component.Material3SettingsGroup
 import com.flowtune.music.ui.component.Material3SettingsItem
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.Updater
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -32,6 +34,7 @@ fun SettingsScreen(
     latestVersionName: String,
 ) {
     val uriHandler = LocalUriHandler.current
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
@@ -45,6 +48,7 @@ fun SettingsScreen(
                 )
             )
         )
+
         Material3SettingsGroup(
             title = stringResource(R.string.settings_section_storage),
             items = listOf(
@@ -55,7 +59,9 @@ fun SettingsScreen(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.settings_section_system),
             items = buildList {
@@ -89,8 +95,10 @@ fun SettingsScreen(
                 }
             }
         )
+
         Spacer(modifier = Modifier.height(16.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.settings)) },
         navigationIcon = {

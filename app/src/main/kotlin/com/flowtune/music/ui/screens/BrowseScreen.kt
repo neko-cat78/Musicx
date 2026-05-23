@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+ 
  import androidx.compose.foundation.ExperimentalFoundationApi
  import androidx.compose.foundation.combinedClickable
  import androidx.compose.foundation.layout.asPaddingValues
@@ -40,6 +41,7 @@ package com.flowtune.music.ui.screens
  import com.flowtune.innertube.models.AlbumItem
  import com.flowtune.innertube.models.ArtistItem
  import com.flowtune.innertube.models.PlaylistItem
+ 
  @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
  @Composable
  fun BrowseScreen(
@@ -52,10 +54,13 @@ package com.flowtune.music.ui.screens
      val playerConnection = LocalPlayerConnection.current ?: return
      val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
      val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+ 
      val title by viewModel.title.collectAsState()
      val items by viewModel.items.collectAsState()
+ 
      val coroutineScope = rememberCoroutineScope()
      val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+ 
      LazyVerticalGrid(
          columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
          contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
@@ -78,6 +83,7 @@ package com.flowtune.music.ui.screens
                                      is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
                                      is ArtistItem -> navController.navigate("artist/${item.id}")
                                      else -> {
+                                         
                                      }
                                  }
                              },
@@ -90,6 +96,7 @@ package com.flowtune.music.ui.screens
                                                  navController = navController,
                                                  onDismiss = menuState::dismiss
                                              )
+ 
                                          is PlaylistItem -> {
                                              YouTubePlaylistMenu(
                                                  playlist = item,
@@ -97,13 +104,16 @@ package com.flowtune.music.ui.screens
                                                  onDismiss = menuState::dismiss
                                              )
                                          }
+ 
                                          is ArtistItem -> {
                                              YouTubeArtistMenu(
                                                  artist = item,
                                                  onDismiss = menuState::dismiss
                                              )
                                          }
+ 
                                          else -> {
+                                             
                                          }
                                      }
                                  }
@@ -111,6 +121,7 @@ package com.flowtune.music.ui.screens
                          )
                  )
              }
+ 
              if (items.isEmpty()) {
                  items(8) {
                      ShimmerHost {
@@ -120,6 +131,7 @@ package com.flowtune.music.ui.screens
              }
          }
      }
+ 
      TopAppBar(
          title = { Text(title ?: "") },
          navigationIcon = {

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
@@ -9,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.flowtune.music.R
+
 @Composable
 fun LoadingScreen(
     isVisible: Boolean,
@@ -22,11 +24,13 @@ fun LoadingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
                 Text(
                     text = stringResource(R.string.progress_percent, value.toString()),
                     color = Color.White,
                     fontSize = 26.sp,
                 )
+
             }
         }
     }

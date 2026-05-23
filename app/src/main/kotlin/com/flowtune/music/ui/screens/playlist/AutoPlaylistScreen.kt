@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.playlist
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -118,6 +119,7 @@ import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.AutoPlaylistViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AutoPlaylistScreen(
@@ -125,6 +127,7 @@ fun AutoPlaylistScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     viewModel: AutoPlaylistViewModel = hiltViewModel(),
 ) {
+
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
@@ -137,25 +140,32 @@ fun AutoPlaylistScreen(
         "uploaded" -> stringResource(R.string.uploaded_playlist)
         else -> stringResource(R.string.offline)
     }
+
     val songs by viewModel.likedSongs.collectAsState(null)
     val mutableSongs =
         remember {
             mutableStateListOf<Song>()
         }
+
     var isSearching by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf(TextFieldValue()) }
     val focusRequester = remember { FocusRequester() }
+
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
         }
     }
+
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
+
     val likeLength =
         remember(songs) {
             songs?.fastSumBy { it.song.duration } ?: 0
         }
+
     val playlistId = viewModel.playlist
     val playlistType = when (playlistId) {
         "liked" -> PlaylistType.LIKE
@@ -163,6 +173,7 @@ fun AutoPlaylistScreen(
         "uploaded" -> PlaylistType.UPLOADED
         else -> PlaylistType.OTHER
     }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -174,6 +185,7 @@ fun AutoPlaylistScreen(
         inSelectMode = false
         selection.clear()
     }
+
     if (isSearching) {
         BackHandler {
             isSearching = false
@@ -182,15 +194,18 @@ fun AutoPlaylistScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         SongSortTypeKey,
         SongSortType.CREATE_DATE
     )
     val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
+
     val downloadUtil = LocalDownloadUtil.current
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+    
     LaunchedEffect(Unit) {
         if (ytmSync) {
             withContext(Dispatchers.IO) {
@@ -199,6 +214,7 @@ fun AutoPlaylistScreen(
             }
         }
     }
+
     LaunchedEffect(songs) {
         mutableSongs.apply {
             clear()
@@ -221,9 +237,11 @@ fun AutoPlaylistScreen(
                 }
         }
     }
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -240,6 +258,7 @@ fun AutoPlaylistScreen(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -258,6 +277,7 @@ fun AutoPlaylistScreen(
             },
         )
     }
+
     val filteredSongs = remember(songs, query) {
         if (query.text.isEmpty()) songs ?: emptyList()
         else songs?.filter { song ->
@@ -265,6 +285,7 @@ fun AutoPlaylistScreen(
                 song.artists.any { it.name.contains(query.text, true) }
         } ?: emptyList()
     }
+
     LaunchedEffect(filteredSongs) {
         selection.fastForEachReversed { songId ->
             if (filteredSongs.find { it.id == songId } == null) {
@@ -272,10 +293,13 @@ fun AutoPlaylistScreen(
             }
         }
     }
+
     val state = rememberLazyListState()
+
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
     val canRefresh = playlistType == PlaylistType.LIKE || playlistType == PlaylistType.UPLOADED
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -317,6 +341,7 @@ fun AutoPlaylistScreen(
                             )
                         }
                     }
+
                     item(key = "songs_header") {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -340,6 +365,7 @@ fun AutoPlaylistScreen(
                         }
                     }
                 }
+
                 if (filteredSongs.isNotEmpty()) {
                     itemsIndexed(
                         items = filteredSongs,
@@ -352,6 +378,7 @@ fun AutoPlaylistScreen(
                                 selection.remove(song.id)
                             }
                         }
+
                         SongListItem(
                             song = song,
                             isActive = song.song.id == mediaMetadata?.id,
@@ -415,6 +442,7 @@ fun AutoPlaylistScreen(
                 }
             }
         }
+
         DraggableScrollbar(
             modifier = Modifier
                 .padding(
@@ -425,6 +453,7 @@ fun AutoPlaylistScreen(
             scrollState = state,
             headerItems = 2
         )
+
         if (canRefresh) {
             Indicator(
                 isRefreshing = isRefreshing,
@@ -434,6 +463,7 @@ fun AutoPlaylistScreen(
                     .padding(LocalPlayerAwareWindowInsets.current.asPaddingValues()),
             )
         }
+
         TopAppBar(
             title = {
                 when {
@@ -551,6 +581,7 @@ fun AutoPlaylistScreen(
         )
     }
 }
+
 @Composable
 private fun AutoPlaylistHeader(
     name: String,
@@ -563,12 +594,14 @@ private fun AutoPlaylistHeader(
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val context = LocalContext.current
+    
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        
         Box(
             modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
         ) {
@@ -590,6 +623,7 @@ private fun AutoPlaylistHeader(
                 )
             }
         }
+
         Text(
             text = name,
             style = MaterialTheme.typography.headlineSmall,
@@ -599,7 +633,9 @@ private fun AutoPlaylistHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             text = buildString {
                 append(pluralStringResource(R.plurals.n_song, songs.size, songs.size))
@@ -611,7 +647,9 @@ private fun AutoPlaylistHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -619,6 +657,7 @@ private fun AutoPlaylistHeader(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             androidx.compose.material3.Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -643,6 +682,7 @@ private fun AutoPlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -668,6 +708,7 @@ private fun AutoPlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     menuState.show {
@@ -730,6 +771,7 @@ private fun AutoPlaylistHeader(
         }
     }
 }
+
 enum class PlaylistType {
     LIKE, DOWNLOAD, UPLOADED, OTHER
 }

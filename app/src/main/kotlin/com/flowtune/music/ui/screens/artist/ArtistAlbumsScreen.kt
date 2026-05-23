@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.artist
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -53,6 +54,7 @@ import com.flowtune.music.ui.component.LibraryAlbumGridItem
 import com.flowtune.music.ui.component.LocalMenuState
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.ArtistAlbumsViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistAlbumsScreen(
@@ -64,11 +66,14 @@ fun ArtistAlbumsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val artist by viewModel.artist.collectAsState()
     val albums by viewModel.albums.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -83,7 +88,9 @@ fun ArtistAlbumsScreen(
     if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val snackbarHostState = remember { SnackbarHostState() }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -102,6 +109,7 @@ fun ArtistAlbumsScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Spacer(Modifier.weight(1f))
+
                     Text(
                         text = pluralStringResource(R.plurals.n_album, albums.size, albums.size),
                         style = MaterialTheme.typography.titleSmall,
@@ -109,6 +117,7 @@ fun ArtistAlbumsScreen(
                     )
                 }
             }
+
             items(
                 items = albums.distinctBy { it.id },
                 key = { it.id },
@@ -125,6 +134,7 @@ fun ArtistAlbumsScreen(
                 )
             }
         }
+
         TopAppBar(
             title = { Text(artist?.artist?.name.orEmpty()) },
             navigationIcon = {
@@ -140,6 +150,7 @@ fun ArtistAlbumsScreen(
             },
             scrollBehavior = scrollBehavior
         )
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier

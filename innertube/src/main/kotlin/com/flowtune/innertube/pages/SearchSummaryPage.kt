@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -17,10 +18,12 @@ import com.flowtune.innertube.models.filterVideoSongs
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
 import com.flowtune.innertube.utils.parseTime
+
 data class SearchSummary(
     val title: String,
     val items: List<YTItem>,
 )
+
 data class SearchSummaryPage(
     val summaries: List<SearchSummary>,
 ) {
@@ -40,6 +43,7 @@ data class SearchSummaryPage(
         } else {
             this
         }
+
     fun filterVideoSongs(disableVideos: Boolean) =
         if (disableVideos) {
             SearchSummaryPage(
@@ -56,6 +60,7 @@ data class SearchSummaryPage(
         } else {
             this
         }
+
     companion object {
         fun fromMusicCardShelfRenderer(renderer: MusicCardShelfRenderer): YTItem? {
             val subtitle = renderer.subtitle.runs?.splitBySeparator()
@@ -95,6 +100,7 @@ data class SearchSummaryPage(
                             } != null,
                     )
                 }
+
                 renderer.onTap.browseEndpoint?.isArtistEndpoint == true -> {
                     ArtistItem(
                         id = renderer.onTap.browseEndpoint.browseId,
@@ -117,6 +123,7 @@ data class SearchSummaryPage(
                                 ?.watchPlaylistEndpoint ?: return null,
                     )
                 }
+
                 renderer.onTap.browseEndpoint?.isAlbumEndpoint == true -> {
                     AlbumItem(
                         browseId = renderer.onTap.browseEndpoint.browseId,
@@ -146,6 +153,7 @@ data class SearchSummaryPage(
                             } != null,
                     )
                 }
+
                 renderer.onTap.browseEndpoint?.isPlaylistEndpoint == true -> {
                     PlaylistItem(
                         id =
@@ -179,9 +187,11 @@ data class SearchSummaryPage(
                         radioEndpoint = null,
                     )
                 }
+
                 else -> null
             }
         }
+
         fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): YTItem? {
             val secondaryLine =
                 renderer.flexColumns
@@ -244,6 +254,7 @@ data class SearchSummaryPage(
                         }?.toggleMenuServiceItemRenderer, "LIBRARY_REMOVE")
                     )
                 }
+
                 renderer.isArtist -> {
                     ArtistItem(
                         id = renderer.navigationEndpoint?.browseEndpoint?.browseId ?: return null,
@@ -273,6 +284,7 @@ data class SearchSummaryPage(
                                 ?.watchPlaylistEndpoint ?: return null,
                     )
                 }
+
                 renderer.isAlbum -> {
                     AlbumItem(
                         browseId = renderer.navigationEndpoint?.browseEndpoint?.browseId ?: return null,
@@ -313,6 +325,7 @@ data class SearchSummaryPage(
                             } != null,
                     )
                 }
+
                 renderer.isPlaylist -> {
                     PlaylistItem(
                         id =
@@ -367,6 +380,7 @@ data class SearchSummaryPage(
                                 ?.watchPlaylistEndpoint ?: return null,
                     )
                 }
+
                 else -> null
             }
         }

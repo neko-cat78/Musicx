@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -10,10 +11,12 @@ import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
 import com.flowtune.innertube.utils.parseTime
+
 data class SearchResult(
     val items: List<YTItem>,
     val continuation: String? = null,
 )
+
 object SearchPage {
     fun toYTItem(renderer: MusicResponsiveListItemRenderer): YTItem? {
         val secondaryLine =

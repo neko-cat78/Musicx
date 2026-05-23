@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -26,20 +27,25 @@ import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.UUID
+
 sealed class PlaylistCreationState {
     object Idle : PlaylistCreationState()
     object Creating : PlaylistCreationState()
     object Success : PlaylistCreationState()
 }
+
 class WrappedManager(
     private val databaseDao: DatabaseDao,
     private val context: Context
 ) {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     private val _state = MutableStateFlow(WrappedState())
     val state = _state.asStateFlow()
+
     fun createPlaylist(imageResName: String) {
         if (_state.value.playlistCreationState != PlaylistCreationState.Idle) return
+
         _state.update { it.copy(playlistCreationState = PlaylistCreationState.Creating) }
         scope.launch {
             try {
@@ -51,13 +57,16 @@ class WrappedManager(
                         set(WrappedConstants.YEAR, Calendar.DECEMBER, 31, 23, 59, 59)
                     }.timeInMillis
                     val allSongs = databaseDao.mostPlayedSongsStats(fromTimestamp, toTimeStamp = toTimestamp, limit = -1).first()
+
                     val playlistId = UUID.randomUUID().toString()
+
                     val drawableId = context.resources.getIdentifier(imageResName, "drawable", context.packageName)
                     val bitmap = BitmapFactory.decodeResource(context.resources, drawableId)
                     val file = File(context.cacheDir, "$playlistId.png")
                     FileOutputStream(file).use {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
                     }
+
                     val newPlaylist = PlaylistEntity(
                         id = playlistId,
                         name = WrappedConstants.PLAYLIST_NAME,
@@ -66,6 +75,7 @@ class WrappedManager(
                         isEditable = true
                     )
                     databaseDao.insert(newPlaylist)
+
                     val createdPlaylist = databaseDao.playlist(playlistId).first()
                     if (createdPlaylist != null) {
                         val songIds = allSongs.map { it.id }
@@ -81,6 +91,7 @@ class WrappedManager(
             }
         }
     }
+
     private suspend fun generatePlaylistMap() {
         val topSongs = _state.value.topSongs
         val topArtists = _state.value.topArtists
@@ -89,17 +100,21 @@ class WrappedManager(
             _state.update { it.copy(trackMap = emptyMap()) }
             return
         }
+
         withContext(Dispatchers.IO) {
             val playlistMap = mutableMapOf<WrappedScreenType, String>()
+
             val introSongPool = topSongs.subList(5, topSongs.size)
             val introSong = introSongPool.randomOrNull()?.id ?: topSongs.last().id
             playlistMap[WrappedScreenType.Welcome] = introSong
             playlistMap[WrappedScreenType.MinutesTease] = introSong
             playlistMap[WrappedScreenType.MinutesReveal] = introSong
+
             val topSong = topSongs.first()
             playlistMap[WrappedScreenType.TotalSongs] = topSong.id
             playlistMap[WrappedScreenType.TopSongReveal] = topSong.id
             playlistMap[WrappedScreenType.Top5Songs] = topSong.id
+
             val topAlbum = _state.value.topAlbum
             val albumSong = topAlbum?.let { album ->
                 val albumSongs = databaseDao.albumSongs(album.id).first()
@@ -108,6 +123,7 @@ class WrappedManager(
             playlistMap[WrappedScreenType.TotalAlbums] = albumSong
             playlistMap[WrappedScreenType.TopAlbumReveal] = albumSong
             playlistMap[WrappedScreenType.Top5Albums] = albumSong
+
             val topArtist = topArtists.firstOrNull()
             val fromTimestamp = Calendar.getInstance().apply {
                 set(WrappedConstants.YEAR, Calendar.JANUARY, 1, 0, 0, 0)
@@ -115,6 +131,7 @@ class WrappedManager(
             val toTimestamp = Calendar.getInstance().apply {
                 set(WrappedConstants.YEAR, Calendar.DECEMBER, 31, 23, 59, 59)
             }.timeInMillis
+
             val artistSong = topArtist?.let { artist ->
                 val artistTopSongs = databaseDao.artistSongs(
                     artistId = artist.id,
@@ -126,34 +143,42 @@ class WrappedManager(
                 if (artistTopSongs.isNotEmpty()) {
                     val artistTopSong = artistTopSongs.first()
                     if (artistTopSong.id == topSong.id) {
+                        
                         artistTopSongs.getOrNull(1)?.id ?: artistTopSongs.filter { it.id != topSong.id }.randomOrNull()?.id ?: artistTopSong.id
                     } else {
                         artistTopSong.id
                     }
                 } else {
+                    
                     topSong.id
                 }
             } ?: topSong.id 
             playlistMap[WrappedScreenType.TotalArtists] = artistSong
             playlistMap[WrappedScreenType.TopArtistReveal] = artistSong
             playlistMap[WrappedScreenType.Top5Artists] = artistSong
+
             val endSongPool = topSongs.subList(2, 5)
             val endSong = endSongPool.randomOrNull()?.id ?: topSongs[2].id
             playlistMap[WrappedScreenType.Playlist] = endSong
             playlistMap[WrappedScreenType.Conclusion] = "2-p9DM2Xvsc"
+
             Log.d("WrappedManager", "Generated Playlist Map: $playlistMap")
             _state.update { it.copy(trackMap = playlistMap) }
         }
     }
+
     suspend fun prepare() {
         if (_state.value.isDataReady) return
         Log.d("WrappedManager", "Starting Wrapped data preparation")
+
         val fromTimestamp = Calendar.getInstance().apply {
             set(WrappedConstants.YEAR, Calendar.JANUARY, 1, 0, 0, 0)
         }.timeInMillis
+
         val toTimestamp = Calendar.getInstance().apply {
             set(WrappedConstants.YEAR, Calendar.DECEMBER, 31, 23, 59, 59)
         }.timeInMillis
+
         withContext(Dispatchers.IO) {
             val accountInfoDeferred = async { YouTube.accountInfo().getOrNull() }
             val topSongsDeferred = async { databaseDao.mostPlayedSongsStats(fromTimestamp, toTimeStamp = toTimestamp, limit = 30).first() }
@@ -163,6 +188,7 @@ class WrappedManager(
             val uniqueArtistCountDeferred = async { databaseDao.getUniqueArtistCountInRange(fromTimestamp, toTimestamp).first() }
             val uniqueAlbumCountDeferred = async { databaseDao.getUniqueAlbumCountInRange(fromTimestamp, toTimestamp).first() }
             val totalPlayTimeMsDeferred = async { databaseDao.getTotalPlayTimeInRange(fromTimestamp, toTimestamp).first() ?: 0L }
+
             val results = awaitAll(
                 accountInfoDeferred,
                 topSongsDeferred,
@@ -173,6 +199,7 @@ class WrappedManager(
                 uniqueAlbumCountDeferred,
                 totalPlayTimeMsDeferred
             )
+
             @Suppress("UNCHECKED_CAST")
             val topSongsResult = results[1] as List<SongWithStats>
             @Suppress("UNCHECKED_CAST")
@@ -193,6 +220,7 @@ class WrappedManager(
                 )
             }
         }
+
         generatePlaylistMap()
         _state.update { it.copy(isDataReady = true) }
         Log.d("WrappedManager", "Wrapped data preparation finished")

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -45,6 +46,7 @@ import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.viewmodels.PlaylistsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 @Composable
 fun AddToPlaylistDialog(
     isVisible: Boolean,
@@ -72,6 +74,7 @@ fun AddToPlaylistDialog(
     var showCreatePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showDuplicateDialog by remember {
         mutableStateOf(false)
     }
@@ -84,6 +87,7 @@ fun AddToPlaylistDialog(
     var duplicates by remember {
         mutableStateOf(emptyList<String>())
     }
+
     if (isVisible) {
         ListDialog(
             onDismiss = onDismiss,
@@ -104,6 +108,7 @@ fun AddToPlaylistDialog(
                     }
                 )
             }
+
             if (playlists.isNotEmpty()) {
                 item {
                     Row(
@@ -127,6 +132,7 @@ fun AddToPlaylistDialog(
                     }
                 }
             }
+
             items(playlists) { playlist ->
                 PlaylistListItem(
                     playlist = playlist,
@@ -142,6 +148,7 @@ fun AddToPlaylistDialog(
                             } else {
                                 onDismiss()
                                 database.addSongToPlaylist(playlist, songIds!!)
+
                                 playlist.playlist.browseId?.let { plist ->
                                     songIds?.forEach {
                                         YouTube.addToPlaylist(plist, it)
@@ -154,6 +161,7 @@ fun AddToPlaylistDialog(
             }
         }
     }
+
     if (showCreatePlaylistDialog) {
         CreatePlaylistDialog(
             onDismiss = { showCreatePlaylistDialog = false },
@@ -161,6 +169,7 @@ fun AddToPlaylistDialog(
             allowSyncing = allowSyncing
         )
     }
+
         if (showDuplicateDialog) {
             DefaultDialog(
                 title = { Text(stringResource(R.string.duplicates)) },
@@ -181,6 +190,7 @@ fun AddToPlaylistDialog(
                     ) {
                         Text(stringResource(R.string.skip_duplicates))
                     }
+
                     TextButton(
                         onClick = {
                             showDuplicateDialog = false
@@ -192,6 +202,7 @@ fun AddToPlaylistDialog(
                     ) {
                         Text(stringResource(R.string.add_anyway))
                     }
+
                     TextButton(
                         onClick = {
                             showDuplicateDialog = false

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
@@ -81,6 +82,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
@@ -97,12 +99,15 @@ fun YouTubePlaylistMenu(
     val downloadUtil = LocalDownloadUtil.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val dbPlaylist by database.playlistByBrowseId(playlist.id).collectAsState(initial = null)
+
     var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showImportPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showErrorPlaylistAddDialog by rememberSaveable { mutableStateOf(false) }
+
     val notAddedList by remember {
         mutableStateOf(mutableListOf<MediaMetadata>())
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { targetPlaylist ->
@@ -124,6 +129,7 @@ fun YouTubePlaylistMenu(
         },
         onDismiss = { showChoosePlaylistDialog = false },
     )
+
     YouTubeListItem(
         item = playlist,
         trailingContent = {
@@ -181,6 +187,7 @@ fun YouTubePlaylistMenu(
         }
     )
     HorizontalDivider()
+
     var downloadState by remember {
         mutableStateOf(Download.STATE_STOPPED)
     }
@@ -240,6 +247,7 @@ fun YouTubePlaylistMenu(
             }
         )
     }
+
     ImportPlaylistDialog(
         isVisible = showImportPlaylistDialog,
         onGetSong = {
@@ -257,6 +265,7 @@ fun YouTubePlaylistMenu(
         playlistTitle = playlist.title,
         onDismiss = { showImportPlaylistDialog = false }
     )
+
     if (showErrorPlaylistAddDialog) {
         ListDialog(
             onDismiss = {
@@ -278,6 +287,7 @@ fun YouTubePlaylistMenu(
                     modifier = Modifier.clickable { showErrorPlaylistAddDialog = false },
                 )
             }
+
             items(notAddedList) { song ->
                 ListItem(
                     headlineContent = { Text(text = song.title) },
@@ -307,8 +317,10 @@ fun YouTubePlaylistMenu(
             }
         }
     }
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -381,6 +393,7 @@ fun YouTubePlaylistMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -459,7 +472,9 @@ fun YouTubePlaylistMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ import com.flowtune.music.utils.rememberPreference
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.foundation.layout.size
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdaterScreen(
@@ -45,6 +47,7 @@ fun UpdaterScreen(
 ) {
     val (checkForUpdates, onCheckForUpdatesChange) = rememberPreference(CheckForUpdatesKey, true)
     val (updateNotifications, onUpdateNotificationsChange) = rememberPreference(UpdateNotificationsEnabledKey, true)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,7 +67,9 @@ fun UpdaterScreen(
                 )
             )
         )
+
         Spacer(Modifier.height(4.dp))
+
         Material3SettingsGroup(
             items = buildList {
                 add(
@@ -89,6 +94,7 @@ fun UpdaterScreen(
                         onClick = { onCheckForUpdatesChange(!checkForUpdates) }
                     )
                 )
+
                 if (checkForUpdates) {
                     add(
                         Material3SettingsItem(
@@ -115,8 +121,10 @@ fun UpdaterScreen(
                 }
             }
         )
+
         Spacer(Modifier.height(32.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.updater)) },
         navigationIcon = {

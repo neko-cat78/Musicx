@@ -1,11 +1,14 @@
 package com.flowtune.music.ui.theme
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.flowtune.music.constants.PlayerBackgroundStyle
+
 object PlayerSliderColors {
+
     @Composable
     fun getSliderColors(
         activeColor: Color,
@@ -24,6 +27,7 @@ object PlayerSliderColors {
                 Color.White.copy(alpha = 0.4f)
             }
         }
+        
         return SliderDefaults.colors(
             activeTrackColor = activeColor,
             activeTickColor = activeColor,

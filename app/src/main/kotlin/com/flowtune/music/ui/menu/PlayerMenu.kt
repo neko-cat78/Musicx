@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
+
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
@@ -74,14 +76,17 @@ import com.flowtune.music.ui.component.BottomSheetState
 import com.flowtune.music.ui.component.ListDialog
 import com.flowtune.music.ui.component.Material3MenuItemData
 import com.flowtune.music.ui.component.Material3MenuGroup
+
 import com.flowtune.music.ui.component.Material3SettingsGroup
 import com.flowtune.music.ui.component.Material3SettingsItem
+
 import com.flowtune.music.ui.component.VolumeSlider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.log2
 import kotlin.math.pow
 import kotlin.math.round
+
 @Composable
 fun PlayerMenu(
     mediaMetadata: MediaMetadata?,
@@ -96,21 +101,27 @@ fun PlayerMenu(
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val playerVolume = playerConnection.service.playerVolume.collectAsState()
+    
     val castHandler = playerConnection.service.castConnectionHandler
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
     val castVolume by castHandler?.castVolume?.collectAsState() ?: remember { mutableStateOf(1f) }
     val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf<String?>(null) }
+    
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
+
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
+
     val artists =
         remember(mediaMetadata.artists) {
             mediaMetadata.artists.filter { it.id != null }
         }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -126,9 +137,11 @@ fun PlayerMenu(
             showChoosePlaylistDialog = false
         }
     )
+
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showSelectArtistDialog) {
         ListDialog(
             onDismiss = { showSelectArtistDialog = false },
@@ -159,14 +172,17 @@ fun PlayerMenu(
             }
         }
     }
+
     var showPitchTempoDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showPitchTempoDialog) {
         TempoPitchDialog(
             onDismiss = { showPitchTempoDialog = false },
         )
     }
+
     if (isQueueTrigger != true) {
         Column(
             modifier = Modifier
@@ -174,6 +190,7 @@ fun PlayerMenu(
                 .padding(horizontal = 24.dp)
                 .padding(top = 24.dp, bottom = 6.dp),
         ) {
+            
             if (isCasting && castDeviceName != null) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -196,6 +213,7 @@ fun PlayerMenu(
                     )
                 }
             }
+            
             VolumeSlider(
                 value = if (isCasting) castVolume else playerVolume.value,
                 onValueChange = { volume ->
@@ -210,11 +228,16 @@ fun PlayerMenu(
             )
         }
     }
+
     Spacer(modifier = Modifier.height(20.dp))
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -224,6 +247,7 @@ fun PlayerMenu(
         ),
     ) {
         item {
+            
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -248,6 +272,7 @@ fun PlayerMenu(
                 )
             }
         }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -310,7 +335,9 @@ fun PlayerMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -339,6 +366,7 @@ fun PlayerMenu(
                                 }
                             )
                         }
+
                         Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.downloading)) },
@@ -358,6 +386,7 @@ fun PlayerMenu(
                                 }
                             )
                         }
+
                         else -> {
                             Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.action_download)) },
@@ -391,7 +420,9 @@ fun PlayerMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -417,6 +448,7 @@ fun PlayerMenu(
         }
     }
 }
+
 @Composable
 fun TempoPitchDialog(onDismiss: () -> Unit) {
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -430,6 +462,7 @@ fun TempoPitchDialog(onDismiss: () -> Unit) {
         playerConnection.player.playbackParameters =
             PlaybackParameters(tempo, 2f.pow(transposeValue.toFloat() / 12))
     }
+
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss,
@@ -481,6 +514,7 @@ fun TempoPitchDialog(onDismiss: () -> Unit) {
         },
     )
 }
+
 @Composable
 fun <T> ValueAdjuster(
     @DrawableRes icon: Int,
@@ -500,6 +534,7 @@ fun <T> ValueAdjuster(
             contentDescription = null,
             modifier = Modifier.size(28.dp),
         )
+
         IconButton(
             enabled = currentValue != values.first(),
             onClick = {
@@ -511,12 +546,14 @@ fun <T> ValueAdjuster(
                 contentDescription = null,
             )
         }
+
         Text(
             text = valueText(currentValue),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.width(80.dp),
         )
+
         IconButton(
             enabled = currentValue != values.last(),
             onClick = {

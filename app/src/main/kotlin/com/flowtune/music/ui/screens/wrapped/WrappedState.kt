@@ -1,8 +1,10 @@
 package com.flowtune.music.ui.screens.wrapped
+
 import com.flowtune.innertube.models.AccountInfo
 import com.flowtune.music.db.entities.Album
 import com.flowtune.music.db.entities.Artist
 import com.flowtune.music.db.entities.SongWithStats
+
 data class WrappedState(
     val accountInfo: AccountInfo? = null,
     val totalMinutes: Long = 0,

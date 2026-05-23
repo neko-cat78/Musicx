@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun Material3SettingsGroup(
     title: String? = null,
@@ -36,6 +38,7 @@ fun Material3SettingsGroup(
         modifier = Modifier
             .fillMaxWidth()
     ) {
+        
         title?.let {
             Text(
                 text = it,
@@ -44,6 +47,7 @@ fun Material3SettingsGroup(
                 modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
             )
         }
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -55,6 +59,7 @@ fun Material3SettingsGroup(
                     index == items.size - 1 -> RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
                     else -> RoundedCornerShape(6.dp)
                 }
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -71,6 +76,7 @@ fun Material3SettingsGroup(
         }
     }
 }
+
 @Composable
 private fun Material3SettingsItemRow(
     item: Material3SettingsItem
@@ -85,6 +91,7 @@ private fun Material3SettingsItemRow(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        
         item.icon?.let { icon ->
             Box(
                 modifier = Modifier
@@ -127,14 +134,18 @@ private fun Material3SettingsItemRow(
                     )
                 }
             }
+
             Spacer(modifier = Modifier.width(16.dp))
         }
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
+            
             ProvideTextStyle(MaterialTheme.typography.titleMedium) {
                 item.title()
             }
+
             item.description?.let { desc ->
                 Spacer(modifier = Modifier.height(2.dp))
                 ProvideTextStyle(
@@ -146,12 +157,14 @@ private fun Material3SettingsItemRow(
                 }
             }
         }
+
         item.trailingContent?.let { trailing ->
             Spacer(modifier = Modifier.width(8.dp))
             trailing()
         }
     }
 }
+
 data class Material3SettingsItem(
     val icon: Painter? = null,
     val title: @Composable () -> Unit,

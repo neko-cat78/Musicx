@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.R
+
 private object VolumeSliderDefaults {
     val TrackHeight: Dp = 40.dp
     val HandleHeight: Dp = 52.dp
@@ -30,6 +32,7 @@ private object VolumeSliderDefaults {
     val ThumbTrackGapSize: Dp = 6.dp
     val StopIndicatorRadius: Dp = 4.dp
 }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VolumeSlider(
@@ -41,16 +44,19 @@ fun VolumeSlider(
     accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
     val volumeOffIcon = painterResource(R.drawable.volume_off)
     val volumeMuteIcon = painterResource(R.drawable.volume_mute)
     val volumeDownIcon = painterResource(R.drawable.volume_down)
     val volumeUpIcon = painterResource(R.drawable.volume_up)
+
     val currentIcon = when {
         value <= 0f -> volumeOffIcon
         value < 0.33f -> volumeMuteIcon
         value < 0.66f -> volumeDownIcon
         else -> volumeUpIcon
     }
+
     val colors = SliderDefaults.colors(
         thumbColor = accentColor,
         activeTrackColor = accentColor,
@@ -58,7 +64,9 @@ fun VolumeSlider(
         inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
         inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
+    
     val stopIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant
+
     Slider(
         value = value,
         onValueChange = onValueChange,
@@ -72,6 +80,7 @@ fun VolumeSlider(
             val iconSize = DpSize(VolumeSliderDefaults.InsetIconSize, VolumeSliderDefaults.InsetIconSize)
             val activeIconColor = colors.activeTickColor
             val inactiveIconColor = colors.inactiveTickColor
+
             SliderDefaults.Track(
                 sliderState = sliderState,
                 modifier = Modifier
@@ -85,6 +94,7 @@ fun VolumeSlider(
                         val inactiveTrackStart = activeTrackEnd + thumbGapPx * 2
                         val activeTrackWidth = activeTrackEnd
                         val inactiveTrackWidth = size.width - inactiveTrackStart
+
                         drawVolumeIcon(
                             icon = currentIcon,
                             iconSize = iconSize,
@@ -113,6 +123,7 @@ fun VolumeSlider(
         }
     )
 }
+
 private fun DrawScope.drawVolumeIcon(
     icon: Painter,
     iconSize: DpSize,
@@ -128,6 +139,7 @@ private fun DrawScope.drawVolumeIcon(
     val iconSizePx = iconSize.toSize()
     val iconPaddingPx = iconPadding.toPx()
     val minSpaceForIcon = iconSizePx.width + iconPaddingPx * 2
+
     if (activeTrackWidth >= minSpaceForIcon) {
         translate(iconPaddingPx, yOffset) {
             with(icon) {

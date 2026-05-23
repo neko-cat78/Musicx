@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -159,6 +160,7 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import com.flowtune.music.ui.theme.LocalHomeGradientColors
 import com.flowtune.music.ui.theme.PlayerColorExtractor
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
@@ -171,8 +173,10 @@ fun HomeScreen(
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val haptic = LocalHapticFeedback.current
+
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val context = LocalContext.current
     val fallbackGradientColors = listOf(
         Color(0xFF2E235A),
@@ -182,6 +186,7 @@ fun HomeScreen(
     val homeGradientColorsState = LocalHomeGradientColors.current
     var gradientColors by remember { mutableStateOf(fallbackGradientColors) }
     val gradientColorsCache = remember { mutableMapOf<String, List<Color>>() }
+
     LaunchedEffect(mediaMetadata?.id) {
         val thumbnailUrl = mediaMetadata?.thumbnailUrl
         val songId = mediaMetadata?.id
@@ -212,6 +217,7 @@ fun HomeScreen(
                         palette = palette,
                         fallbackColor = Color(0xFF2E235A).toArgb()
                     )
+                    
                     val brightened = extracted.map { color ->
                         val argb = color.toArgb()
                         val hsv = FloatArray(3)
@@ -220,6 +226,7 @@ fun HomeScreen(
                         hsv[1] = (hsv[1] * 1.1f).coerceAtMost(1.0f)
                         Color(android.graphics.Color.HSVToColor(hsv))
                     }
+                    
                     val homeGradient = listOf(
                         brightened[0].copy(alpha = 0.85f),
                         brightened.getOrElse(1) { brightened[0] }.copy(alpha = 0.5f),
@@ -237,6 +244,7 @@ fun HomeScreen(
             homeGradientColorsState.value = fallbackGradientColors
         }
     }
+
     val quickPicks by viewModel.quickPicks.collectAsState()
     val forgottenFavorites by viewModel.forgottenFavorites.collectAsState()
     val keepListening by viewModel.keepListening.collectAsState()
@@ -244,35 +252,46 @@ fun HomeScreen(
     val accountPlaylists by viewModel.accountPlaylists.collectAsState()
     val homePage by viewModel.homePage.collectAsState()
     val explorePage by viewModel.explorePage.collectAsState()
+
     val allLocalItems by viewModel.allLocalItems.collectAsState()
     val allYtItems by viewModel.allYtItems.collectAsState()
     val selectedChip by viewModel.selectedChip.collectAsState()
+
     val isLoading: Boolean by viewModel.isLoading.collectAsState()
     val isMoodAndGenresLoading = isLoading && explorePage?.moodAndGenres == null
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
+
     val quickPicksLazyGridState = rememberLazyGridState()
     val forgottenFavoritesLazyGridState = rememberLazyGridState()
+
     val accountName by viewModel.accountName.collectAsState()
     val accountImageUrl by viewModel.accountImageUrl.collectAsState()
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
+
     val shouldShowWrappedCard by viewModel.showWrappedCard.collectAsState()
     val wrappedState by viewModel.wrappedManager.state.collectAsState()
     val isWrappedDataReady = wrappedState.isDataReady
+
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
     }
     val url = if (isLoggedIn) accountImageUrl else null
+
     val scope = rememberCoroutineScope()
     val lazylistState = rememberLazyListState()
+    
     val gradientAlpha = 1f
+     
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
     val currentGridHeight = if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     val wrappedDismissed by backStackEntry?.savedStateHandle?.getStateFlow("wrapped_seen", false)
         ?.collectAsState() ?: remember { mutableStateOf(false) }
+
     LaunchedEffect(wrappedDismissed) {
         if (wrappedDismissed) {
             viewModel.markWrappedAsSeen()
@@ -282,12 +301,14 @@ fun HomeScreen(
             backStackEntry?.savedStateHandle?.set("wrapped_seen", false) 
         }
     }
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             lazylistState.animateScrollToItem(0)
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     LaunchedEffect(Unit) {
         snapshotFlow { lazylistState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleIndex ->
@@ -297,11 +318,14 @@ fun HomeScreen(
                 }
             }
     }
+
     if (selectedChip != null) {
         BackHandler {
+            
             viewModel.toggleChip(selectedChip)
         }
     }
+
     val localGridItem: @Composable (LocalItem) -> Unit = {
         when (it) {
             is Song -> SongGridItem(
@@ -334,6 +358,7 @@ fun HomeScreen(
                 isActive = it.id == mediaMetadata?.id,
                 isPlaying = isPlaying,
             )
+
             is Album -> AlbumGridItem(
                 album = it,
                 isActive = it.id == mediaMetadata?.album?.id,
@@ -357,6 +382,7 @@ fun HomeScreen(
                         }
                     )
             )
+
             is Artist -> ArtistGridItem(
                 artist = it,
                 modifier = Modifier
@@ -379,9 +405,11 @@ fun HomeScreen(
                         },
                     ),
             )
+
             is Playlist -> {}
         }
     }
+
     val ytGridItem: @Composable (YTItem) -> Unit = { item ->
         YouTubeGridItem(
             item = item,
@@ -400,6 +428,7 @@ fun HomeScreen(
                                     ), item.toMediaMetadata()
                                 )
                             )
+
                             is AlbumItem -> navController.navigate("album/${item.id}")
                             is ArtistItem -> navController.navigate("artist/${item.id}")
                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
@@ -414,15 +443,18 @@ fun HomeScreen(
                                     navController = navController,
                                     onDismiss = menuState::dismiss
                                 )
+
                                 is AlbumItem -> YouTubeAlbumMenu(
                                     albumItem = item,
                                     navController = navController,
                                     onDismiss = menuState::dismiss
                                 )
+
                                 is ArtistItem -> YouTubeArtistMenu(
                                     artist = item,
                                     onDismiss = menuState::dismiss
                                 )
+
                                 is PlaylistItem -> YouTubePlaylistMenu(
                                     playlist = item,
                                     coroutineScope = scope,
@@ -434,12 +466,15 @@ fun HomeScreen(
                 )
         )
     }
+
     LaunchedEffect(quickPicks) {
         quickPicksLazyGridState.scrollToItem(0)
     }
+
     LaunchedEffect(forgottenFavorites) {
         forgottenFavoritesLazyGridState.scrollToItem(0)
     }
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -450,6 +485,7 @@ fun HomeScreen(
             ),
         contentAlignment = Alignment.TopStart
     ) {
+      
       BoxWithConstraints(
     modifier = Modifier
         .fillMaxWidth()
@@ -467,6 +503,7 @@ fun HomeScreen(
             )
             .blur(80.dp)
     )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -475,6 +512,7 @@ fun HomeScreen(
             .background(Color.Black.copy(alpha = 0.15f))
     )
 }
+    
         val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
         val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
         val quickPicksSnapLayoutInfoProvider = remember(quickPicksLazyGridState) {
@@ -493,6 +531,7 @@ fun HomeScreen(
                 }
             )
         }
+
         LazyColumn(
             state = lazylistState,
             contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
@@ -500,6 +539,7 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(5.dp))
             }
+
             if (selectedChip == null) {
                 item(key = "wrapped_card") {
                     AnimatedVisibility(visible = shouldShowWrappedCard) {
@@ -562,6 +602,7 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                     item(key = "quick_picks_list") {
                         LazyHorizontalGrid(
                             state = quickPicksLazyGridState,
@@ -578,8 +619,10 @@ fun HomeScreen(
                                 items = quickPicks.distinctBy { it.id },
                                 key = { it.id }
                             ) { originalSong ->
+                                
                                 val song by database.song(originalSong.id)
                                     .collectAsState(initial = originalSong)
+
                                 SongListItem(
                                     song = song!!,
                                     showInLibraryIcon = true,
@@ -634,6 +677,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 keepListening?.takeIf { it.isNotEmpty() }?.let { keepListening ->
                     item(key = "keep_listening_title") {
                         NavigationTitle(
@@ -641,6 +685,7 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                     item(key = "keep_listening_list") {
                         val rows = if (keepListening.size > 6) 2 else 1
                         LazyHorizontalGrid(
@@ -662,6 +707,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 accountPlaylists?.takeIf { it.isNotEmpty() }?.let { accountPlaylists ->
                     item(key = "account_playlists_title") {
                         NavigationTitle(
@@ -698,6 +744,7 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                     item(key = "account_playlists_list") {
                         LazyRow(
                             contentPadding = WindowInsets.systemBars
@@ -714,6 +761,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 forgottenFavorites?.takeIf { it.isNotEmpty() }?.let { forgottenFavorites ->
                     item(key = "forgotten_favorites_title") {
                         NavigationTitle(
@@ -721,7 +769,9 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                     item(key = "forgotten_favorites_list") {
+                        
                         val rows = min(4, forgottenFavorites.size)
                         LazyHorizontalGrid(
                             state = forgottenFavoritesLazyGridState,
@@ -742,6 +792,7 @@ fun HomeScreen(
                             ) { originalSong ->
                                 val song by database.song(originalSong.id)
                                     .collectAsState(initial = originalSong)
+
                                 SongListItem(
                                     song = song!!,
                                     showInLibraryIcon = true,
@@ -797,6 +848,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 similarRecommendations?.forEachIndexed { index, recommendation ->
                     item(key = "similar_to_title_$index") {
                         NavigationTitle(
@@ -828,6 +880,7 @@ fun HomeScreen(
                             modifier = Modifier.animateItem()
                         )
                     }
+
                     item(key = "similar_to_list_$index") {
                         LazyRow(
                             contentPadding = WindowInsets.systemBars
@@ -842,6 +895,7 @@ fun HomeScreen(
                     }
                 }
             }
+
             homePage?.sections?.forEachIndexed { index, section ->
                 item(key = "home_section_title_$index") {
                     NavigationTitle(
@@ -877,6 +931,7 @@ fun HomeScreen(
                         modifier = Modifier.animateItem()
                     )
                 }
+
                 item(key = "home_section_list_$index") {
                     LazyRow(
                         contentPadding = WindowInsets.systemBars
@@ -890,6 +945,7 @@ fun HomeScreen(
                     }
                 }
             }
+
             if (isLoading || homePage?.continuation != null && homePage?.sections?.isNotEmpty() == true) {
                 item(key = "loading_shimmer") {
                     ShimmerHost(
@@ -911,6 +967,7 @@ fun HomeScreen(
                     }
                 }
             }
+
             if (selectedChip == null) {
                 explorePage?.moodAndGenres?.let { moodAndGenres ->
                     item(key = "mood_and_genres_title") {
@@ -944,6 +1001,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 if (isMoodAndGenresLoading) {
                     item(key = "mood_and_genres_shimmer") {
                         ShimmerHost(
@@ -955,6 +1013,7 @@ fun HomeScreen(
                                     .padding(vertical = 12.dp, horizontal = 12.dp)
                                     .width(250.dp),
                             )
+
                             repeat(4) {
                                 Row {
                                     repeat(2) {
@@ -973,6 +1032,7 @@ fun HomeScreen(
                 }
             }
         }
+
         HideOnScrollFAB(
             visible = allLocalItems.isNotEmpty() || allYtItems.isNotEmpty(),
             lazyListState = lazylistState,
@@ -1013,6 +1073,7 @@ fun HomeScreen(
                 }
             }
         )
+
         Indicator(
             isRefreshing = isRefreshing,
             state = pullRefreshState,

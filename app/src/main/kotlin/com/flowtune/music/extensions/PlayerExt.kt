@@ -1,4 +1,5 @@
 package com.flowtune.music.extensions
+
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -9,12 +10,14 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import com.flowtune.music.models.MediaMetadata
 import java.util.ArrayDeque
+
 fun Player.togglePlayPause() {
     if (!playWhenReady && playbackState == Player.STATE_IDLE) {
         prepare()
     }
     playWhenReady = !playWhenReady
 }
+
 fun Player.toggleRepeatMode() {
     repeatMode =
         when (repeatMode) {
@@ -24,6 +27,7 @@ fun Player.toggleRepeatMode() {
             else -> throw IllegalStateException()
         }
 }
+
 fun Player.getQueueWindows(): List<Timeline.Window> {
     val timeline = currentTimeline
     if (timeline.isEmpty) {
@@ -31,8 +35,10 @@ fun Player.getQueueWindows(): List<Timeline.Window> {
     }
     val queue = ArrayDeque<Timeline.Window>()
     val queueSize = timeline.windowCount
+
     val currentMediaItemIndex: Int = currentMediaItemIndex
     queue.add(timeline.getWindow(currentMediaItemIndex, Timeline.Window()))
+
     var firstMediaItemIndex = currentMediaItemIndex
     var lastMediaItemIndex = currentMediaItemIndex
     val shuffleModeEnabled = shuffleModeEnabled
@@ -57,6 +63,7 @@ fun Player.getQueueWindows(): List<Timeline.Window> {
     }
     return queue.toList()
 }
+
 fun Player.getCurrentQueueIndex(): Int {
     if (currentTimeline.isEmpty) {
         return -1
@@ -75,15 +82,19 @@ fun Player.getCurrentQueueIndex(): Int {
     }
     return index
 }
+
 val Player.currentMetadata: MediaMetadata?
     get() = currentMediaItem?.metadata
+
 val Player.mediaItems: List<MediaItem>
     get() =
         object : AbstractList<MediaItem>() {
             override val size: Int
                 get() = mediaItemCount
+
             override fun get(index: Int): MediaItem = getMediaItemAt(index)
         }
+
 fun Player.findNextMediaItemById(mediaId: String): MediaItem? {
     for (i in currentMediaItemIndex until mediaItemCount) {
         if (getMediaItemAt(i).mediaId == mediaId) {
@@ -92,6 +103,7 @@ fun Player.findNextMediaItemById(mediaId: String): MediaItem? {
     }
     return null
 }
+
 fun Player.setOffloadEnabled(enabled: Boolean) {
     trackSelectionParameters = trackSelectionParameters.buildUpon()
         .setAudioOffloadPreferences(

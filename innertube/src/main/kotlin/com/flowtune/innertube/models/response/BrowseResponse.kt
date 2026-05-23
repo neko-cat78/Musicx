@@ -1,4 +1,5 @@
 package com.flowtune.innertube.models.response
+
 import com.flowtune.innertube.models.Button
 import com.flowtune.innertube.models.Continuation
 import com.flowtune.innertube.models.GridRenderer
@@ -13,6 +14,7 @@ import com.flowtune.innertube.models.SubscriptionButton
 import com.flowtune.innertube.models.Tabs
 import com.flowtune.innertube.models.ThumbnailRenderer
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class BrowseResponse(
     val contents: Contents?,
@@ -29,6 +31,7 @@ data class BrowseResponse(
         val sectionListRenderer: SectionListRenderer?,
         val twoColumnBrowseResultsRenderer: TwoColumnBrowseResultsRenderer?,
     )
+
     @Serializable
     data class TwoColumnBrowseResultsRenderer(
         val tabs: List<Tabs.Tab?>?,
@@ -38,6 +41,7 @@ data class BrowseResponse(
     data class SecondaryContents(
         val sectionListRenderer: SectionListRenderer?,
     )
+
     @Serializable
     data class ContinuationContents(
         val sectionListContinuation: SectionListContinuation?,
@@ -50,17 +54,20 @@ data class BrowseResponse(
             val contents: List<SectionListRenderer.Content> = emptyList(),
             val continuations: List<Continuation>?,
         )
+
         @Serializable
         data class MusicPlaylistShelfContinuation(
             val contents: List<MusicShelfRenderer.Content> = emptyList(),
             val continuations: List<Continuation>?,
         )
+
         @Serializable
         data class GridContinuation(
             val items: List<GridRenderer.Item> = emptyList(),
             val continuations: List<Continuation>?,
         )
     }
+
     @Serializable
     data class ResponseAction(
         val appendContinuationItemsAction: ContinuationItems?,
@@ -70,6 +77,7 @@ data class BrowseResponse(
             val continuationItems: List<MusicShelfRenderer.Content>?,
         )
     }
+
     @Serializable
     data class Header(
         val musicImmersiveHeaderRenderer: MusicImmersiveHeaderRenderer?,
@@ -100,16 +108,19 @@ data class BrowseResponse(
                 )
             }
         }
+
         @Serializable
         data class MusicVisualHeaderRenderer(
             val title: Runs,
             val foregroundThumbnail: ThumbnailRenderer,
             val thumbnail: ThumbnailRenderer?,
         )
+
         @Serializable
         data class Buttons(
             val menuRenderer: Menu.MenuRenderer?,
         )
+
         @Serializable
         data class MusicHeaderRenderer(
             val buttons: List<Buttons>?,
@@ -130,6 +141,7 @@ data class BrowseResponse(
             val thumbnails: List<MusicThumbnail>?,
         )
     }
+
     @Serializable
     data class Microformat(
         val microformatDataRenderer: MicroformatDataRenderer?,

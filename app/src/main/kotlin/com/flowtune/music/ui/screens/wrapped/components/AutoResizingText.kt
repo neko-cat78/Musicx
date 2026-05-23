@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.components
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.TextStyle
+
 @Composable
 fun AutoResizingText(
     text: String,
@@ -16,6 +18,7 @@ fun AutoResizingText(
 ) {
     var scaledTextStyle by remember { mutableStateOf(style) }
     var readyToDraw by remember { mutableStateOf(false) }
+
     Text(
         text = text,
         style = scaledTextStyle,

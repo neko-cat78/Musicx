@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class ArtistItemsViewModel
 @Inject
@@ -28,8 +30,10 @@ constructor(
 ) : ViewModel() {
     private val browseId = savedStateHandle.get<String>("browseId")!!
     private val params = savedStateHandle.get<String>("params")
+
     val title = MutableStateFlow("")
     val itemsPage = MutableStateFlow<ItemsPage?>(null)
+
     init {
         viewModelScope.launch {
             YouTube
@@ -55,6 +59,7 @@ constructor(
                 }
         }
     }
+
     fun loadMore() {
         viewModelScope.launch {
             val oldItemsPage = itemsPage.value ?: return@launch

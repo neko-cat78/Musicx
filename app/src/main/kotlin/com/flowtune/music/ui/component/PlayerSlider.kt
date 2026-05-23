@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSliderTrack(
@@ -50,6 +52,7 @@ fun PlayerSliderTrack(
         )
     }
 }
+
 private fun DrawScope.drawTrack(
     tickFractions: FloatArray,
     activeRangeStart: Float,
@@ -100,8 +103,10 @@ private fun DrawScope.drawTrack(
         )
     }
 }
+
 private fun stepsToTickFractions(steps: Int): FloatArray {
     return if (steps == 0) floatArrayOf() else FloatArray(steps + 2) { it.toFloat() / (steps + 1) }
 }
+
 private fun calcFraction(a: Float, b: Float, pos: Float) =
     (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)

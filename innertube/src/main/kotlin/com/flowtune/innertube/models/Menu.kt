@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class Menu(
     val menuRenderer: MenuRenderer,
@@ -21,6 +23,7 @@ data class Menu(
                 val icon: Icon,
                 val navigationEndpoint: NavigationEndpoint,
             )
+
             @Serializable
             data class MenuServiceItemRenderer(
                 val text: Runs,
@@ -34,6 +37,7 @@ data class Menu(
                 val toggledServiceEndpoint: ToggledServiceEndpoint?
             )
         }
+
         @Serializable
         data class TopLevelButton(
             val buttonRenderer: ButtonRenderer?,

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class LocalSearchViewModel
@@ -32,6 +34,7 @@ constructor(
 ) : ViewModel() {
     val query = MutableStateFlow("")
     val filter = MutableStateFlow(LocalFilter.ALL)
+
     val result =
         combine(
             query,
@@ -54,6 +57,7 @@ constructor(
                             val filteredSongs = if (hideVideoSongs) songs.filter { !it.song.isVideo } else songs
                             filteredSongs + albums + artists + playlists
                         }
+
                     LocalFilter.SONG -> database.searchSongs(query).map { songs ->
                         if (hideVideoSongs) songs.filter { !it.song.isVideo } else songs
                     }
@@ -81,10 +85,12 @@ constructor(
             SharingStarted.Lazily,
             LocalSearchResult("", filter.value, emptyMap())
         )
+
     companion object {
         const val PREVIEW_SIZE = 3
     }
 }
+
 enum class LocalFilter {
     ALL,
     SONG,
@@ -92,6 +98,7 @@ enum class LocalFilter {
     ARTIST,
     PLAYLIST,
 }
+
 data class LocalSearchResult(
     val query: String,
     val filter: LocalFilter,

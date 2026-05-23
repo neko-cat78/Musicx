@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -27,6 +28,7 @@ import java.util.zip.ZipEntry
 import javax.inject.Inject
 import kotlin.system.exitProcess
 import timber.log.Timber
+
 @HiltViewModel
 class BackupRestoreViewModel @Inject constructor(
     val database: MusicDatabase,
@@ -56,6 +58,7 @@ class BackupRestoreViewModel @Inject constructor(
             Toast.makeText(context, R.string.backup_create_failed, Toast.LENGTH_SHORT).show()
         }
     }
+
     fun restore(context: Context, uri: Uri) {
         runCatching {
             Timber.tag("RESTORE").i("Starting restore from URI: $uri")
@@ -77,6 +80,7 @@ class BackupRestoreViewModel @Inject constructor(
                             InternalDatabase.DB_NAME -> {
                                 Timber.tag("RESTORE").i("Restoring DB (entry = ${entry.name})")
                                 foundAny = true
+                                
                                 val dbPath = database.openHelper.writableDatabase.path
                                 runBlocking(Dispatchers.IO) { database.checkpoint() }
                                 database.close()
@@ -99,6 +103,7 @@ class BackupRestoreViewModel @Inject constructor(
             } ?: run {
                 Timber.tag("RESTORE").e("Could not open input stream for uri: $uri")
             }
+
             context.stopService(Intent(context, MusicService::class.java))
             context.filesDir.resolve(PERSISTENT_QUEUE_FILE).delete()
             context.startActivity(Intent(context, MainActivity::class.java))
@@ -109,6 +114,7 @@ class BackupRestoreViewModel @Inject constructor(
             Toast.makeText(context, R.string.restore_failed, Toast.LENGTH_SHORT).show()
         }
     }
+
     fun importPlaylistFromCsv(context: Context, uri: Uri): ArrayList<Song> {
         val songs = arrayListOf<Song>()
         runCatching {
@@ -118,6 +124,7 @@ class BackupRestoreViewModel @Inject constructor(
                     val parts = line.split(",").map { it.trim() }
                     val title = parts[0]
                     val artistStr = parts[1]
+
                     val artists = artistStr.split(";").map { it.trim() }.map {
                    ArtistEntity(
                             id = "",
@@ -135,6 +142,7 @@ class BackupRestoreViewModel @Inject constructor(
                 }
             }
         }
+
         if (songs.isEmpty()) {
             Toast.makeText(
                 context,
@@ -144,20 +152,24 @@ class BackupRestoreViewModel @Inject constructor(
         }
         return songs
     }
+
     fun loadM3UOnline(
         context: Context,
         uri: Uri,
     ): ArrayList<Song> {
         val songs = ArrayList<Song>()
+
         runCatching {
             context.applicationContext.contentResolver.openInputStream(uri)?.use { stream ->
                 val lines = stream.bufferedReader().readLines()
                 if (lines.first().startsWith("#EXTM3U")) {
                     lines.forEachIndexed { _, rawLine ->
                         if (rawLine.startsWith("#EXTINF:")) {
+                            
                             val artists =
                                 rawLine.substringAfter("#EXTINF:").substringAfter(',').substringBefore(" - ").split(';')
                             val title = rawLine.substringAfter("#EXTINF:").substringAfter(',').substringAfter(" - ")
+
                             val mockSong = Song(
                                 song = SongEntity(
                                     id = "",
@@ -166,11 +178,13 @@ class BackupRestoreViewModel @Inject constructor(
                                 artists = artists.map { ArtistEntity("", it) },
                             )
                             songs.add(mockSong)
+
                         }
                     }
                 }
             }
         }
+
         if (songs.isEmpty()) {
             Toast.makeText(
                 context,
@@ -180,6 +194,7 @@ class BackupRestoreViewModel @Inject constructor(
         }
         return songs
     }
+
     companion object {
         const val SETTINGS_FILENAME = "settings.preferences_pb"
     }

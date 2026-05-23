@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models.response
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class GetTranscriptResponse(
     val actions: List<Action>?,

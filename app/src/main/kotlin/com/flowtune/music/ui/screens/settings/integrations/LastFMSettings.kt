@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings.integrations
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,6 +66,7 @@ import com.flowtune.music.ui.component.SwitchPreference
 import com.flowtune.music.utils.makeTimeString
 import com.flowtune.music.utils.reportException
 import kotlin.math.roundToInt
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LastFMSettings(
@@ -72,42 +74,53 @@ fun LastFMSettings(
     scrollBehavior: TopAppBarScrollBehavior,
 ) { 
     val coroutineScope = rememberCoroutineScope()
+
     var lastfmUsername by rememberPreference(LastFMUsernameKey, "")
     var lastfmSession by rememberPreference(LastFMSessionKey, "")
+
     val isLoggedIn =
         remember(lastfmSession) {
             lastfmSession != ""
         }
+
     val (useNowPlaying, onUseNowPlayingChange) = rememberPreference(
         key = LastFMUseNowPlaying,
         defaultValue = false
     )
+
     val (useSendLikes, onUseSendLikes) = rememberPreference(
         key = LastFMUseSendLikes,
         defaultValue = false
     )
+
     val (lastfmScrobbling, onlastfmScrobblingChange) = rememberPreference(
         key = EnableLastFMScrobblingKey,
         defaultValue = false
     )
+
     val (scrobbleDelayPercent, onScrobbleDelayPercentChange) = rememberPreference(
         ScrobbleDelayPercentKey,
         defaultValue = LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT
     )
+
     val (minTrackDuration, onMinTrackDurationChange) = rememberPreference(
         ScrobbleMinSongDurationKey,
         defaultValue = LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION
     )
+
     val (scrobbleDelaySeconds, onScrobbleDelaySecondsChange) = rememberPreference(
         ScrobbleDelaySecondsKey,
         defaultValue = LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS
     )
+
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     var isLoggingIn by rememberSaveable { mutableStateOf(false) }
     var loginError by rememberSaveable { mutableStateOf<String?>(null) }
+
     if (showLoginDialog) {
         var tempUsername by rememberSaveable { mutableStateOf("") }
         var tempPassword by rememberSaveable { mutableStateOf("") }
+
         AlertDialog(
             onDismissRequest = { 
                 if (!isLoggingIn) {
@@ -147,6 +160,7 @@ fun LastFMSettings(
                         enabled = !isLoggingIn,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    
                     loginError?.let { error ->
                         Text(
                             text = error,
@@ -155,6 +169,7 @@ fun LastFMSettings(
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
+                    
                     if (isLoggingIn) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -180,8 +195,10 @@ fun LastFMSettings(
                             loginError = "Please enter both username and password"
                             return@TextButton
                         }
+                        
                         isLoggingIn = true
                         loginError = null
+                        
                         coroutineScope.launch(Dispatchers.IO) {
                             try {
                                 LastFM.getMobileSession(tempUsername, tempPassword)
@@ -189,6 +206,7 @@ fun LastFMSettings(
                                         lastfmUsername = auth.session.name
                                         lastfmSession = auth.session.key
                                         LastFM.sessionKey = auth.session.key
+                                        
                                         coroutineScope.launch(Dispatchers.Main) {
                                             isLoggingIn = false
                                             showLoginDialog = false
@@ -245,6 +263,7 @@ fun LastFMSettings(
             }
         )
     }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
@@ -257,9 +276,11 @@ fun LastFMSettings(
                 )
             )
         )
+
         PreferenceGroupTitle(
             title = stringResource(R.string.account),
         )
+
         PreferenceEntry(
             title = {
                 Text(
@@ -286,21 +307,25 @@ fun LastFMSettings(
                 }
             },
         )
+
         PreferenceGroupTitle(
             title = stringResource(R.string.options),
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.enable_scrobbling)) },
             checked = lastfmScrobbling,
             onCheckedChange = onlastfmScrobblingChange,
             isEnabled = isLoggedIn,
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.lastfm_now_playing)) },
             checked = useNowPlaying,
             onCheckedChange = onUseNowPlayingChange,
             isEnabled = isLoggedIn && lastfmScrobbling,
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.last_fm_send_likes)) },
             description = stringResource(R.string.last_fm_send_likes_description),
@@ -308,12 +333,16 @@ fun LastFMSettings(
             onCheckedChange = onUseSendLikes,
             isEnabled = isLoggedIn,
         )
+
         PreferenceGroupTitle(
             title = stringResource(R.string.scrobbling_configuration)
         )
+
         var showMinTrackDurationDialog by rememberSaveable { mutableStateOf(false) }
+
         if (showMinTrackDurationDialog) {
             var tempMinTrackDuration by remember { mutableIntStateOf(minTrackDuration) }
+
             DefaultDialog(
                 onDismiss = {
                     tempMinTrackDuration = minTrackDuration
@@ -327,7 +356,9 @@ fun LastFMSettings(
                     ) {
                         Text(stringResource(R.string.reset))
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     TextButton(
                         onClick = {
                             tempMinTrackDuration = minTrackDuration
@@ -355,11 +386,13 @@ fun LastFMSettings(
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Text(
                         text = makeTimeString((tempMinTrackDuration * 1000).toLong()),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Slider(
                         value = tempMinTrackDuration.toFloat(),
                         onValueChange = { tempMinTrackDuration = it.toInt() },
@@ -369,14 +402,18 @@ fun LastFMSettings(
                 }
             }
         }
+
         PreferenceEntry(
             title = { Text(stringResource(R.string.scrobble_min_track_duration)) },
             description = makeTimeString((minTrackDuration * 1000).toLong()),
             onClick = { showMinTrackDurationDialog = true }
         )
+
         var showScrobbleDelayPercentDialog by rememberSaveable { mutableStateOf(false) }
+
         if (showScrobbleDelayPercentDialog) {
             var tempScrobbleDelayPercent by remember { mutableFloatStateOf(scrobbleDelayPercent) }
+
             DefaultDialog(
                 onDismiss = {
                     tempScrobbleDelayPercent = scrobbleDelayPercent
@@ -390,7 +427,9 @@ fun LastFMSettings(
                     ) {
                         Text(stringResource(R.string.reset))
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     TextButton(
                         onClick = {
                             tempScrobbleDelayPercent = scrobbleDelayPercent
@@ -418,11 +457,13 @@ fun LastFMSettings(
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Text(
                         text = stringResource(R.string.sensitivity_percentage, (tempScrobbleDelayPercent * 100).roundToInt()),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Slider(
                         value = tempScrobbleDelayPercent,
                         onValueChange = { tempScrobbleDelayPercent = it },
@@ -432,14 +473,18 @@ fun LastFMSettings(
                 }
             }
         }
+
         PreferenceEntry(
             title = { Text(stringResource(R.string.scrobble_delay_percent)) },
             description = stringResource(R.string.sensitivity_percentage, (scrobbleDelayPercent * 100).roundToInt()),
             onClick = { showScrobbleDelayPercentDialog = true }
         )
+
         var showScrobbleDelaySecondsDialog by rememberSaveable { mutableStateOf(false) }
+
         if (showScrobbleDelaySecondsDialog) {
             var tempScrobbleDelaySeconds by remember { mutableIntStateOf(scrobbleDelaySeconds) }
+
             DefaultDialog(
                 onDismiss = {
                     tempScrobbleDelaySeconds = scrobbleDelaySeconds
@@ -453,7 +498,9 @@ fun LastFMSettings(
                     ) {
                         Text(stringResource(R.string.reset))
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     TextButton(
                         onClick = {
                             tempScrobbleDelaySeconds = scrobbleDelaySeconds
@@ -481,11 +528,13 @@ fun LastFMSettings(
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Text(
                         text = makeTimeString((tempScrobbleDelaySeconds * 1000).toLong()),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Slider(
                         value = tempScrobbleDelaySeconds.toFloat(),
                         onValueChange = { tempScrobbleDelaySeconds = it.toInt() },
@@ -495,12 +544,14 @@ fun LastFMSettings(
                 }
             }
         }
+
         PreferenceEntry(
             title = { Text(stringResource(R.string.scrobble_delay_minutes)) },
             description = makeTimeString((scrobbleDelaySeconds * 1000).toLong()),
             onClick = { showScrobbleDelaySecondsDialog = true }
         )
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.lastfm_integration)) },
         navigationIcon = {

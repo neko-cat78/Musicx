@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.artist
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.ArtistSongsViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistSongsScreen(
@@ -65,6 +67,7 @@ fun ArtistSongsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         ArtistSongSortTypeKey,
         ArtistSongSortType.CREATE_DATE
@@ -77,6 +80,7 @@ fun ArtistSongsScreen(
     val artist by viewModel.artist.collectAsState()
     val songs by viewModel.songs.collectAsState()
     val lazyListState = rememberLazyListState()
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -105,7 +109,9 @@ fun ArtistSongsScreen(
                             }
                         },
                     )
+
                     Spacer(Modifier.weight(1f))
+
                     Text(
                         text = pluralStringResource(R.plurals.n_song, songs.size, songs.size),
                         style = MaterialTheme.typography.titleSmall,
@@ -113,6 +119,7 @@ fun ArtistSongsScreen(
                     )
                 }
             }
+
             itemsIndexed(
                 items = songs,
                 key = { _, item -> item.id },
@@ -172,6 +179,7 @@ fun ArtistSongsScreen(
                 )
             }
         }
+
         TopAppBar(
             title = { Text(artist?.artist?.name.orEmpty()) },
             navigationIcon = {
@@ -186,6 +194,7 @@ fun ArtistSongsScreen(
                 }
             },
         )
+
         HideOnScrollFAB(
             lazyListState = lazyListState,
             icon = R.drawable.shuffle,

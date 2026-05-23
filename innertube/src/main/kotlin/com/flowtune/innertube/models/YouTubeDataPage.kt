@@ -1,6 +1,8 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class YouTubeDataPage(
     @SerialName("contents")
@@ -70,6 +72,7 @@ data class YouTubeDataPage(
                                 }
                             }
                         }
+
                         @Serializable
                         data class VideoPrimaryInfoRenderer(
                             @SerialName("title")
@@ -90,6 +93,7 @@ data class YouTubeDataPage(
                                     val text: String? = null,
                                 )
                             }
+
                             @Serializable
                             data class ViewCount(
                                 @SerialName("videoViewCountRenderer")
@@ -107,12 +111,14 @@ data class YouTubeDataPage(
                                     )
                                 }
                             }
+
                             @Serializable
                             data class DateText(
                                 @SerialName("simpleText")
                                 val simpleText: String? = null,
                             )
                         }
+
                         @Serializable
                         data class VideoSecondaryInfoRenderer(
                             @SerialName("owner")
@@ -125,6 +131,7 @@ data class YouTubeDataPage(
                                 @SerialName("content")
                                 val content: String? = null,
                             )
+
                             @Serializable
                             data class Owner(
                                 @SerialName("videoOwnerRenderer")
@@ -146,11 +153,13 @@ data class YouTubeDataPage(
                                         @SerialName("thumbnails")
                                         val thumbnails: List<com.flowtune.innertube.models.Thumbnail>? = null,
                                     )
+
                                     @Serializable
                                     data class SubscriberCountText(
                                         @SerialName("simpleText")
                                         val simpleText: String? = null,
                                     )
+
                                     @Serializable
                                     data class Title(
                                         @SerialName("runs")

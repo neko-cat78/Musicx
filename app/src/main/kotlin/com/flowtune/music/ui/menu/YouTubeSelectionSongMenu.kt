@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -47,6 +48,7 @@ import com.flowtune.music.ui.component.Material3MenuGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+
 @Composable
 fun YouTubeSelectionSongMenu(
     songSelection: List<SongItem>,
@@ -59,23 +61,29 @@ fun YouTubeSelectionSongMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     val allLiked by remember(songSelection) {
         mutableStateOf(
             songSelection.isNotEmpty() && songSelection.all { song ->
+                
                 val metadata = song.toMediaMetadata()
                 metadata.liked
             }
         )
     }
+
     val allInLibrary by remember(songSelection) {
         mutableStateOf(
             songSelection.all { song ->
@@ -84,6 +92,7 @@ fun YouTubeSelectionSongMenu(
             }
         )
     }
+
     LaunchedEffect(songSelection) {
         if (songSelection.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -102,10 +111,12 @@ fun YouTubeSelectionSongMenu(
                 }
         }
     }
+
     AddToPlaylistDialogOnline(
         isVisible = showChoosePlaylistDialog,
         songs = remember { 
             songSelection.map { song ->
+                
                 val metadata = song.toMediaMetadata()
                 com.flowtune.music.db.entities.Song(
                     song = com.flowtune.music.db.entities.SongEntity(
@@ -146,6 +157,7 @@ fun YouTubeSelectionSongMenu(
             showChoosePlaylistDialog = false
         },
     )
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -164,6 +176,7 @@ fun YouTubeSelectionSongMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -182,6 +195,7 @@ fun YouTubeSelectionSongMenu(
             },
         )
     }
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 8.dp,
@@ -370,7 +384,9 @@ fun YouTubeSelectionSongMenu(
                                 songSelection.forEach { song ->
                                     val metadata = song.toMediaMetadata()
                                     if ((!allLiked && !metadata.liked) || allLiked) {
+                                        
                                         insert(metadata)
+                                        
                                         val songEntity = com.flowtune.music.db.entities.SongEntity(
                                             id = metadata.id,
                                             title = metadata.title,

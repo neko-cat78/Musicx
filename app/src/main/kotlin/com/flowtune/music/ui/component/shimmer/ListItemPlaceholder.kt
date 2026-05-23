@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component.shimmer
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.flowtune.music.constants.ListItemHeight
 import com.flowtune.music.constants.ListThumbnailSize
 import com.flowtune.music.constants.ThumbnailCornerRadius
+
 @Composable
 fun ListItemPlaceHolder(
     modifier: Modifier = Modifier,
@@ -37,6 +39,7 @@ fun ListItemPlaceHolder(
                 .clip(thumbnailShape)
                 .background(MaterialTheme.colorScheme.onSurface),
         )
+
         Column(
             modifier =
             Modifier

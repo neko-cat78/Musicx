@@ -1,6 +1,8 @@
 package com.my.kizzy.gateway.entities
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class Resume(
     @SerialName("seq")

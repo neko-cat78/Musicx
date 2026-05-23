@@ -1,4 +1,5 @@
 package com.flowtune.music.utils
+
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -18,11 +19,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.properties.ReadOnlyProperty
+
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? =
     runBlocking(Dispatchers.IO) {
         data.first()[key]
     }
+
 fun <T> DataStore<Preferences>.get(
     key: Preferences.Key<T>,
     defaultValue: T,
@@ -30,16 +34,19 @@ fun <T> DataStore<Preferences>.get(
     runBlocking(Dispatchers.IO) {
         data.first()[key] ?: defaultValue
     }
+
 fun <T> preference(
     context: Context,
     key: Preferences.Key<T>,
     defaultValue: T,
 ) = ReadOnlyProperty<Any?, T> { _, _ -> context.dataStore[key] ?: defaultValue }
+
 inline fun <reified T : Enum<T>> enumPreference(
     context: Context,
     key: Preferences.Key<String>,
     defaultValue: T,
 ) = ReadOnlyProperty<Any?, T> { _, _ -> context.dataStore[key].toEnum(defaultValue) }
+
 @Composable
 fun <T> rememberPreference(
     key: Preferences.Key<T>,
@@ -47,12 +54,14 @@ fun <T> rememberPreference(
 ): MutableState<T> {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
     val state =
         remember {
             context.dataStore.data
                 .map { it[key] ?: defaultValue }
                 .distinctUntilChanged()
         }.collectAsState(context.dataStore[key] ?: defaultValue)
+
     return remember {
         object : MutableState<T> {
             override var value: T
@@ -64,11 +73,14 @@ fun <T> rememberPreference(
                         }
                     }
                 }
+
             override fun component1() = value
+
             override fun component2(): (T) -> Unit = { value = it }
         }
     }
 }
+
 @Composable
 inline fun <reified T : Enum<T>> rememberEnumPreference(
     key: Preferences.Key<String>,
@@ -76,6 +88,7 @@ inline fun <reified T : Enum<T>> rememberEnumPreference(
 ): MutableState<T> {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
     val initialValue = context.dataStore[key].toEnum(defaultValue = defaultValue)
     val state =
         remember {
@@ -83,6 +96,7 @@ inline fun <reified T : Enum<T>> rememberEnumPreference(
                 .map { it[key].toEnum(defaultValue = defaultValue) }
                 .distinctUntilChanged()
         }.collectAsState(initialValue)
+
     return remember {
         object : MutableState<T> {
             override var value: T
@@ -94,7 +108,9 @@ inline fun <reified T : Enum<T>> rememberEnumPreference(
                         }
                     }
                 }
+
             override fun component1() = value
+
             override fun component2(): (T) -> Unit = { value = it }
         }
     }

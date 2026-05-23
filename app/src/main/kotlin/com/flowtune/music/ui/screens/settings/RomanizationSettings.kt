@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -44,6 +45,7 @@ import com.flowtune.music.utils.rememberPreference
 import java.net.Proxy
 import java.util.Locale
 import androidx.core.net.toUri
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RomanizationSettings(
@@ -51,6 +53,7 @@ fun RomanizationSettings(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val context = LocalContext.current
+
     val (lyricsRomanizeJapanese, onLyricsRomanizeJapaneseChange) = rememberPreference(LyricsRomanizeJapaneseKey, defaultValue = true)
     val (lyricsRomanizeKorean, onLyricsRomanizeKoreanChange) = rememberPreference(LyricsRomanizeKoreanKey, defaultValue = true)
     val (lyricsRomanizeChinese, onLyricsRomanizeChineseChange) = rememberPreference(LyricsRomanizeChineseKey, defaultValue = true)
@@ -63,30 +66,35 @@ fun RomanizationSettings(
     val (lyricsRomanizeMacedonian, onLyricsRomanizeMacedonianChange) = rememberPreference(LyricsRomanizeMacedonianKey, defaultValue = true)
     val (lyricsRomanizeCyrillicByLine, onLyricsRomanizeCyrillicByLineChange) = rememberPreference(LyricsRomanizeCyrillicByLineKey, defaultValue = false)
     val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
             .verticalScroll(rememberScrollState()),
     ) {
         PreferenceGroupTitle(title = stringResource(R.string.general))
+
         SwitchPreference(
             title = { Text(stringResource(R.string.lyrics_romanize_japanese)) },
             icon = { Icon(painterResource(R.drawable.language_japanese_latin), null) },
             checked = lyricsRomanizeJapanese,
             onCheckedChange = onLyricsRomanizeJapaneseChange,
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.lyrics_romanize_korean)) },
             icon = { Icon(painterResource(R.drawable.language_korean_latin), null) },
             checked = lyricsRomanizeKorean,
             onCheckedChange = onLyricsRomanizeKoreanChange,
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.lyrics_romanize_chinese)) },
             icon = { Icon(painterResource(R.drawable.language), null) },
             checked = lyricsRomanizeChinese,
             onCheckedChange = onLyricsRomanizeChineseChange,
         )
+
         PreferenceGroupTitle(title = stringResource(R.string.lyrics_romanization_cyrillic))
         SwitchPreference(
             title = { Text(stringResource(R.string.lyrics_romanize_russian)) },
@@ -158,6 +166,7 @@ fun RomanizationSettings(
             )
         }
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.lyrics_romanize_title)) },
         navigationIcon = {

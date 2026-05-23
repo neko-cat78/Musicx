@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -10,6 +11,7 @@ import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.response.BrowseResponse
 import com.flowtune.innertube.models.splitBySeparator
 import com.flowtune.innertube.utils.parseTime
+
 data class AlbumPage(
     val album: AlbumItem,
     val songs: List<SongItem>,
@@ -25,18 +27,22 @@ data class AlbumPage(
             }
             return playlistId
         }
+
         fun getTitle(response: BrowseResponse): String? {
             val title = getHeader(response)?.title ?: response.header?.musicDetailHeaderRenderer?.title
             return title?.runs?.firstOrNull()?.text
         }
+
         fun getYear(response: BrowseResponse): Int? {
             val title = getHeader(response)?.subtitle ?: response.header?.musicDetailHeaderRenderer?.subtitle
             return title?.runs?.lastOrNull()?.text?.toIntOrNull()
         }
+
         fun getThumbnail(response: BrowseResponse): String? {
             return response.background?.musicThumbnailRenderer?.getThumbnailUrl() ?: response.header?.musicDetailHeaderRenderer?.thumbnail
                 ?.croppedSquareThumbnailRenderer?.getThumbnailUrl()
         }
+
         fun getArtists(response: BrowseResponse): List<Artist> {
             val artists = getHeader(response)?.straplineTextOne?.runs?.oddElements()?.map {
                 Artist(
@@ -49,8 +55,10 @@ data class AlbumPage(
                     id = it.navigationEndpoint?.browseEndpoint?.browseId
                 )
             } ?: emptyList()
+
             return artists
         }
+
         private fun getHeader(response: BrowseResponse): MusicResponsiveHeaderRenderer? {
             val tabs = response.contents?.singleColumnBrowseResultsRenderer?.tabs
                 ?: response.contents?.twoColumnBrowseResultsRenderer?.tabs
@@ -59,15 +67,18 @@ data class AlbumPage(
             val header = section?.musicResponsiveHeaderRenderer
             return header
         }
+
         fun getSongs(response: BrowseResponse, album: AlbumItem): List<SongItem> {
             val tabs = response.contents?.singleColumnBrowseResultsRenderer?.tabs ?: response.contents?.twoColumnBrowseResultsRenderer?.tabs
             val shelfRenderer = tabs?.firstOrNull()?.tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer ?:
                 response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer
+
             val songs = shelfRenderer?.contents?.getItems()?.mapNotNull {
                 getSong(it, album)
             }
             return songs ?: emptyList()
         }
+
         fun getSong(renderer: MusicResponsiveListItemRenderer, album: AlbumItem? = null): SongItem? {
             return SongItem(
                 id = renderer.playlistItemData?.videoId ?: return null,
@@ -78,6 +89,7 @@ data class AlbumPage(
                         id = it.navigationEndpoint?.browseEndpoint?.browseId
                     )
                 }.ifEmpty {
+                    
                     album?.artists ?: emptyList()
                 },
                 album = album?.let {

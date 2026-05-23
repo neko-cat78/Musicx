@@ -1,7 +1,9 @@
 package com.flowtune.music.db.entities
+
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+
 @Entity(
     tableName = "album_artist_map",
     primaryKeys = ["albumId", "artistId"],

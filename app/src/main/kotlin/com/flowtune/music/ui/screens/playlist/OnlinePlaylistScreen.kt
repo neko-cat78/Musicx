@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.playlist
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ import com.flowtune.music.utils.makeTimeString
 import com.flowtune.music.constants.HideExplicitKey
 import com.flowtune.music.viewmodels.OnlinePlaylistViewModel
 import java.time.LocalDateTime
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OnlinePlaylistScreen(
@@ -76,19 +78,25 @@ fun OnlinePlaylistScreen(
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val coroutineScope = rememberCoroutineScope()
+
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val playlist by viewModel.playlist.collectAsState()
     val songs by viewModel.playlistSongs.collectAsState()
     val dbPlaylist by viewModel.dbPlaylist.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val error by viewModel.error.collectAsState()
+
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+
     val lazyListState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
+
     var isSearching by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+
     val filteredSongs = remember(songs, query) {
         if (query.text.isEmpty()) songs.mapIndexed { i, s -> i to s }
         else songs.mapIndexed { i, s -> i to s }.filter {
@@ -96,6 +104,7 @@ fun OnlinePlaylistScreen(
                 it.second.artists.fastAny { a -> a.name.contains(query.text, true) }
         }
     }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -107,8 +116,10 @@ fun OnlinePlaylistScreen(
         inSelectMode = false
         selection.clear()
     }
+
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(isSearching) { if (isSearching) focusRequester.requestFocus() }
+
     LaunchedEffect(filteredSongs) {
         selection.fastForEachReversed { songId ->
             if (filteredSongs.find { it.second.id == songId } == null) {
@@ -116,6 +127,7 @@ fun OnlinePlaylistScreen(
             }
         }
     }
+
     if (isSearching) {
         BackHandler {
             isSearching = false
@@ -124,6 +136,7 @@ fun OnlinePlaylistScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             state = lazyListState,
@@ -157,6 +170,7 @@ fun OnlinePlaylistScreen(
                             )
                         }
                     }
+
                     itemsIndexed(filteredSongs) { index, (_, songItem) ->
                         val onCheckedChange: (Boolean) -> Unit = {
                             if (it) {
@@ -165,6 +179,7 @@ fun OnlinePlaylistScreen(
                                 selection.remove(songItem.id)
                             }
                         }
+
                         YouTubeListItem(
                             item = songItem,
                             isActive = mediaMetadata?.id == songItem.id,
@@ -217,6 +232,7 @@ fun OnlinePlaylistScreen(
                             }
                         )
                     }
+
                     if (isLoadingMore) {
                         item(key = "loading_more") {
                             Box(
@@ -232,6 +248,7 @@ fun OnlinePlaylistScreen(
                 }
             }
         }
+
         TopAppBar(
             title = {
                 if (inSelectMode) {
@@ -336,12 +353,14 @@ fun OnlinePlaylistScreen(
                 }
             }
         )
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
+
 @Composable
 private fun OnlinePlaylistHeader(
     playlist: PlaylistItem,
@@ -356,6 +375,7 @@ private fun OnlinePlaylistHeader(
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
     val syncUtils = LocalSyncUtils.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -379,7 +399,9 @@ private fun OnlinePlaylistHeader(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
         Spacer(modifier = Modifier.height(20.dp))
+
         Text(
             text = playlist.title,
             style = MaterialTheme.typography.headlineSmall,
@@ -389,7 +411,9 @@ private fun OnlinePlaylistHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         val totalDuration = songs.sumOf { it.duration ?: 0 }
         Text(
             text = buildString {
@@ -402,7 +426,9 @@ private fun OnlinePlaylistHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -410,6 +436,7 @@ private fun OnlinePlaylistHeader(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             Surface(
                 onClick = {
                     if (dbPlaylist != null) {
@@ -470,6 +497,7 @@ private fun OnlinePlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     if (songs.isNotEmpty()) {
@@ -499,6 +527,7 @@ private fun OnlinePlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     menuState.show {

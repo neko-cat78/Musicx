@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -28,6 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WavySlider(
@@ -50,23 +52,31 @@ fun WavySlider(
     val stroke = remember(strokeWidthPx) { 
         Stroke(width = strokeWidthPx, cap = StrokeCap.Round) 
     }
+    
     val normalizedValue = ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start))
         .coerceIn(0f, 1f)
+    
     var isDragging by remember { mutableStateOf(false) }
     var dragValue by remember { mutableFloatStateOf(normalizedValue) }
+    
     val displayValue = if (isDragging) dragValue else normalizedValue
+    
     val animatedAmplitude by animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0f,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = "amplitude"
     )
+    
     val activeColor = colors.activeTrackColor
     val inactiveColor = colors.inactiveTrackColor
     val thumbColor = colors.thumbColor
+    
     val containerHeight = maxOf(WavyProgressIndicatorDefaults.LinearContainerHeight, thumbRadius * 2)
+    
     val baseModifier = modifier
         .fillMaxWidth()
         .height(containerHeight)
+
     val interactiveModifier = if (enabled) {
         baseModifier
             .pointerInput(valueRange) {
@@ -102,6 +112,7 @@ fun WavySlider(
     } else {
         baseModifier
     }
+
     Box(
         modifier = interactiveModifier,
         contentAlignment = Alignment.Center
@@ -119,9 +130,11 @@ fun WavySlider(
             wavelength = wavelength,
             waveSpeed = waveSpeed
         )
+        
         Canvas(modifier = Modifier.fillMaxSize()) {
             val thumbX = size.width * displayValue
             val thumbY = size.height / 2
+            
             drawCircle(
                 color = thumbColor,
                 radius = thumbRadiusPx,
