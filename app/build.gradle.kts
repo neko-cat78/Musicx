@@ -28,11 +28,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
-        val lastFmKey = localProperties.getProperty("LASTFM_API_KEY") ?: System.getenv("LASTFM_API_KEY") ?: ""
-        val lastFmSecret = localProperties.getProperty("LASTFM_SECRET") ?: System.getenv("LASTFM_SECRET") ?: ""
 
-        buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
-        buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
     }
 
     flavorDimensions += listOf("abi", "variant")
@@ -247,8 +243,6 @@ dependencies {
     implementation(project(":innertube"))
     implementation(project(":packages:kugou"))
     implementation(project(":packages:lrclib"))
-    implementation(project(":packages:kizzy"))
-    implementation(project(":packages:lastfm"))
     implementation(project(":packages:betterlyrics"))
     implementation(project(":packages:simpmusic"))
 

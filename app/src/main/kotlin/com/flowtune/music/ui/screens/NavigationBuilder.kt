@@ -40,16 +40,13 @@ import com.flowtune.music.ui.screens.settings.AppearanceSettings
 import com.flowtune.music.ui.screens.settings.BackupAndRestore
 import com.flowtune.music.ui.screens.settings.ContentSettings
 import com.flowtune.music.ui.screens.settings.DarkMode
-import com.flowtune.music.ui.screens.settings.DiscordLoginScreen
 import com.flowtune.music.ui.screens.settings.PlayerSettings
 import com.flowtune.music.ui.screens.settings.PrivacySettings
 import com.flowtune.music.ui.screens.settings.RomanizationSettings
 import com.flowtune.music.ui.screens.settings.SettingsScreen
 import com.flowtune.music.ui.screens.settings.StorageSettings
 import com.flowtune.music.ui.screens.settings.UpdaterScreen
-import com.flowtune.music.ui.screens.settings.integrations.DiscordSettings
 import com.flowtune.music.ui.screens.settings.integrations.IntegrationScreen
-import com.flowtune.music.ui.screens.settings.integrations.LastFMSettings
 import com.flowtune.music.ui.screens.wrapped.WrappedScreen
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
@@ -324,18 +321,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/integrations") {
         IntegrationScreen(navController, scrollBehavior)
-    }
-
-    composable("settings/integrations/discord") {
-        DiscordSettings(navController, scrollBehavior)
-    }
-
-    composable("settings/integrations/lastfm") {
-        LastFMSettings(navController, scrollBehavior)
-    }
-
-    composable("settings/discord/login") {
-        DiscordLoginScreen(navController)
     }
 
     composable("settings/updater") {

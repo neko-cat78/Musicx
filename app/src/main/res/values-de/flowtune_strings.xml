@@ -24,7 +24,6 @@
     <string name="slim">Schmal</string>
     <string name="slim_navbar">Dünne untere Navigationsleiste</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Mit Token anmelden</string>
     <string name="token_hidden">Tippen, um Token anzuzeigen</string>
     <string name="token_shown">Tippen, um zu kopieren oder zu bearbeiten</string>
@@ -202,8 +201,6 @@
     <string name="uploaded_playlist">Hochgeladen</string>
     <string name="filter_uploaded">Hochgeladen</string>
     <string name="show_uploaded_playlist">\"Hochgeladen\"-Playlist anzeigen</string>
-    <string name="discord_use_details">Verwende Details anstelle von Statusangaben</string>
-    <string name="discord_use_details_description">Songtitel anstelle von Künstlernamen prominent anzeigen</string>
     <string name="updater">Updater</string>
     <string name="check_for_updates">Automatisch nach Updates prüfen</string>
     <string name="update_notifications">Benachrichtigungen zu Updates erhalten</string>
@@ -214,13 +211,6 @@
     <string name="integrations">Integrationen</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
-    <string name="lastfm_integration">Last.fm-Integration</string>
-    <string name="enable_scrobbling">Scrobbeln aktivieren</string>
-    <string name="lastfm_now_playing">Aktuelle Wiedergabe senden</string>
-    <string name="scrobbling_configuration">Scrobbling Konfiguration</string>
-    <string name="scrobble_min_track_duration">Lieder scrobbeln, die länger sind als</string>
-    <string name="scrobble_delay_percent">Scrobble Verzögerung (%)</string>
-    <string name="scrobble_delay_minutes">Scrobble Verzögerung (min)</string>
     <string name="swipe_song_to_remove">Wische den Song zur Seite, um ihn aus der Playlist zu entfernen</string>
     <string name="other_results">Sonstiges</string>
     <string name="download_playlist_desc">Alle Songs für die Offline-Wiedergabe herunterladen</string>
@@ -240,8 +230,6 @@
     <string name="lyrics_romanize_chinese">Chinesische Liedtexte romanisieren</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Aktivieren Sie die Audioübertragung auf Chromecast und andere Cast-fähige Geräte.</string>
-    <string name="last_fm_send_likes">Likes/Dislikes senden</string>
-    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Flowtune als „Gefällt mir“/„Gefällt mir nicht“ markiert werden.</string>
     <string name="logging_in">Anmelden…</string>
     <string name="hide_video_songs">Videosongs ausblenden</string>
     <string name="details_desc">Informationen zum Song anzeigen</string>

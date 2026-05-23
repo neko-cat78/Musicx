@@ -78,7 +78,6 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.WatchEndpoint
-import com.flowtune.lastfm.LastFM
 import com.flowtune.music.MainActivity
 import com.flowtune.music.R
 import com.flowtune.music.constants.AudioNormalizationKey
@@ -88,17 +87,9 @@ import com.flowtune.music.constants.AutoDownloadOnLikeKey
 import com.flowtune.music.constants.AutoLoadMoreKey
 import com.flowtune.music.constants.AutoSkipNextOnErrorKey
 import com.flowtune.music.constants.DisableLoadMoreWhenRepeatAllKey
-import com.flowtune.music.constants.DiscordTokenKey
-import com.flowtune.music.constants.DiscordUseDetailsKey
-import com.flowtune.music.constants.EnableDiscordRPCKey
-import com.flowtune.music.constants.EnableLastFMScrobblingKey
 import com.flowtune.music.constants.HideExplicitKey
 import com.flowtune.music.constants.HideVideoSongsKey
 import com.flowtune.music.constants.HistoryDuration
-import com.flowtune.music.constants.LastFMUseNowPlaying
-import com.flowtune.music.constants.ScrobbleDelayPercentKey
-import com.flowtune.music.constants.ScrobbleMinSongDurationKey
-import com.flowtune.music.constants.ScrobbleDelaySecondsKey
 import com.flowtune.music.constants.MediaSessionConstants.CommandToggleLike
 import com.flowtune.music.constants.MediaSessionConstants.CommandToggleRepeatMode
 import com.flowtune.music.constants.MediaSessionConstants.CommandToggleShuffle
@@ -149,9 +140,7 @@ import com.flowtune.music.playback.queues.filterExplicit
 import com.flowtune.music.playback.queues.filterVideoSongs
 import com.flowtune.music.playback.audio.SilenceDetectorAudioProcessor
 import com.flowtune.music.utils.CoilBitmapLoader
-import com.flowtune.music.utils.DiscordRPC
 import com.flowtune.music.utils.NetworkConnectivityObserver
-import com.flowtune.music.utils.ScrobbleManager
 import com.flowtune.music.utils.SyncUtils
 import com.flowtune.music.utils.YTPlayerUtils
 import com.flowtune.music.utils.dataStore
@@ -272,11 +261,7 @@ class MusicService :
     private var isAudioEffectSessionOpened = false
     private var loudnessEnhancer: LoudnessEnhancer? = null
 
-    private var discordRpc: DiscordRPC? = null
-    private var lastPlaybackSpeed = 1.0f
-    private var discordUpdateJob: kotlinx.coroutines.Job? = null
 
-    private var scrobbleManager: ScrobbleManager? = null
 
     val automixItems = MutableStateFlow<List<MediaItem>>(emptyList())
 
@@ -427,14 +412,6 @@ class MusicService :
                     triggerRetry()
                 }
                 
-                if (isConnected && discordRpc != null && player.isPlaying) {
-                    val mediaId = player.currentMetadata?.id
-                    if (mediaId != null) {
-                        database.song(mediaId).first()?.let { song ->
-                            discordRpc?.updateSong(song, player.currentPosition, player.playbackParameters.speed, dataStore.get(DiscordUseDetailsKey, false))
-                        }
-                    }
-                }
             }
         }
 
@@ -499,87 +476,6 @@ class MusicService :
         ) { format, normalizeAudio ->
             format to normalizeAudio
         }.collectLatest(scope) { (format, normalizeAudio) -> setupLoudnessEnhancer()}
-
-        dataStore.data
-            .map { it[DiscordTokenKey] to (it[EnableDiscordRPCKey] ?: true) }
-            .debounce(300)
-            .distinctUntilChanged()
-            .collect(scope) { (key, enabled) ->
-                if (discordRpc?.isRpcRunning() == true) {
-                    discordRpc?.closeRPC()
-                }
-                discordRpc = null
-                if (key != null && enabled) {
-                    discordRpc = DiscordRPC(this, key)
-                    if (player.playbackState == Player.STATE_READY && player.playWhenReady) {
-                        currentSong.value?.let {
-                            discordRpc?.updateSong(it, player.currentPosition, player.playbackParameters.speed, dataStore.get(DiscordUseDetailsKey, false))
-                        }
-                    }
-                }
-            }
-
-        dataStore.data
-            .map { it[DiscordUseDetailsKey] ?: false }
-            .debounce(1000)
-            .distinctUntilChanged()
-            .collect(scope) { useDetails ->
-                if (player.playbackState == Player.STATE_READY && player.playWhenReady) {
-                    currentSong.value?.let { song ->
-                        discordUpdateJob?.cancel()
-                        discordUpdateJob = scope.launch {
-                            delay(1000)
-                            discordRpc?.updateSong(song, player.currentPosition, player.playbackParameters.speed, useDetails)
-                        }
-                    }
-                }
-            }
-
-        dataStore.data
-            .map { it[EnableLastFMScrobblingKey] ?: false }
-            .debounce(300)
-            .distinctUntilChanged()
-            .collect(scope) { enabled ->
-                if (enabled && scrobbleManager == null) {
-                    val delayPercent = dataStore.get(ScrobbleDelayPercentKey, LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT)
-                    val minSongDuration = dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
-                    val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-                    scrobbleManager = ScrobbleManager(
-                        scope,
-                        minSongDuration = minSongDuration,
-                        scrobbleDelayPercent = delayPercent,
-                        scrobbleDelaySeconds = delaySeconds
-                    )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
-                } else if (!enabled && scrobbleManager != null) {
-                    scrobbleManager?.destroy()
-                    scrobbleManager = null
-                }
-            }
-
-        dataStore.data
-            .map { it[LastFMUseNowPlaying] ?: false }
-            .distinctUntilChanged()
-            .collectLatest(scope) {
-                scrobbleManager?.useNowPlaying = it
-            }
-
-        dataStore.data
-            .map { prefs ->
-                Triple(
-                    prefs[ScrobbleDelayPercentKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT,
-                    prefs[ScrobbleMinSongDurationKey] ?: LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION,
-                    prefs[ScrobbleDelaySecondsKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS
-                )
-            }
-            .distinctUntilChanged()
-            .collect(scope) { (delayPercent, minSongDuration, delaySeconds) ->
-                scrobbleManager?.let {
-                    it.scrobbleDelayPercent = delayPercent
-                    it.minSongDuration = minSongDuration
-                    it.scrobbleDelaySeconds = delaySeconds
-                }
-            }
 
         if (dataStore.get(PersistentQueueKey, true)) {
             runCatching {
@@ -1383,16 +1279,7 @@ class MusicService :
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        lastPlaybackSpeed = -1.0f 
-
         setupLoudnessEnhancer()
-
-        discordUpdateJob?.cancel()
-
-        scrobbleManager?.onSongStop()
-        if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
-            scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
-        }
 
         if (castConnectionHandler?.isCasting?.value == true && 
             castConnectionHandler?.isSyncingFromCast != true && 
@@ -1446,9 +1333,6 @@ class MusicService :
             retryJob?.cancel()
         }
 
-        if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-            scrobbleManager?.onSongStop()
-        }
     }
 
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -1499,27 +1383,6 @@ class MusicService :
 
         if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
             updateWidgetUI(player.isPlaying)
-            if (!player.isPlaying && !events.containsAny(Player.EVENT_POSITION_DISCONTINUITY, Player.EVENT_MEDIA_ITEM_TRANSITION)) {
-                scope.launch {
-                    discordRpc?.close()
-                }
-            }
-        }
-
-        if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION, Player.EVENT_IS_PLAYING_CHANGED) && player.isPlaying) {
-            val mediaId = player.currentMetadata?.id
-            if (mediaId != null) {
-                scope.launch {
-                    
-                    database.song(mediaId).first()?.let { song ->
-                        discordRpc?.updateSong(song, player.currentPosition, player.playbackParameters.speed, dataStore.get(DiscordUseDetailsKey, false))
-                    }
-                }
-            }
-        }
-
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
         }
 
     }
@@ -1595,19 +1458,6 @@ class MusicService :
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         super.onPlaybackParametersChanged(playbackParameters)
-        if (playbackParameters.speed != lastPlaybackSpeed) {
-            lastPlaybackSpeed = playbackParameters.speed
-            discordUpdateJob?.cancel()
-
-            discordUpdateJob = scope.launch {
-                delay(1000)
-                if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
-                    currentSong.value?.let { song ->
-                        discordRpc?.updateSong(song, player.currentPosition, playbackParameters.speed, dataStore.get(DiscordUseDetailsKey, false))
-                    }
-                }
-            }
-        }
     }
 
     private fun getHttpResponseCode(error: PlaybackException): Int? {
@@ -2014,10 +1864,6 @@ class MusicService :
         if (dataStore.get(PersistentQueueKey, true)) {
             saveQueueToDisk()
         }
-        if (discordRpc?.isRpcRunning() == true) {
-            discordRpc?.closeRPC()
-        }
-        discordRpc = null
         connectivityObserver.unregister()
         abandonAudioFocus()
         releaseLoudnessEnhancer()
@@ -2025,7 +1871,6 @@ class MusicService :
         player.removeListener(this)
         player.removeListener(sleepTimer)
         player.release()
-        discordUpdateJob?.cancel()
         super.onDestroy()
     }
 

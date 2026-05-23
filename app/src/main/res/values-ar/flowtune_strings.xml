@@ -86,7 +86,6 @@
     <string name="secondary_text_color">لون النص الثانوي</string>
     <string name="background_color">لون الخلفية</string>
     <string name="google">جوجل</string>
-    <string name="discord">ديسكورد</string>
     <string name="advanced_login">تسجيل الدخول باستخدام token</string>
     <string name="token_hidden">اضغط لعرض ال Token</string>
     <string name="token_shown">اضغط مرة أخرى للنسخ أو التعديل</string>
@@ -214,8 +213,6 @@
     <string name="uploaded_playlist">المرفوعه</string>
     <string name="filter_uploaded">المرفوعه</string>
     <string name="show_uploaded_playlist">إظهار قائمة التشغيل \"المرفوعه\"</string>
-    <string name="discord_use_details">استخدم التفاصيل بدلاً من الحالة</string>
-    <string name="discord_use_details_description">إظهار عنوان الأغنية بشكل بارز بدلاً من أسماء الفنانين</string>
     <string name="updater">التحديثات</string>
     <string name="check_for_updates">التحقق تلقائيًا من التحديثات</string>
     <string name="update_notifications">تمكين إشعارات التحديث</string>
@@ -226,16 +223,7 @@
     <string name="integrations">التكاملات</string>
     <string name="username">اسم المستخدم</string>
     <string name="password">كلمة المرور</string>
-    <string name="lastfm_integration">Last.fm</string>
-    <string name="enable_scrobbling">تمكين سكروبلينج</string>
-    <string name="lastfm_now_playing">إرسال المُشغله حاليا</string>
-    <string name="scrobbling_configuration">تكوين سكروبلينج</string>
-    <string name="scrobble_min_track_duration">أغاني سكرابل أطول من</string>
-    <string name="scrobble_delay_percent">نسبة تأخير سكرابل</string>
-    <string name="scrobble_delay_minutes">دقائق تأخير سكرابل</string>
     <string name="swipe_song_to_remove">مرر الأغنية لإزالتها من قائمة التشغيل</string>
-    <string name="last_fm_send_likes_description">عندما تعجبك أغنية أو تلغي إعجابك بها في Flowtune سيتم تلقائيًا وضع علامة (أحببت) أو (غير محبوب) على نفس الأغنية في Last.fm</string>
-    <string name="last_fm_send_likes">إرسال الإعجابات/إلغاء الإعجابات</string>
     <string name="lyrics_romanize_chinese">كلمات الأغاني الصينية بالحروف اللاتينية</string>
     <string name="hide_video_songs">إخفاء أغاني الفيديو</string>
     <string name="google_cast">جوجل كاست</string>

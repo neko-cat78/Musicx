@@ -88,25 +88,7 @@ val PauseListenHistoryKey = booleanPreferencesKey("pauseListenHistory")
 val PauseSearchHistoryKey = booleanPreferencesKey("pauseSearchHistory")
 val DisableScreenshotKey = booleanPreferencesKey("disableScreenshot")
 
-val DiscordTokenKey = stringPreferencesKey("discordToken")
-val DiscordInfoDismissedKey = booleanPreferencesKey("discordInfoDismissed")
-val DiscordUsernameKey = stringPreferencesKey("discordUsername")
-val DiscordNameKey = stringPreferencesKey("discordName")
-val EnableDiscordRPCKey = booleanPreferencesKey("discordRPCEnable")
-val DiscordUseDetailsKey = booleanPreferencesKey("discordUseDetails")
-
 val EnableGoogleCastKey = booleanPreferencesKey("enableGoogleCast")
-
-val LastFMSessionKey = stringPreferencesKey("lastfmSession")
-val LastFMUsernameKey = stringPreferencesKey("lastfmUsername")
-val EnableLastFMScrobblingKey = booleanPreferencesKey("lastfmScrobblingEnable")
-val LastFMUseNowPlaying = booleanPreferencesKey("lastfmUseNowPlaying")
-
-val LastFMUseSendLikes = booleanPreferencesKey("lastfmUseSendLikes")
-
-val ScrobbleDelayPercentKey = floatPreferencesKey("scrobbleDelayPercent")
-val ScrobbleMinSongDurationKey = intPreferencesKey("scrobbleMinSongDuration")
-val ScrobbleDelaySecondsKey = intPreferencesKey("scrobbleDelaySeconds")
 
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
 val SongSortTypeKey = stringPreferencesKey("songSortType")

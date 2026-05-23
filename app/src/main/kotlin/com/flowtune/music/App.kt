@@ -19,8 +19,6 @@ import coil3.request.crossfade
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.YouTubeLocale
 import com.flowtune.kugou.KuGou
-import com.flowtune.lastfm.LastFM
-import com.flowtune.music.BuildConfig
 import com.flowtune.music.constants.*
 import com.flowtune.music.di.ApplicationScope
 import com.flowtune.music.extensions.toEnum
@@ -80,11 +78,6 @@ class App : Application(), SingletonImageLoader.Factory {
         if (languageTag == "zh-TW") {
             KuGou.useTraditionalChinese = true
         }
-
-        LastFM.initialize(
-            apiKey = BuildConfig.LASTFM_API_KEY.takeIf { it.isNotEmpty() } ?: "",
-            secret = BuildConfig.LASTFM_SECRET.takeIf { it.isNotEmpty() } ?: ""
-        )
 
         if (settings[ProxyEnabledKey] == true) {
             val username = settings[ProxyUsernameKey].orEmpty()
@@ -170,18 +163,6 @@ class App : Application(), SingletonImageLoader.Factory {
                 }
         }
 
-        applicationScope.launch(Dispatchers.IO) {
-            dataStore.data
-                .map { it[LastFMSessionKey] }
-                .distinctUntilChanged()
-                .collect { session ->
-                    try {
-                        LastFM.sessionKey = session
-                    } catch (e: Exception) {
-                        Timber.e("Error while loading last.fm session key. %s", e.message)
-                    }
-                }
-        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {

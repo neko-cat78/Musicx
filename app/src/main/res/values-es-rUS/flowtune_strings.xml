@@ -2,7 +2,6 @@
 <resources>
     <string name="lyrics_auto_scroll">Letras sincronizadas</string>
     <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Inicio de sesión con token</string>
     <string name="token_hidden">Presiona para mostrar el token</string>
     <string name="token_shown">Presiona de nuevo para copiar o editar</string>
@@ -203,7 +202,6 @@
     <string name="show_uploaded_playlist">Mostrar listas de reproducción \"Subidas\"</string>
     <string name="choose_from_library">Elija de la biblioteca</string>
     <string name="remove_custom_image">Eliminar imagen personalizada</string>
-    <string name="discord_use_details">Usar detalles en lugar de estado</string>
     <string name="top_result">Mejor resultado</string>
     <string name="other_results">Otro</string>
     <string name="filter_uploaded">Subido</string>
@@ -223,7 +221,6 @@
     <string name="shuffle_playlist_first">Aleatorizar lista de reproducción/álbum primero</string>
     <string name="shuffle_playlist_first_desc">Al aleatorizar, reproducir primero todas las canciones de la lista de reproducción/álbum original, luego el contenido similar</string>
     <string name="show_wrapped_card">Mostrar tarjeta de Recap</string>
-    <string name="discord_use_details_description">Mostrar resaltado el título de la canción en lugar de los nombres de los artistas</string>
     <string name="lyrics_romanize_chinese">Romanizar letras chinas</string>
     <string name="updater">Actualizador</string>
     <string name="check_for_updates">Buscar actualizaciones automáticamente</string>
@@ -239,11 +236,7 @@
     <string name="integrations">Integraciones</string>
     <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
-    <string name="lastfm_integration">Integración con Last.fm</string>
-    <string name="enable_scrobbling">Habilitar scrobbling</string>
-    <string name="lastfm_now_playing">Enviar lo que estoy escuchando</string>
-    <string name="last_fm_send_likes">Enviar Me gusta/No me gusta</string>
-    <string name="last_fm_send_likes_description">Marcar como Me gusta/No me gusta las canciones en Last.fm cuando son marcadas como Me gusta/No me gusta en Flowtune</string>
+
     <string name="logging_in">Iniciando sesión…</string>
     <string name="enable_wavy_slider">Habilitar deslizador ondulado</string>
     <string name="wavy">Ondulado</string>
@@ -253,10 +246,6 @@
     <string name="remember_shuffle_and_repeat_desc">Recordar el estado de los modos aleatorio y repetir al reiniciar la app</string>
     <string name="pause_music_when_media_is_muted">Pausar la música al silenciar la multimedia</string>
     <string name="lyrics_offset">Compensación de letras</string>
-    <string name="scrobbling_configuration">Configuración de scrobbling</string>
-    <string name="scrobble_min_track_duration">Hacer scrobble a canciones más largas que</string>
-    <string name="scrobble_delay_percent">Porcentaje de retraso de scrobble</string>
-    <string name="scrobble_delay_minutes">Minutos de retraso de scrobble</string>
     <string name="hide_video_songs">Ocultar canciones de video</string>
     <string name="details_desc">Ver la información de la canción</string>
     <string name="edit_desc">Cambiar el título o artista</string>
