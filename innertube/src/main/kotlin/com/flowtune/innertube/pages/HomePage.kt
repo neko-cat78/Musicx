@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.AlbumItem
 import com.flowtune.innertube.models.Artist
@@ -13,6 +14,7 @@ import com.flowtune.innertube.models.YTItem
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.filterExplicit
 import com.flowtune.innertube.models.filterVideoSongs
+
 data class HomePage(
     val chips: List<Chip>?,
     val sections: List<Section>,
@@ -33,6 +35,7 @@ data class HomePage(
             }
         }
     }
+
     data class Section(
         val title: String,
         val label: String?,
@@ -56,6 +59,7 @@ data class HomePage(
                     }
                 )
             }
+
             private fun fromMusicTwoRowItemRenderer(renderer: MusicTwoRowItemRenderer): YTItem? {
                 return when {
                     renderer.isSong -> {
@@ -110,6 +114,7 @@ data class HomePage(
                             } != null
                         )
                     }
+
                     renderer.isPlaylist -> {
                         PlaylistItem(
                             id = renderer.navigationEndpoint.browseEndpoint?.browseId?.removePrefix("VL") ?: return null,
@@ -132,6 +137,7 @@ data class HomePage(
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint
                         )
                     }
+
                     renderer.isArtist -> {
                         ArtistItem(
                             id = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
@@ -145,17 +151,20 @@ data class HomePage(
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
                         )
                     }
+
                     else -> null
                 }
             }
         }
     }
+
     fun filterExplicit(enabled: Boolean = true) =
         if (enabled) {
             copy(sections = sections.map {
                 it.copy(items = it.items.filterExplicit())
             })
         } else this
+
     fun filterVideoSongs(disableVideos: Boolean = false) =
         if (disableVideos) {
             copy(sections = sections.map { section ->

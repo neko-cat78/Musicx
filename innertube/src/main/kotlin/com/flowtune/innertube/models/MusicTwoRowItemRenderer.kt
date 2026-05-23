@@ -1,9 +1,11 @@
 package com.flowtune.innertube.models
+
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ALBUM
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_ARTIST
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_AUDIOBOOK
 import com.flowtune.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_PLAYLIST
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicTwoRowItemRenderer(
     val title: Runs,
@@ -42,6 +44,7 @@ data class MusicTwoRowItemRenderer(
                 ?.browseEndpointContextMusicConfig
                 ?.pageType ==
                 MUSIC_PAGE_TYPE_ARTIST
+
     val musicVideoType: String?
         get() =
             thumbnailOverlay

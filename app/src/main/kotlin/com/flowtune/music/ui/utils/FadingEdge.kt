@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.utils
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
@@ -6,6 +7,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
+
 fun Modifier.fadingEdge(
     left: Dp? = null,
     top: Dp? = null,
@@ -75,6 +77,7 @@ fun Modifier.fadingEdge(
             )
         }
     }
+
 fun Modifier.fadingEdge(
     horizontal: Dp? = null,
     vertical: Dp? = null,

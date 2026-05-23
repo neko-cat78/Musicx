@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.R
 import com.flowtune.music.ui.screens.OptionStats
+
 @Composable
 fun <E> ChipsRow(
     chips: List<Pair<E, String>>,
@@ -64,6 +66,7 @@ fun <E> ChipsRow(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)),
     ) {
         Spacer(Modifier.width(12.dp))
+
         chips.forEach { (value, label) ->
             FilterChip(
                 label = { Text(label) },
@@ -75,10 +78,12 @@ fun <E> ChipsRow(
                 shape = RoundedCornerShape(16.dp),
                 border = null
             )
+
             Spacer(Modifier.width(8.dp))
         }
     }
 }
+
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun <Int> ChoiceChipsRow(
@@ -97,6 +102,7 @@ fun <Int> ChoiceChipsRow(
         animationSpec = tween(durationMillis = 400),
         label = "",
     )
+
     Row(
         modifier =
         modifier
@@ -105,6 +111,7 @@ fun <Int> ChoiceChipsRow(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)),
     ) {
         var expanded by remember { mutableStateOf(false) }
+
         Column {
             AssistChip(
                 onClick = {
@@ -136,6 +143,7 @@ fun <Int> ChoiceChipsRow(
                     labelColor = MaterialTheme.colorScheme.onSurface
                 )
             )
+
             AnimatedVisibility(
                 visible = expanded,
                 enter = expandIn() + fadeIn(),
@@ -162,6 +170,7 @@ fun <Int> ChoiceChipsRow(
                 }
             }
         }
+
         AnimatedContent(
             targetState = selectedOption,
             transitionSpec = { slideInHorizontally() + fadeIn() togetherWith slideOutHorizontally() + fadeOut() },
@@ -176,6 +185,7 @@ fun <Int> ChoiceChipsRow(
             ) {
                 chips.forEach { (value, label) ->
                     Spacer(Modifier.width(8.dp))
+
                     FilterChip(
                         label = { Text(label) },
                         selected = currentValue == value,

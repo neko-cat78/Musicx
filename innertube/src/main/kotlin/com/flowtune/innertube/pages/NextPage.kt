@@ -1,4 +1,5 @@
 package com.flowtune.innertube.pages
+
 import com.flowtune.innertube.models.Album
 import com.flowtune.innertube.models.Artist
 import com.flowtune.innertube.models.BrowseEndpoint
@@ -8,6 +9,7 @@ import com.flowtune.innertube.models.WatchEndpoint
 import com.flowtune.innertube.models.oddElements
 import com.flowtune.innertube.models.splitBySeparator
 import com.flowtune.innertube.utils.parseTime
+
 data class NextResult(
     val title: String? = null,
     val items: List<SongItem>,
@@ -17,6 +19,7 @@ data class NextResult(
     val continuation: String?,
     val endpoint: WatchEndpoint, 
 )
+
 object NextPage {
     fun fromPlaylistPanelVideoRenderer(renderer: PlaylistPanelVideoRenderer): SongItem? {
         val longByLineRuns = renderer.longBylineText?.runs?.splitBySeparator() ?: return null

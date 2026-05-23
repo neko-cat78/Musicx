@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.library
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -60,6 +61,7 @@ import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.LibraryArtistsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryArtistsScreen(
@@ -71,9 +73,11 @@ fun LibraryArtistsScreen(
     val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
     val viewType = LibraryViewType.GRID
+
     var filter by rememberEnumPreference(ArtistFilterKey, ArtistFilter.LIKED)
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
+
     val filterContent = @Composable {
         Row {
             Spacer(Modifier.width(12.dp))
@@ -101,6 +105,7 @@ fun LibraryArtistsScreen(
             )
         }
     }
+
     LaunchedEffect(Unit) {
         if (ytmSync) {
             withContext(Dispatchers.IO) {
@@ -108,12 +113,15 @@ fun LibraryArtistsScreen(
             }
         }
     }
+
     val artists by viewModel.allArtists.collectAsState()
+
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             when (viewType) {
@@ -123,6 +131,7 @@ fun LibraryArtistsScreen(
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -138,6 +147,7 @@ fun LibraryArtistsScreen(
                     ) {
                         filterContent()
                     }
+
                     artists.let { artists ->
                         if (artists.isEmpty()) {
                             item(key = "empty_placeholder") {
@@ -148,6 +158,7 @@ fun LibraryArtistsScreen(
                                 )
                             }
                         }
+
                         items(
                             items = artists.distinctBy { it.id },
                             key = { it.id },
@@ -163,6 +174,7 @@ fun LibraryArtistsScreen(
                         }
                     }
                 }
+
             LibraryViewType.GRID ->
                 LazyVerticalGrid(
                     state = lazyGridState,
@@ -179,6 +191,7 @@ fun LibraryArtistsScreen(
                     ) {
                         filterContent()
                     }
+
                     artists.let { artists ->
                         if (artists.isEmpty()) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -189,6 +202,7 @@ fun LibraryArtistsScreen(
                                 )
                             }
                         }
+
                         items(
                             items = artists.distinctBy { it.id },
                             key = { it.id },

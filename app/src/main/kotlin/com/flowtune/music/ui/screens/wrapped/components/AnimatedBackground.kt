@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.components
+
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -14,9 +15,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random
+
 enum class ShapeType {
     Circle, Rect, Line
 }
+
 private data class AnimatedElement(
     val shapeType: ShapeType,
     val initialX: Float,
@@ -27,6 +30,7 @@ private data class AnimatedElement(
     val alpha: Float,
     val duration: Int
 )
+
 @Composable
 internal fun AnimatedBackground(
     elementCount: Int = 20,
@@ -48,6 +52,7 @@ internal fun AnimatedBackground(
             )
         }
     }
+
     val infiniteTransition = rememberInfiniteTransition(label = "animated_bg")
     val progressAnims = elements.map {
         infiniteTransition.animateFloat(
@@ -60,11 +65,13 @@ internal fun AnimatedBackground(
             label = "element_progress"
         )
     }
+
     Canvas(modifier = Modifier.fillMaxSize()) {
         elements.forEachIndexed { index, element ->
             val progress = progressAnims[index].value
             val currentX = element.initialX + (element.targetX - element.initialX) * progress
             val currentY = element.initialY + (element.targetY - element.initialY) * progress
+
             when (element.shapeType) {
                 ShapeType.Circle -> {
                     drawCircle(

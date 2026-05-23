@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+
 @HiltViewModel
 class TopPlaylistViewModel
 @Inject
@@ -27,7 +29,9 @@ constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val top = savedStateHandle.get<String>("top")!!
+
     val topPeriod = MutableStateFlow(MyTopFilter.ALL_TIME)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val topSongs =
         combine(

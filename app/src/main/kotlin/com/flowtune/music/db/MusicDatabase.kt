@@ -1,4 +1,5 @@
 package com.flowtune.music.db
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -38,17 +39,20 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
+
 class MusicDatabase(
     private val delegate: InternalDatabase,
 ) : DatabaseDao by delegate.dao {
     val openHelper: SupportSQLiteOpenHelper
         get() = delegate.openHelper
+
     fun query(block: MusicDatabase.() -> Unit) =
         with(delegate) {
             queryExecutor.execute {
                 block(this@MusicDatabase)
             }
         }
+
     fun transaction(block: MusicDatabase.() -> Unit) =
         with(delegate) {
             transactionExecutor.execute {
@@ -57,6 +61,7 @@ class MusicDatabase(
                 }
             }
         }
+
     suspend fun withTransaction(block: suspend MusicDatabase.() -> Unit) =
         with(delegate) {
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
@@ -67,8 +72,10 @@ class MusicDatabase(
                 }
             }
         }
+
     fun close() = delegate.close()
 }
+
 @Database(
     entities = [
         SongEntity::class,
@@ -128,8 +135,10 @@ class MusicDatabase(
 @TypeConverters(Converters::class)
 abstract class InternalDatabase : RoomDatabase() {
     abstract val dao: DatabaseDao
+
     companion object {
         const val DB_NAME = "song.db"
+
         fun newInstance(context: Context): MusicDatabase =
             MusicDatabase(
                 delegate =
@@ -162,6 +171,7 @@ abstract class InternalDatabase : RoomDatabase() {
             )
     }
 }
+
 val MIGRATION_1_2 =
     object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -178,6 +188,7 @@ val MIGRATION_1_2 =
                 val createDate: LocalDateTime = LocalDateTime.now(),
                 val modifyDate: LocalDateTime = LocalDateTime.now(),
             )
+
             val converters = Converters()
             val artistMap = mutableMapOf<Int, String>()
             val artists = mutableListOf<ArtistEntity>()
@@ -194,6 +205,7 @@ val MIGRATION_1_2 =
                     )
                 }
             }
+
             val playlistMap = mutableMapOf<Int, String>()
             val playlists = mutableListOf<PlaylistEntity>()
             db.query("SELECT * FROM playlist".toSQLiteQuery()).use { cursor ->
@@ -365,9 +377,11 @@ val MIGRATION_1_2 =
             }
         }
     }
+
 val MIGRATION_21_24 =
     object : Migration(21, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
+            
             try {
                 db.execSQL("ALTER TABLE song ADD COLUMN libraryAddToken TEXT DEFAULT ''")
             } catch (e: Exception) {
@@ -388,6 +402,7 @@ val MIGRATION_21_24 =
             } catch (e: Exception) {
                 android.util.Log.w("Migration", "Column isDownloaded may already exist")
             }
+            
             var hasIsUploaded = false
             db.query("PRAGMA table_info('song')").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -399,14 +414,17 @@ val MIGRATION_21_24 =
                     }
                 }
             }
+            
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
+
 val MIGRATION_22_24 =
     object : Migration(22, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
+            
             var hasIsUploaded = false
             db.query("PRAGMA table_info('song')").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -418,11 +436,13 @@ val MIGRATION_22_24 =
                     }
                 }
             }
+            
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
+
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "song", columnName = "isTrash"),
     DeleteColumn(tableName = "playlist", columnName = "author"),
@@ -452,6 +472,7 @@ class Migration5To6 : AutoMigrationSpec {
         }
     }
 }
+
 class Migration6To7 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.query("SELECT id, createDate FROM song").use { cursor ->
@@ -463,15 +484,18 @@ class Migration6To7 : AutoMigrationSpec {
         }
     }
 }
+
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "song", columnName = "createDate"),
     DeleteColumn(tableName = "song", columnName = "modifyDate"),
 )
 class Migration7To8 : AutoMigrationSpec
+
 @DeleteTable.Entries(
     DeleteTable(tableName = "download"),
 )
 class Migration9To10 : AutoMigrationSpec
+
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "song", columnName = "downloadState"),
     DeleteColumn(tableName = "artist", columnName = "bannerUrl"),
@@ -479,6 +503,7 @@ class Migration9To10 : AutoMigrationSpec
     DeleteColumn(tableName = "artist", columnName = "createDate"),
 )
 class Migration10To11 : AutoMigrationSpec
+
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "album", columnName = "createDate"),
 )
@@ -506,10 +531,12 @@ class Migration11To12 : AutoMigrationSpec {
         db.query("CREATE INDEX IF NOT EXISTS `index_song_albumId` ON `song` (`albumId`)")
     }
 }
+
 class Migration12To13 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
     }
 }
+
 class Migration13To14 : AutoMigrationSpec {
     @SuppressLint("Range")
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
@@ -519,6 +546,7 @@ class Migration13To14 : AutoMigrationSpec {
         )
     }
 }
+
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "song", columnName = "isLocal"),
     DeleteColumn(tableName = "song", columnName = "localPath"),
@@ -531,16 +559,19 @@ class Migration16To17 : AutoMigrationSpec {
         db.execSQL("UPDATE playlist SET isEditable = 1 WHERE browseId IS NOT NULL")
     }
 }
+
 class Migration18To19 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.execSQL("UPDATE song SET explicit = 0 WHERE explicit IS NULL")
     }
 }
+
 class Migration19To20 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.execSQL("UPDATE song SET explicit = 0 WHERE explicit IS NULL")
     }
 }
+
 @DeleteColumn.Entries(
     DeleteColumn(
         tableName = "song",
@@ -548,6 +579,7 @@ class Migration19To20 : AutoMigrationSpec {
     )
 )
 class Migration20To21 : AutoMigrationSpec
+
 class Migration21To22 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         try {
@@ -572,10 +604,13 @@ class Migration21To22 : AutoMigrationSpec {
         }
     }
 }
+
 class Migration22To23: AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        
     }
 }
+
 class Migration23To24: AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         var hasIsUploaded = false
@@ -589,14 +624,17 @@ class Migration23To24: AutoMigrationSpec {
                 }
             }
         }
+
         if (!hasIsUploaded) {
             db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
         }
     }
 }
+
 val MIGRATION_24_25 =
     object : Migration(24, 25) {
         override fun migrate(db: SupportSQLiteDatabase) {
+            
             var columnExists = false
             db.query("PRAGMA table_info(format)").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -607,13 +645,17 @@ val MIGRATION_24_25 =
                     }
                 }
             }
+
             if (!columnExists) {
+                
                 db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
             }
         }
     }
+
 class Migration29To30 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        
         var hasIsVideo = false
         db.query("PRAGMA table_info('song')").use { cursor ->
             val nameIndex = cursor.getColumnIndex("name")
@@ -628,6 +670,7 @@ class Migration29To30 : AutoMigrationSpec {
         if (!hasIsVideo) {
             db.execSQL("ALTER TABLE song ADD COLUMN isVideo INTEGER NOT NULL DEFAULT 0")
         }
+
         var hasProvider = false
         db.query("PRAGMA table_info('lyrics')").use { cursor ->
             val nameIndex = cursor.getColumnIndex("name")

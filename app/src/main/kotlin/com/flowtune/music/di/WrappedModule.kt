@@ -1,4 +1,5 @@
 package com.flowtune.music.di
+
 import android.content.Context
 import com.flowtune.music.db.DatabaseDao
 import com.flowtune.music.ui.screens.wrapped.WrappedManager
@@ -9,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+
 @Module
 @InstallIn(SingletonComponent::class)
 object WrappedModule {
@@ -18,6 +20,7 @@ object WrappedModule {
         databaseDao: DatabaseDao,
         @ApplicationContext context: Context,
     ): WrappedManager = WrappedManager(databaseDao, context)
+
     @Provides
     @Singleton
     fun provideWrappedAudioService(@ApplicationContext context: Context): WrappedAudioService = WrappedAudioService(context)

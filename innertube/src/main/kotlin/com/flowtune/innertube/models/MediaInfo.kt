@@ -1,4 +1,5 @@
 package com.flowtune.innertube.models
+
 data class MediaInfo(
     val videoId: String,
     val title: String? = null,

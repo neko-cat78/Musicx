@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.playlist
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -105,6 +106,7 @@ import com.flowtune.music.ui.menu.TopPlaylistMenu
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.makeTimeString
 import com.flowtune.music.viewmodels.TopPlaylistViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TopPlaylistScreen(
@@ -120,19 +122,24 @@ fun TopPlaylistScreen(
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val maxSize = viewModel.top
+
     val songs by viewModel.topSongs.collectAsState(null)
     val mutableSongs = remember { mutableStateListOf<Song>() }
+
     val likeLength = remember(songs) {
         songs?.fastSumBy { it.song.duration } ?: 0
     }
+
     var isSearching by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf(TextFieldValue()) }
     val focusRequester = remember { FocusRequester() }
+    
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
         }
     }
+    
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -144,6 +151,7 @@ fun TopPlaylistScreen(
         inSelectMode = false
         selection.clear()
     }
+
     val filteredSongs = remember(songs, query) {
         if (query.text.isEmpty()) songs ?: emptyList()
         else songs?.filter { song ->
@@ -151,6 +159,7 @@ fun TopPlaylistScreen(
                 song.artists.any { it.name.contains(query.text, true) }
         } ?: emptyList()
     }
+
     LaunchedEffect(filteredSongs) {
         selection.fastForEachReversed { songId ->
             if (filteredSongs.find { it.id == songId } == null) {
@@ -158,6 +167,7 @@ fun TopPlaylistScreen(
             }
         }
     }
+
     if (isSearching) {
         BackHandler {
             isSearching = false
@@ -166,10 +176,13 @@ fun TopPlaylistScreen(
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     val sortType by viewModel.topPeriod.collectAsState()
     val name = stringResource(R.string.my_top) + " $maxSize"
+
     val downloadUtil = LocalDownloadUtil.current
     var downloadState by remember { mutableStateOf(Download.STATE_STOPPED) }
+
     LaunchedEffect(songs) {
         mutableSongs.apply {
             clear()
@@ -192,7 +205,9 @@ fun TopPlaylistScreen(
                 }
         }
     }
+
     var showRemoveDownloadDialog by remember { mutableStateOf(false) }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -209,6 +224,7 @@ fun TopPlaylistScreen(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -227,7 +243,9 @@ fun TopPlaylistScreen(
             },
         )
     }
+
     val state = rememberLazyListState()
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -257,6 +275,7 @@ fun TopPlaylistScreen(
                             )
                         }
                     }
+
                     item(key = "songs_header") {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -284,6 +303,7 @@ fun TopPlaylistScreen(
                         }
                     }
                 }
+
                 if (filteredSongs.isNotEmpty()) {
                     itemsIndexed(
                         items = filteredSongs,
@@ -296,6 +316,7 @@ fun TopPlaylistScreen(
                                 selection.remove(song.id)
                             }
                         }
+
                         SongListItem(
                             song = song,
                             albumIndex = index + 1,
@@ -359,6 +380,7 @@ fun TopPlaylistScreen(
                 }
             }
         }
+
         DraggableScrollbar(
             modifier = Modifier
                 .padding(
@@ -369,6 +391,7 @@ fun TopPlaylistScreen(
             scrollState = state,
             headerItems = 2
         )
+
         TopAppBar(
             title = {
                 when {
@@ -483,6 +506,7 @@ fun TopPlaylistScreen(
         )
     }
 }
+
 @Composable
 private fun TopPlaylistHeader(
     name: String,
@@ -495,12 +519,14 @@ private fun TopPlaylistHeader(
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val context = LocalContext.current
+    
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        
         Box(
             modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
         ) {
@@ -522,6 +548,7 @@ private fun TopPlaylistHeader(
                 )
             }
         }
+
         Text(
             text = name,
             style = MaterialTheme.typography.headlineSmall,
@@ -531,7 +558,9 @@ private fun TopPlaylistHeader(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             text = buildString {
                 append(pluralStringResource(R.plurals.n_song, songs.size, songs.size))
@@ -543,7 +572,9 @@ private fun TopPlaylistHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -551,6 +582,7 @@ private fun TopPlaylistHeader(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            
             androidx.compose.material3.Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -575,6 +607,7 @@ private fun TopPlaylistHeader(
                     )
                 }
             }
+
             Surface(
                 onClick = {
                     playerConnection.playQueue(
@@ -600,6 +633,7 @@ private fun TopPlaylistHeader(
                     )
                 }
             }
+
             androidx.compose.material3.Surface(
                 onClick = {
                     menuState.show {

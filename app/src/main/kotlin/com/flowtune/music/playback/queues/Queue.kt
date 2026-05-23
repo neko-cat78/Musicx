@@ -1,12 +1,18 @@
 package com.flowtune.music.playback.queues
+
 import androidx.media3.common.MediaItem
 import com.flowtune.music.extensions.metadata
 import com.flowtune.music.models.MediaMetadata
+
 interface Queue {
     val preloadItem: MediaMetadata?
+
     suspend fun getInitialStatus(): Status
+
     fun hasNextPage(): Boolean
+
     suspend fun nextPage(): List<MediaItem>
+
     data class Status(
         val title: String?,
         val items: List<MediaItem>,
@@ -21,6 +27,7 @@ interface Queue {
             } else {
                 this
             }
+
         fun filterVideoSongs(disableVideos: Boolean = false) =
             if (disableVideos) {
                 copy(
@@ -31,6 +38,7 @@ interface Queue {
             }
     }
 }
+
 fun List<MediaItem>.filterExplicit(enabled: Boolean = true) =
     if (enabled) {
         filterNot {
@@ -39,6 +47,7 @@ fun List<MediaItem>.filterExplicit(enabled: Boolean = true) =
     } else {
         this
     }
+
 fun List<MediaItem>.filterVideoSongs(disableVideos: Boolean = false) =
     if (disableVideos) {
         filterNot { it.metadata?.isVideoSong == true }

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class StatsViewModel
@@ -34,6 +36,7 @@ constructor(
 ) : ViewModel() {
     val selectedOption = MutableStateFlow(OptionStats.CONTINUOUS)
     val indexChips = MutableStateFlow(0)
+
     val mostPlayedSongsStats =
         combine(
             selectedOption,
@@ -59,6 +62,7 @@ constructor(
                         if (hideVideoSongs) songs.filter { !it.isVideo } else songs
                     }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val mostPlayedSongs =
         combine(
             selectedOption,
@@ -84,6 +88,7 @@ constructor(
                         if (hideVideoSongs) songs.filter { !it.song.isVideo } else songs
                     }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val mostPlayedArtists =
         combine(
             selectedOption,
@@ -108,6 +113,7 @@ constructor(
                         artists.filter { it.artist.isYouTubeArtist }
                     }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val mostPlayedAlbums =
         combine(
             selectedOption,
@@ -129,10 +135,12 @@ constructor(
                     },
                 )
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val firstEvent =
         database
             .firstEvent()
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     init {
         viewModelScope.launch {
             mostPlayedArtists.collect { artists ->

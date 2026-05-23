@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.flowtune.music.R
 import com.flowtune.music.models.MediaMetadata
+
 @Composable
 fun rememberAdjustedFontSize(
     text: String,
@@ -39,6 +41,7 @@ fun rememberAdjustedFontSize(
     textMeasurer: androidx.compose.ui.text.TextMeasurer? = null
 ): TextUnit {
     val measurer = textMeasurer ?: rememberTextMeasurer()
+
     var calculatedFontSize by remember(text, maxWidth, maxHeight, style, density) {
         val initialSize = when {
             text.length < 50 -> initialFontSize
@@ -48,6 +51,7 @@ fun rememberAdjustedFontSize(
         }
         mutableStateOf(initialSize)
     }
+
     LaunchedEffect(key1 = text, key2 = maxWidth, key3 = maxHeight) {
         val targetWidthPx = with(density) { maxWidth.toPx() * 0.92f }
         val targetHeightPx = with(density) { maxHeight.toPx() * 0.92f }
@@ -55,6 +59,7 @@ fun rememberAdjustedFontSize(
             calculatedFontSize = minFontSize
             return@LaunchedEffect
         }
+
         if (text.length < 20) {
             val largerSize = (initialFontSize.value * 1.1f).sp
             val result = measurer.measure(
@@ -76,18 +81,22 @@ fun rememberAdjustedFontSize(
                 return@LaunchedEffect
             }
         }
+
         var minSize = minFontSize.value
         var maxSize = initialFontSize.value
         var bestFit = minSize
         var iterations = 0
+
         while (minSize <= maxSize && iterations < 20) {
             iterations++
             val midSize = (minSize + maxSize) / 2
             val midSizeSp = midSize.sp
+
             val result = measurer.measure(
                 text = AnnotatedString(text),
                 style = style.copy(fontSize = midSizeSp)
             )
+
             if (result.size.width <= targetWidthPx && result.size.height <= targetHeightPx) {
                 bestFit = midSize
                 minSize = midSize + 0.5f
@@ -95,10 +104,13 @@ fun rememberAdjustedFontSize(
                 maxSize = midSize - 0.5f
             }
         }
+
         calculatedFontSize = if (bestFit < minFontSize.value) minFontSize else bestFit.sp
     }
+
     return calculatedFontSize
 }
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LyricsImageCard(
@@ -112,21 +124,25 @@ fun LyricsImageCard(
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
+
     val cardSizeDp = remember {
         340.dp 
     }
     val cardCornerRadius = 20.dp
     val padding = 28.dp
     val coverArtSize = 64.dp
+
     val backgroundGradient = backgroundColor ?: if (darkBackground) Color(0xFF121212) else Color(0xFFF5F5F5)
     val mainTextColor = textColor ?: if (darkBackground) Color.White else Color.Black
     val secondaryColor = secondaryTextColor ?: if (darkBackground) Color.White.copy(alpha = 0.7f) else Color.Black.copy(alpha = 0.7f)
+
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(context)
             .data(mediaMetadata.thumbnailUrl)
             .crossfade(false)
             .build()
     )
+
     Box(
         modifier = Modifier
             .background(backgroundGradient)
@@ -147,6 +163,7 @@ fun LyricsImageCard(
                     .padding(padding),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
+                
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -186,6 +203,7 @@ fun LyricsImageCard(
                         )
                     }
                 }
+                
                 BoxWithConstraints(
                     modifier = Modifier
                         .weight(1f)
@@ -205,6 +223,7 @@ fun LyricsImageCard(
                         textAlign = textAlign,
                         letterSpacing = 0.005.em,
                     )
+
                     val textMeasurer = rememberTextMeasurer()
                     val initialSize = when {
                         lyricText.length < 50 -> 24.sp
@@ -213,6 +232,7 @@ fun LyricsImageCard(
                         lyricText.length < 300 -> 15.sp
                         else -> 13.sp
                     }
+
                     val dynamicFontSize = rememberAdjustedFontSize(
                         text = lyricText,
                         maxWidth = availableWidth - 8.dp,
@@ -223,6 +243,7 @@ fun LyricsImageCard(
                         style = textStyle,
                         textMeasurer = textMeasurer
                     )
+
                     Text(
                         text = lyricText,
                         style = textStyle.copy(
@@ -234,6 +255,7 @@ fun LyricsImageCard(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+                
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -253,7 +275,9 @@ fun LyricsImageCard(
                             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(backgroundGradient) 
                         )
                     }
+
                     Spacer(modifier = Modifier.width(8.dp))
+
                     Text(
                         text = context.getString(R.string.app_name),
                         color = secondaryColor,

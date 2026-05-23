@@ -1,9 +1,11 @@
 package com.flowtune.innertube.models.response
+
 import com.flowtune.innertube.models.AccountInfo
 import com.flowtune.innertube.models.Runs
 import com.flowtune.innertube.models.Thumbnails
 import com.flowtune.innertube.models.Thumbnail
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class AccountMenuResponse(
     val actions: List<Action>,

@@ -1,7 +1,9 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
+
 @Serializable
 data class SectionListRenderer(
     val header: Header?,
@@ -25,12 +27,14 @@ data class SectionListRenderer(
                     val isSelected: Boolean,
                     val navigationEndpoint: NavigationEndpoint,
                     val onDeselectedCommand: NavigationEndpoint? = null,
+                    
                     val text: Runs?,
                     val uniqueId: String?,
                 )
             }
         }
     }
+
     @OptIn(ExperimentalSerializationApi::class)
     @Serializable
     data class Content(
@@ -45,6 +49,7 @@ data class SectionListRenderer(
         val gridRenderer: GridRenderer?,
         val itemSectionRenderer: ItemSectionRenderer?,
     )
+
     @Serializable
     data class ItemSectionRenderer(
         val contents: List<ItemSectionContent>?,

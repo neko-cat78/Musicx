@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+
 @HiltViewModel
 class PlaylistsViewModel
 @Inject
@@ -36,6 +39,7 @@ constructor(
             .flatMapLatest { (sortType, descending) ->
                 database.playlists(sortType, descending)
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     suspend fun sync() {
         syncUtils.syncSavedPlaylists()
     }

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -70,6 +71,7 @@ import com.flowtune.music.utils.Updater
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.HomeViewModel
 import com.flowtune.music.viewmodels.AccountSettingsViewModel
+
 @Composable
 fun AccountSettings(
     navController: NavController,
@@ -78,23 +80,28 @@ fun AccountSettings(
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
+
     val (accountNamePref, onAccountNameChange) = rememberPreference(AccountNameKey, "")
     val (accountEmail, onAccountEmailChange) = rememberPreference(AccountEmailKey, "")
     val (accountChannelHandle, onAccountChannelHandleChange) = rememberPreference(AccountChannelHandleKey, "")
     val (innerTubeCookie, onInnerTubeCookieChange) = rememberPreference(InnerTubeCookieKey, "")
     val (visitorData, onVisitorDataChange) = rememberPreference(VisitorDataKey, "")
     val (dataSyncId, onDataSyncIdChange) = rememberPreference(DataSyncIdKey, "")
+
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
     }
     val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
     val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
+
     val homeViewModel: HomeViewModel = hiltViewModel()
     val accountSettingsViewModel: AccountSettingsViewModel = hiltViewModel()
     val accountName by homeViewModel.accountName.collectAsState()
     val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
+
     var showToken by remember { mutableStateOf(false) }
     var showTokenEditor by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -117,7 +124,9 @@ fun AccountSettings(
                 Icon(painterResource(R.drawable.close), contentDescription = null)
             }
         }
+
         Spacer(Modifier.height(12.dp))
+
         val accountSectionModifier = Modifier.clickable {
             onClose()
             if (isLoggedIn) {
@@ -126,6 +135,7 @@ fun AccountSettings(
                 navController.navigate("login")
             }
         }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = accountSectionModifier
@@ -148,7 +158,9 @@ fun AccountSettings(
                     modifier = Modifier.size(24.dp)
                 )
             }
+
             Spacer(Modifier.width(12.dp))
+
             Column(Modifier.weight(1f)) {
                 Text(
                     text = if (isLoggedIn) accountName else stringResource(R.string.login),
@@ -157,6 +169,7 @@ fun AccountSettings(
                     modifier = Modifier.padding(start = 5.dp)
                 )
             }
+
             if (isLoggedIn) {
                 OutlinedButton(
                     onClick = {
@@ -171,7 +184,9 @@ fun AccountSettings(
                 }
             }
         }
+
         Spacer(Modifier.height(4.dp))
+
         if (showTokenEditor) {
             val text = """
                 ***INNERTUBE COOKIE*** =$innerTubeCookie
@@ -181,6 +196,7 @@ fun AccountSettings(
                 ***ACCOUNT EMAIL*** =$accountEmail
                 ***ACCOUNT CHANNEL HANDLE*** =$accountChannelHandle
             """.trimIndent()
+
             TextFieldDialog(
                 initialTextFieldValue = TextFieldValue(text),
                 onDone = { data ->
@@ -206,6 +222,7 @@ fun AccountSettings(
                 }
             )
         }
+
         PreferenceEntry(
             title = {
                 Text(
@@ -227,7 +244,9 @@ fun AccountSettings(
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
         )
+
         Spacer(Modifier.height(4.dp))
+
         if (isLoggedIn) {
             SwitchPreference(
                 title = { Text(stringResource(R.string.more_content)) },
@@ -243,7 +262,9 @@ fun AccountSettings(
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.surface)
             )
+  
             Spacer(Modifier.height(4.dp))
+
             SwitchPreference(
                 title = { Text(stringResource(R.string.yt_sync)) },
                 icon = { Icon(painterResource(R.drawable.cached), null) },
@@ -255,7 +276,9 @@ fun AccountSettings(
                     .background(MaterialTheme.colorScheme.surface)
             )
         }
+
         Spacer(Modifier.height(12.dp))
+
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
@@ -272,7 +295,9 @@ fun AccountSettings(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surfaceContainer)
             )
+
             Spacer(Modifier.height(4.dp))
+
             PreferenceEntry(
                 title = { Text(stringResource(R.string.settings)) },
                 icon = {
@@ -294,7 +319,9 @@ fun AccountSettings(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surfaceContainer)
             )
+
             Spacer(Modifier.height(4.dp))
+
             if (latestVersionName != BuildConfig.VERSION_NAME) {
                 PreferenceEntry(
                     title = {

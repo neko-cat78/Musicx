@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.logging.Logger
+
 @Composable
 fun CreatePlaylistDialog(
     onDismiss: () -> Unit,
@@ -43,8 +45,10 @@ fun CreatePlaylistDialog(
     val coroutineScope = rememberCoroutineScope()
     var syncedPlaylist by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
     val isSignedIn = innerTubeCookie.isNotEmpty()
+
     TextFieldDialog(
         icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = null) },
         title = { Text(text = stringResource(R.string.create_playlist)) },
@@ -58,6 +62,7 @@ fun CreatePlaylistDialog(
                     Logger.getLogger("CreatePlaylistDialog").warning("Not signed in")
                     return@launch
                 } else null
+
                 database.query {
                     insert(
                         PlaylistEntity(

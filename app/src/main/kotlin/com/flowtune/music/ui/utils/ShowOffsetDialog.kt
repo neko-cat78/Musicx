@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.utils
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import com.flowtune.music.LocalDatabase
 import com.flowtune.music.R
 import com.flowtune.music.db.entities.SongEntity
 import kotlinx.coroutines.FlowPreview
+
 @OptIn(FlowPreview::class)
 @Composable
 fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
@@ -45,12 +47,14 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
     val song = songProvider()
     var lyricsOffset by rememberSaveable { mutableIntStateOf(song?.lyricsOffset ?: 0) }
     var textFieldValue by rememberSaveable { mutableStateOf(lyricsOffset.toString()) }
+
     LaunchedEffect(song?.id) {
         song?.let {
             lyricsOffset = it.lyricsOffset
             textFieldValue = lyricsOffset.toString()
         }
     }
+
     LaunchedEffect(lyricsOffset) {
         songProvider()?.let { song ->
             database.query {
@@ -62,6 +66,7 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
             }
         }
     }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -74,13 +79,17 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
             modifier = Modifier.size(40.dp),
             tint = MaterialTheme.colorScheme.primary
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             text = stringResource(R.string.lyrics_offset),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -92,26 +101,33 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                     val sanitized = newText.filter {
                         it.isDigit() || (it == '-' && newText.indexOf('-') == 0)
                     }
+
                     val limited = if (sanitized.startsWith('-')) {
                         sanitized.take(6)
                     } else {
                         sanitized.take(5)
                     }
+
                     textFieldValue = limited
+
                     when {
                         limited.isEmpty() -> {
                             lyricsOffset = 0
                             textFieldValue = "0"
                         }
+
                         limited == "-" -> {
                         }
+
                         else -> {
                             limited.toIntOrNull()?.let { parsedValue ->
                                 val clampedValue = parsedValue.coerceIn(-9999, 9999)
                                 lyricsOffset = clampedValue
+
                                 if (parsedValue != clampedValue) {
                                     textFieldValue = clampedValue.toString()
                                 }
+
                                 if (clampedValue == 0 && limited.startsWith('-')) {
                                     textFieldValue = "0"
                                 }
@@ -139,15 +155,19 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                     imeAction = ImeAction.Done
                 )
             )
+
             Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 text = "ms",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Medium
             )
+
             if (lyricsOffset != 0) {
                 Spacer(Modifier.width(8.dp))
+
                 IconButton(
                     onClick = {
                         lyricsOffset = 0
@@ -162,7 +182,9 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -178,6 +200,7 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                     contentDescription = "Decrease"
                 )
             }
+
             Slider(
                 value = lyricsOffset.toFloat(),
                 onValueChange = { newValue ->
@@ -189,6 +212,7 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                 steps = 59,
                 modifier = Modifier.weight(1f)
             )
+
             IconButton(
                 onClick = {
                     lyricsOffset = (lyricsOffset + 50).coerceIn(-3000, 3000)
@@ -201,7 +225,9 @@ fun ShowOffsetDialog(songProvider: () -> SongEntity?) {
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings.integrations
+
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -80,6 +81,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscordSettings(
@@ -88,15 +90,19 @@ fun DiscordSettings(
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val song by playerConnection.currentSong.collectAsState(null)
+
     val playbackState by playerConnection.playbackState.collectAsState()
     var position by rememberSaveable(playbackState) {
         mutableLongStateOf(playerConnection.player.currentPosition)
     }
+
     val coroutineScope = rememberCoroutineScope()
+
     var discordToken by rememberPreference(DiscordTokenKey, "")
     var discordUsername by rememberPreference(DiscordUsernameKey, "")
     var discordName by rememberPreference(DiscordNameKey, "")
     var infoDismissed by rememberPreference(DiscordInfoDismissedKey, false)
+
     LaunchedEffect(discordToken) {
         val token = discordToken
         if (token.isEmpty()) {
@@ -104,16 +110,19 @@ fun DiscordSettings(
             discordName = ""
             return@LaunchedEffect
         }
+        
         launch(Dispatchers.IO) {
             KizzyRPC.getUserInfo(token).onSuccess {
                 discordUsername = it.username
                 discordName = it.name
             }.onFailure {
+                
                 discordUsername = ""
                 discordName = ""
             }
         }
     }
+
     LaunchedEffect(playbackState) {
         if (playbackState == STATE_READY) {
             while (isActive) {
@@ -122,19 +131,24 @@ fun DiscordSettings(
             }
         }
     }
+
     val (discordRPC, onDiscordRPCChange) = rememberPreference(
         key = EnableDiscordRPCKey,
         defaultValue = true
     )
+
     val (useDetails, onUseDetailsChange) = rememberPreference(
         key = DiscordUseDetailsKey,
         defaultValue = false
     )
+
     val isLoggedIn =
         remember(discordToken) {
             discordToken != ""
         }
+
     var showTokenDialog by rememberSaveable { mutableStateOf(false) }
+
     if (showTokenDialog) {
         TextFieldDialog(
             onDismiss = { showTokenDialog = false },
@@ -150,6 +164,7 @@ fun DiscordSettings(
             }
         )
     }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
@@ -162,6 +177,7 @@ fun DiscordSettings(
                 )
             )
         )
+
         AnimatedVisibility(
             visible = !infoDismissed,
         ) {
@@ -180,11 +196,13 @@ fun DiscordSettings(
                     contentDescription = null,
                     modifier = Modifier.padding(16.dp),
                 )
+
                 Text(
                     text = stringResource(R.string.discord_information),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
+
                 TextButton(
                     onClick = {
                         infoDismissed = true
@@ -198,9 +216,11 @@ fun DiscordSettings(
                 }
             }
         }
+
         PreferenceGroupTitle(
             title = stringResource(R.string.account),
         )
+
         PreferenceEntry(
             title = {
                 Text(
@@ -244,15 +264,18 @@ fun DiscordSettings(
                 }
             )
         }
+
         PreferenceGroupTitle(
             title = stringResource(R.string.options),
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.enable_discord_rpc)) },
             checked = discordRPC,
             onCheckedChange = onDiscordRPCChange,
             isEnabled = isLoggedIn,
         )
+
         SwitchPreference(
             title = { Text(stringResource(R.string.discord_use_details)) },
             description = stringResource(R.string.discord_use_details_description),
@@ -260,11 +283,14 @@ fun DiscordSettings(
             onCheckedChange = onUseDetailsChange,
             isEnabled = isLoggedIn && discordRPC,
         )
+
         PreferenceGroupTitle(
             title = stringResource(R.string.preview),
         )
+
         RichPresence(song, position)
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.discord_integration)) },
         navigationIcon = {
@@ -280,9 +306,11 @@ fun DiscordSettings(
         }
     )
 }
+
 @Composable
 fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
     val context = LocalContext.current
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = MaterialTheme.shapes.medium,
@@ -303,7 +331,9 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier.fillMaxWidth(),
             )
+
             Spacer(Modifier.height(16.dp))
+
             Row(
                 verticalAlignment = Alignment.Top,
             ) {
@@ -330,6 +360,7 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                                 }
                             },
                     )
+
                     song?.artists?.firstOrNull()?.thumbnailUrl?.let {
                         Box(
                             modifier =
@@ -353,6 +384,7 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                         }
                     }
                 }
+
                 Column(
                     modifier =
                     Modifier
@@ -367,6 +399,7 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+
                     Text(
                         text = song?.artists?.joinToString { it.name } ?: "Artist",
                         color = MaterialTheme.colorScheme.secondary,
@@ -374,6 +407,7 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+
                     song?.album?.title?.let {
                         Text(
                             text = it,
@@ -383,6 +417,7 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
+
                     if (song != null) {
                         SongProgressBar(
                             currentTimeMillis = currentPlaybackTimeMillis,
@@ -391,13 +426,15 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedButton(
                 enabled = song != null,
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
-                        "https:
+                        "https://music.youtube.com/watch?v=${song?.id}".toUri()
                     )
                     context.startActivity(intent)
                 },
@@ -405,11 +442,12 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
             ) {
                 Text(stringResource(R.string.listen_on_youtube_music))
             }
+
             OutlinedButton(
                 onClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
-                        "https:
+                        "https://github.com/abhiram79/Flowtune".toUri()
                     )
                     context.startActivity(intent)
                 },
@@ -420,11 +458,14 @@ fun RichPresence(song: Song?, currentPlaybackTimeMillis: Long = 0L) {
         }
     }
 }
+
 @Composable
 fun SongProgressBar(currentTimeMillis: Long, durationMillis: Long) {
     val progress = if (durationMillis > 0) currentTimeMillis.toFloat() / durationMillis else 0f
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(16.dp))
+
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier
@@ -449,5 +490,6 @@ fun SongProgressBar(currentTimeMillis: Long, durationMillis: Long) {
                 fontSize = 12.sp
             )
         }
+
     }
 }

@@ -1,7 +1,9 @@
 package com.flowtune.music.db.entities
+
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 @Entity(tableName = "lyrics")
 data class LyricsEntity(
     @PrimaryKey val id: String,

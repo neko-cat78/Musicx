@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.search
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -51,6 +52,7 @@ import com.flowtune.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
@@ -61,16 +63,19 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    
     var searchSource by rememberEnumPreference(SearchSourceKey, SearchSource.ONLINE)
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
+
     val onSearch: (String) -> Unit = remember {
         { searchQuery ->
             if (searchQuery.isNotEmpty()) {
                 focusManager.clearFocus()
                 navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}")
+
                 if (!pauseSearchHistory) {
                     coroutineScope.launch(Dispatchers.IO) {
                         database.query {
@@ -81,11 +86,13 @@ fun SearchScreen(
             }
         }
     }
+
     val onSearchFromSuggestion: (String) -> Unit = remember {
         { searchQuery ->
             if (searchQuery.isNotEmpty()) {
                 focusManager.clearFocus()
                 navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}")
+
                 if (!pauseSearchHistory) {
                     coroutineScope.launch(Dispatchers.IO) {
                         database.query {
@@ -96,6 +103,7 @@ fun SearchScreen(
             }
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -140,6 +148,7 @@ fun SearchScreen(
                                 onSearch = { onSearch(query.text) }
                             )
                         )
+                        
                         Row {
                             if (query.text.isNotEmpty()) {
                                 IconButton(onClick = { query = TextFieldValue("") }) {
@@ -187,6 +196,7 @@ fun SearchScreen(
         containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.background
     ) { paddingValues ->
         val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
+        
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -211,4 +221,5 @@ fun SearchScreen(
             }
         }
     }
+
 }

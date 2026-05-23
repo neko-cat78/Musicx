@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.utils
+
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -8,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 @Composable
 fun LazyListState.isScrollingUp(): Boolean {
     var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
@@ -25,6 +27,7 @@ fun LazyListState.isScrollingUp(): Boolean {
         }
     }.value
 }
+
 @Composable
 fun LazyGridState.isScrollingUp(): Boolean {
     var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
@@ -42,6 +45,7 @@ fun LazyGridState.isScrollingUp(): Boolean {
         }
     }.value
 }
+
 @Composable
 fun ScrollState.isScrollingUp(): Boolean {
     var previousScrollOffset by remember(this) { mutableStateOf(value) }

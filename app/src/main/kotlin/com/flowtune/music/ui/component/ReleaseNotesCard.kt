@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +23,15 @@ import com.flowtune.music.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
+
 @Composable
 fun ReleaseNotesCard() {
     var releaseNotes by remember { mutableStateOf<List<String>>(emptyList()) }
+
     LaunchedEffect(Unit) {
         releaseNotes = fetchReleaseNotesText()
     }
+
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -56,16 +60,19 @@ fun ReleaseNotesCard() {
     }
     Spacer(modifier = Modifier.height(16.dp))
 }
+
 suspend fun fetchReleaseNotesText(): List<String> {
     return withContext(Dispatchers.IO) {
         try {
             val document =
-                Jsoup.connect("https:
+                Jsoup.connect("https://github.com/abhiram79/Flowtune/releases/latest").get()
             val changelogElement = document.selectFirst(".markdown-body")
             val htmlContent = changelogElement?.html() ?: "No release notes found"
+
             val textContent = htmlContent
                 .replace(Regex("<br.*?>|</p>"), "\n")
                 .replace(Regex("<.*?>"), "")
+
             textContent.split("\n")
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }

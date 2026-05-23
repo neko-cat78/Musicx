@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -48,6 +49,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.ui.graphics.graphicsLayer
 import com.flowtune.music.ui.theme.bbhBartle
 import kotlinx.coroutines.delay
+
 private const val FADE_IN_DURATION = 1000
 private const val SLIDE_IN_DURATION = 1000
 private const val INITIAL_DELAY = 200
@@ -56,6 +58,7 @@ private const val TITLE_DELAY = 400
 private const val SUBTITLE_DELAY = 600
 private const val BUTTON_DELAY = 1000
 private val BOTTOM_PADDING = 64.dp
+
 @Composable
 fun AutoResizingText(
     text: String,
@@ -64,6 +67,7 @@ fun AutoResizingText(
 ) {
     var scaledTextStyle by remember { mutableStateOf(style) }
     var readyToDraw by remember { mutableStateOf(false) }
+
     Text(
         text = text,
         style = scaledTextStyle,
@@ -84,6 +88,7 @@ fun AutoResizingText(
         }
     )
 }
+
 @Composable
 fun WrappedIntro(onNext: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
@@ -91,6 +96,7 @@ fun WrappedIntro(onNext: () -> Unit) {
         delay(INITIAL_DELAY.toLong())
         visible = true
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,6 +121,7 @@ fun WrappedIntro(onNext: () -> Unit) {
             ),
             label = "intro rotation"
         )
+
         Box(
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -137,11 +144,13 @@ fun WrappedIntro(onNext: () -> Unit) {
                 )
             }
         }
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(FADE_IN_DURATION, delayMillis = ICON_DELAY)) + slideInVertically(animationSpec = tween(SLIDE_IN_DURATION, delayMillis = ICON_DELAY))
@@ -152,7 +161,9 @@ fun WrappedIntro(onNext: () -> Unit) {
                     modifier = Modifier.size(100.dp)
                 )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(FADE_IN_DURATION, delayMillis = TITLE_DELAY)) + slideInVertically(animationSpec = tween(SLIDE_IN_DURATION, delayMillis = TITLE_DELAY))
@@ -169,7 +180,9 @@ fun WrappedIntro(onNext: () -> Unit) {
                     AutoResizingText(text = stringResource(id = R.string.wrapped_intro_title), style = baseStyle.copy(color = Color.White))
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(FADE_IN_DURATION, delayMillis = SUBTITLE_DELAY)) + slideInVertically(animationSpec = tween(SLIDE_IN_DURATION, delayMillis = SUBTITLE_DELAY))
@@ -182,6 +195,7 @@ fun WrappedIntro(onNext: () -> Unit) {
                 )
             }
         }
+
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(animationSpec = tween(FADE_IN_DURATION, delayMillis = BUTTON_DELAY)) + slideInVertically(animationSpec = tween(SLIDE_IN_DURATION, delayMillis = BUTTON_DELAY)) { it },

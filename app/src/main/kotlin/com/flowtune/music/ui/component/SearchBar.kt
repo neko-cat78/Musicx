@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -70,6 +71,7 @@ import com.flowtune.music.constants.AppBarHeight
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.LocalTextStyle
+
 @ExperimentalMaterial3Api
 @Composable
 fun TopSearch(
@@ -104,6 +106,7 @@ fun TopSearch(
                     onActiveChange = onActiveChange,
                     enabled = enabled,
                     placeholder = placeholder,
+                    
                     leadingIcon = null,
                     trailingIcon = null,
                     colors = TextFieldDefaults.colors(
@@ -134,6 +137,7 @@ fun TopSearch(
             scrollBehavior = scrollBehavior,
             windowInsets = windowInsets
         )
+        
         if (active) {
             Box(
                 modifier = Modifier
@@ -145,12 +149,14 @@ fun TopSearch(
                     content()
                  }
             }
+            
             BackHandler(enabled = active) {
                 onActiveChange(false)
             }
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchBarInputField(
@@ -172,6 +178,7 @@ private fun SearchBarInputField(
     val textColor = LocalTextStyle.current.color.takeOrElse {
         if (focused) colors.focusedTextColor else colors.unfocusedTextColor
     }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -182,6 +189,7 @@ private fun SearchBarInputField(
             Spacer(Modifier.width(SearchBarIconOffsetX))
             leadingIcon()
         }
+
         BasicTextField(
             value = query,
             onValueChange = onQueryChange,
@@ -233,12 +241,14 @@ private fun SearchBarInputField(
                 )
             },
         )
+
         if (trailingIcon != null) {
             trailingIcon()
             Spacer(Modifier.width(SearchBarIconOffsetX))
         }
     }
 }
+
 val InputFieldHeight = 48.dp
 internal val TopAppBarVerticalPadding: Dp = 8.dp
 internal val TopAppBarHorizontalPadding: Dp = 12.dp

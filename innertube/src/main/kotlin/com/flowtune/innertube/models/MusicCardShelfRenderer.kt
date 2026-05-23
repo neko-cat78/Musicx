@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicCardShelfRenderer(
     val title: Runs,
@@ -20,6 +22,7 @@ data class MusicCardShelfRenderer(
             val title: Runs,
         )
     }
+
     @Serializable
     data class Content(
         val musicResponsiveListItemRenderer: MusicResponsiveListItemRenderer?,

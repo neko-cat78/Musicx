@@ -1,4 +1,5 @@
 package com.flowtune.music.extensions
+
 import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
@@ -8,8 +9,10 @@ import com.flowtune.music.db.entities.Song
 import com.flowtune.music.models.MediaMetadata
 import com.flowtune.music.models.toMediaMetadata
 import com.flowtune.music.ui.utils.resize
+
 val MediaItem.metadata: MediaMetadata?
     get() = localConfiguration?.tag as? MediaMetadata
+
 fun Song.toMediaItem() = MediaItem.Builder()
     .setMediaId(song.id)
     .setUri(song.id)
@@ -33,6 +36,7 @@ fun Song.toMediaItem() = MediaItem.Builder()
             .build()
     )
     .build()
+
 fun SongItem.toMediaItem() = MediaItem.Builder()
     .setMediaId(id)
     .setUri(id)
@@ -56,6 +60,7 @@ fun SongItem.toMediaItem() = MediaItem.Builder()
             .build()
     )
     .build()
+
 fun MediaMetadata.toMediaItem() = MediaItem.Builder()
     .setMediaId(id)
     .setUri(id)

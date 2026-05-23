@@ -1,4 +1,5 @@
 package com.flowtune.music.utils
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -16,13 +17,17 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.guava.future
+
 class CoilBitmapLoader(
     private val context: Context,
     private val scope: CoroutineScope,
 ) : BitmapLoader {
+    
     override fun supportsMimeType(mimeType: String): Boolean = mimeType.startsWith("image/")
+
     private fun createFallbackBitmap(): Bitmap = 
         Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888)
+
     private fun Bitmap.copyIfNeeded(): Bitmap {
         return if (isRecycled) {
             createFallbackBitmap()
@@ -34,6 +39,7 @@ class CoilBitmapLoader(
             }
         }
     }
+
     override fun decodeBitmap(data: ByteArray): ListenableFuture<Bitmap> =
         scope.future(Dispatchers.IO) {
             try {
@@ -44,13 +50,16 @@ class CoilBitmapLoader(
                 createFallbackBitmap()
             }
         }
+
     override fun loadBitmap(uri: Uri): ListenableFuture<Bitmap> =
         scope.future(Dispatchers.IO) {
             val request = ImageRequest.Builder(context)
                 .data(uri)
                 .allowHardware(false)
                 .build()
+
             val result = context.imageLoader.execute(request)
+
             when (result) {
                 is ErrorResult -> {
                     createFallbackBitmap()

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.library
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -54,6 +55,7 @@ import com.flowtune.music.ui.menu.SongMenu
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.LibrarySongsViewModel
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibrarySongsScreen(
@@ -66,10 +68,14 @@ fun LibrarySongsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+
     val songs by viewModel.allSongs.collectAsState()
+
     var filter by rememberEnumPreference(SongFilterKey, SongFilter.LIKED)
+
     LaunchedEffect(Unit) {
         if (ytmSync) {
             when (filter) {
@@ -80,21 +86,26 @@ fun LibrarySongsScreen(
             }
         }
     }
+
     val lazyListState = rememberLazyListState()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             lazyListState.animateScrollToItem(0)
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     val filteredSongs = if (hideExplicit) {
         songs.filter { !it.song.explicit }
     } else {
         songs
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -137,6 +148,7 @@ fun LibrarySongsScreen(
                     )
                 }
             }
+
             itemsIndexed(
                 items = filteredSongs,
                 key = { _, item -> item.song.id },
@@ -187,6 +199,7 @@ fun LibrarySongsScreen(
                 )
             }
         }
+
         HideOnScrollFAB(
             visible = filteredSongs.isNotEmpty(),
             lazyListState = lazyListState,

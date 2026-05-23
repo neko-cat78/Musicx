@@ -1,10 +1,14 @@
 package com.flowtune.music.lyrics
+
 import android.content.Context
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.WatchEndpoint
+
 object YouTubeLyricsProvider : LyricsProvider {
     override val name = "YouTube Music"
+
     override fun isEnabled(context: Context) = true
+
     override suspend fun getLyrics(
         id: String,
         title: String,

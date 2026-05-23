@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
@@ -83,6 +84,7 @@ import com.flowtune.music.ui.component.NewActionGrid
 import com.flowtune.music.ui.component.SongListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun AlbumMenu(
@@ -100,15 +102,19 @@ fun AlbumMenu(
     var songs by remember {
         mutableStateOf(emptyList<Song>())
     }
+
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         database.albumSongs(album.id).collect {
             songs = it
         }
     }
+
     var downloadState by remember {
         mutableStateOf(STATE_STOPPED)
     }
+
     LaunchedEffect(songs) {
         if (songs.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -127,24 +133,31 @@ fun AlbumMenu(
                 }
         }
     }
+
     var refetchIconDegree by remember { mutableFloatStateOf(0f) }
+
     val rotationAnimation by animateFloatAsState(
         targetValue = refetchIconDegree,
         animationSpec = tween(durationMillis = 800),
         label = "",
     )
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showErrorPlaylistAddDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val notAddedList by remember {
         mutableStateOf(mutableListOf<Song>())
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -161,6 +174,7 @@ fun AlbumMenu(
             showChoosePlaylistDialog = false
         },
     )
+
     if (showErrorPlaylistAddDialog) {
         ListDialog(
             onDismiss = {
@@ -184,11 +198,13 @@ fun AlbumMenu(
                         .clickable { showErrorPlaylistAddDialog = false },
                 )
             }
+
             items(notAddedList) { song ->
                 SongListItem(song = song)
             }
         }
     }
+
     if (showSelectArtistDialog) {
         ListDialog(
             onDismiss = { showSelectArtistDialog = false },
@@ -237,6 +253,7 @@ fun AlbumMenu(
             }
         }
     }
+
     AlbumListItem(
         album = album,
         showLikedIcon = false,
@@ -257,10 +274,14 @@ fun AlbumMenu(
             }
         },
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -334,7 +355,7 @@ fun AlbumMenu(
                             val intent = Intent().apply {
                                 action = Intent.ACTION_SEND
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "https:
+                                putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/playlist?list=${album.album.playlistId}")
                             }
                             context.startActivity(Intent.createChooser(intent, null))
                         }
@@ -390,7 +411,9 @@ fun AlbumMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -473,7 +496,9 @@ fun AlbumMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(

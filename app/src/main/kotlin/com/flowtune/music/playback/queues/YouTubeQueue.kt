@@ -1,4 +1,5 @@
 package com.flowtune.music.playback.queues
+
 import androidx.media3.common.MediaItem
 import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.WatchEndpoint
@@ -6,6 +7,7 @@ import com.flowtune.music.extensions.toMediaItem
 import com.flowtune.music.models.MediaMetadata
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+
 class YouTubeQueue(
     private var endpoint: WatchEndpoint,
     override val preloadItem: MediaMetadata? = null,
@@ -13,9 +15,11 @@ class YouTubeQueue(
     private var continuation: String? = null
     private var retryCount = 0
     private val maxRetries = 3
+
     override suspend fun getInitialStatus(): Queue.Status {
         return withContext(IO) {
             var lastException: Throwable? = null
+            
             for (attempt in 0..maxRetries) {
                 try {
                     val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
@@ -29,6 +33,7 @@ class YouTubeQueue(
                     )
                 } catch (e: Exception) {
                     lastException = e
+                    
                     if (attempt == 0 && endpoint.videoId != null && endpoint.playlistId == null) {
                         endpoint = WatchEndpoint(
                             videoId = endpoint.videoId,
@@ -41,10 +46,13 @@ class YouTubeQueue(
             throw lastException ?: Exception("Failed to get initial status")
         }
     }
+
     override fun hasNextPage(): Boolean = continuation != null
+
     override suspend fun nextPage(): List<MediaItem> {
         return withContext(IO) {
             var lastException: Throwable? = null
+            
             for (attempt in 0..maxRetries) {
                 try {
                     val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
@@ -63,8 +71,10 @@ class YouTubeQueue(
             throw lastException ?: Exception("Failed to get next page")
         }
     }
+
     companion object {
         fun radio(song: MediaMetadata): YouTubeQueue {
+            
             return YouTubeQueue(
                 WatchEndpoint(
                     videoId = song.id,

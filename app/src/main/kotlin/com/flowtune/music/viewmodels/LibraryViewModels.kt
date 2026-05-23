@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +64,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Locale
 import javax.inject.Inject
+
 @HiltViewModel
 class LibrarySongsViewModel
 @Inject
@@ -93,16 +96,20 @@ constructor(
                     SongFilter.UPLOADED -> database.uploadedSongs(sortType, descending).map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     fun syncLikedSongs() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedSongs() }
     }
+
     fun syncLibrarySongs() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLibrarySongs() }
     }
+
     fun syncUploadedSongs() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncUploadedSongs() }
     }
 }
+
 @HiltViewModel
 class LibraryArtistsViewModel
 @Inject
@@ -126,9 +133,11 @@ constructor(
                     ArtistFilter.LIBRARY -> database.artists(sortType, descending)
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     fun sync() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncArtistsSubscriptions() }
     }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             allArtists.collect { artists ->
@@ -150,6 +159,7 @@ constructor(
         }
     }
 }
+
 @HiltViewModel
 class LibraryAlbumsViewModel
 @Inject
@@ -178,9 +188,11 @@ constructor(
                     AlbumFilter.UPLOADED -> database.albumsUploaded(sortType, descending).map { it.filterExplicitAlbums(hideExplicit) }
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     fun sync() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedAlbums() }
     }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             allAlbums.collect { albums ->
@@ -207,6 +219,7 @@ constructor(
         }
     }
 }
+
 @HiltViewModel
 class LibraryPlaylistsViewModel
 @Inject
@@ -224,14 +237,17 @@ constructor(
             .flatMapLatest { (sortType, descending) ->
                 database.playlists(sortType, descending)
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     fun sync() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncSavedPlaylists() }
     }
+
     val topValue =
         context.dataStore.data
             .map { it[TopSize] ?: "50" }
             .distinctUntilChanged()
 }
+
 @HiltViewModel
 class ArtistSongsViewModel
 @Inject
@@ -245,6 +261,7 @@ constructor(
         database
             .artist(artistId)
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     val songs =
         context.dataStore.data
             .map {
@@ -260,6 +277,7 @@ constructor(
                 database.artistSongs(artistId, sortType, descending).map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 }
+
 @HiltViewModel
 class LibraryMixViewModel
 @Inject
@@ -270,11 +288,13 @@ constructor(
 ) : ViewModel() {
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
     val syncAllLibrary = {
          viewModelScope.launch(Dispatchers.IO) {
              syncUtils.tryAutoSync()
          }
     }
+
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
             _isRefreshing.value = true
@@ -282,6 +302,7 @@ constructor(
             _isRefreshing.value = false
         }
     }
+
     val topValue =
         context.dataStore.data
             .map { it[TopSize] ?: "50" }
@@ -300,6 +321,7 @@ constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var playlists = database.playlists(PlaylistSortType.CREATE_DATE, true)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             albums.collect { albums ->
@@ -345,6 +367,7 @@ constructor(
         }
     }
 }
+
 @HiltViewModel
 class LibraryViewModel
 @Inject

@@ -1,4 +1,5 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDateTime
+
 @Immutable
 @Entity(tableName = "artist")
 data class ArtistEntity(
@@ -23,11 +25,14 @@ data class ArtistEntity(
 ) {
     val isYouTubeArtist: Boolean
         get() = id.startsWith("UC") || id.startsWith("FEmusic_library_privately_owned_artist")
+
     val isPrivatelyOwnedArtist: Boolean
         get() = id.startsWith("FEmusic_library_privately_owned_artist")
+
     fun localToggleLike() = copy(
         bookmarkedAt = if (bookmarkedAt != null) null else LocalDateTime.now(),
     )
+
     fun toggleLike() = localToggleLike().also {
         CoroutineScope(Dispatchers.IO).launch {
             val targetChannelId = channelId ?: YouTube.getChannelId(id)
@@ -36,6 +41,7 @@ data class ArtistEntity(
             }
         }
     }
+
     companion object {
         fun generateArtistId() = "LA" + RandomStringUtils.insecure().next(8, true, false)
     }

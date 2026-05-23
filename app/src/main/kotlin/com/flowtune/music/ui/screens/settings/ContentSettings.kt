@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -69,6 +70,7 @@ import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.utils.setAppLocale
 import java.net.Proxy
 import java.util.Locale
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentSettings(
@@ -77,7 +79,9 @@ fun ContentSettings(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
     val (appLanguage, onAppLanguageChange) = rememberPreference(key = AppLanguageKey, defaultValue = SYSTEM_DEFAULT)
+
     val (contentLanguage, onContentLanguageChange) = rememberPreference(key = ContentLanguageKey, defaultValue = "system")
     val (contentCountry, onContentCountryChange) = rememberPreference(key = ContentCountryKey, defaultValue = "system")
     val (hideExplicit, onHideExplicitChange) = rememberPreference(key = HideExplicitKey, defaultValue = false)
@@ -102,15 +106,19 @@ fun ContentSettings(
     val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
     val (quickPicks, onQuickPicksChange) = rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
     val (showWrappedCard, onShowWrappedCardChange) = rememberPreference(key = ShowWrappedCardKey, defaultValue = false)
+
     var showProxyConfigurationDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showProxyConfigurationDialog) {
         var expandedDropdown by remember { mutableStateOf(false) }
+
         var tempProxyUrl by rememberSaveable { mutableStateOf(proxyUrl) }
         var tempProxyUsername by rememberSaveable { mutableStateOf(proxyUsername) }
         var tempProxyPassword by rememberSaveable { mutableStateOf(proxyPassword) }
         var authEnabled by rememberSaveable { mutableStateOf(proxyUsername.isNotBlank() || proxyPassword.isNotBlank()) }
+
         AlertDialog(
             onDismissRequest = { showProxyConfigurationDialog = false },
             title = {
@@ -156,12 +164,14 @@ fun ContentSettings(
                             }
                         }
                     }
+
                     OutlinedTextField(
                         value = tempProxyUrl,
                         onValueChange = { tempProxyUrl = it },
                         label = { Text(stringResource(R.string.proxy_url)) },
                         modifier = Modifier.fillMaxWidth()
                     )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -179,6 +189,7 @@ fun ContentSettings(
                             }
                         )
                     }
+
                     AnimatedVisibility(visible = authEnabled) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
@@ -218,9 +229,11 @@ fun ContentSettings(
             }
         )
     }
+
     var showContentLanguageDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showContentLanguageDialog) {
         EnumDialog(
             onDismiss = { showContentLanguageDialog = false },
@@ -236,9 +249,11 @@ fun ContentSettings(
             }
         )
     }
+
     var showContentCountryDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showContentCountryDialog) {
         EnumDialog(
             onDismiss = { showContentCountryDialog = false },
@@ -254,9 +269,11 @@ fun ContentSettings(
             }
         )
     }
+
     var showAppLanguageDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showAppLanguageDialog) {
         EnumDialog(
             onDismiss = { showAppLanguageDialog = false },
@@ -272,9 +289,11 @@ fun ContentSettings(
             }
         )
     }
+
     var showPreferredProviderDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showPreferredProviderDialog) {
         EnumDialog(
             onDismiss = { showPreferredProviderDialog = false },
@@ -295,9 +314,11 @@ fun ContentSettings(
             }
         )
     }
+
     var showQuickPicksDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showQuickPicksDialog) {
         EnumDialog(
             onDismiss = { showQuickPicksDialog = false },
@@ -316,11 +337,14 @@ fun ContentSettings(
             }
         )
     }
+
     var showTopLengthDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showTopLengthDialog) {
         var tempLength by rememberSaveable { mutableStateOf(lengthTop.toFloat()) }
+
         AlertDialog(
             onDismissRequest = { showTopLengthDialog = false },
             title = { Text(stringResource(R.string.top_length)) },
@@ -351,6 +375,7 @@ fun ContentSettings(
             }
         )
     }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
@@ -422,7 +447,9 @@ fun ContentSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.artist_page_settings),
             items = listOf(
@@ -488,7 +515,9 @@ fun ContentSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.app_language),
             items = listOf(
@@ -519,7 +548,9 @@ fun ContentSettings(
                 }
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.proxy),
             items = buildList {
@@ -556,7 +587,9 @@ fun ContentSettings(
                 }
             }
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.lyrics),
             items = listOf(
@@ -664,7 +697,9 @@ fun ContentSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = "Wrapped",
             items = listOf(
@@ -690,7 +725,9 @@ fun ContentSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.misc),
             items = listOf(
@@ -717,6 +754,7 @@ fun ContentSettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.content)) },
         navigationIcon = {

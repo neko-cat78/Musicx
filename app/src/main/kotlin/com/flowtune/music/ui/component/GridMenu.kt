@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -33,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.offline.Download
 import com.flowtune.music.R
 import com.flowtune.music.utils.makeTimeString
+
 val GridMenuItemHeight = 108.dp
+
 @Composable
 fun GridMenu(
     modifier: Modifier = Modifier,
@@ -47,6 +50,7 @@ fun GridMenu(
         content = content
     )
 }
+
 fun LazyGridScope.GridMenuItem(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
@@ -67,6 +71,7 @@ fun LazyGridScope.GridMenuItem(
     enabled = enabled,
     onClick = onClick
 )
+
 fun LazyGridScope.GridMenuItem(
     modifier: Modifier = Modifier,
     icon: @Composable BoxScope.() -> Unit,
@@ -107,6 +112,7 @@ fun LazyGridScope.GridMenuItem(
         }
     }
 }
+
 fun LazyGridScope.DownloadGridMenu(
     @Download.State state: Int?,
     onRemoveDownload: () -> Unit,
@@ -120,6 +126,7 @@ fun LazyGridScope.DownloadGridMenu(
                 onClick = onRemoveDownload
             )
         }
+
         Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
             GridMenuItem(
                 icon = {
@@ -132,6 +139,7 @@ fun LazyGridScope.DownloadGridMenu(
                 onClick = onRemoveDownload
             )
         }
+
         else -> {
             GridMenuItem(
                 icon = R.drawable.download,
@@ -141,6 +149,7 @@ fun LazyGridScope.DownloadGridMenu(
         }
     }
 }
+
 fun LazyGridScope.SleepTimerGridMenu(
     modifier: Modifier = Modifier,
     sleepTimerTimeLeft: Long,

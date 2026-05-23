@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import com.flowtune.music.ui.component.shimmer.ListItemPlaceHolder
 import com.flowtune.music.ui.component.shimmer.ShimmerHost
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.MoodAndGenresViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoodAndGenresScreen(
@@ -47,7 +49,9 @@ fun MoodAndGenresScreen(
 ) {
     val localConfiguration = LocalConfiguration.current
     val itemsPerRow = if (localConfiguration.orientation == ORIENTATION_LANDSCAPE) 3 else 2
+
     val moodAndGenresList by viewModel.moodAndGenres.collectAsState()
+
     LazyColumn(
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) {
@@ -62,6 +66,7 @@ fun MoodAndGenresScreen(
                 }
             }
         }
+
         moodAndGenresList?.forEachIndexed { index, moodAndGenres ->
             item(key = "mood_and_genres_section_$index") {
                 Column(
@@ -86,6 +91,7 @@ fun MoodAndGenresScreen(
                                         .padding(6.dp),
                                 )
                             }
+
                             repeat(itemsPerRow - row.size) {
                                 Spacer(Modifier.weight(1f))
                             }
@@ -95,6 +101,7 @@ fun MoodAndGenresScreen(
             }
         }
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.mood_and_genres)) },
         navigationIcon = {
@@ -110,6 +117,7 @@ fun MoodAndGenresScreen(
         },
     )
 }
+
 @Composable
 fun MoodAndGenresButton(
     title: String,
@@ -134,4 +142,5 @@ fun MoodAndGenresButton(
         )
     }
 }
+
 val MoodAndGenresButtonHeight = 48.dp

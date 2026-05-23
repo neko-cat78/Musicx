@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import javax.inject.Inject
+
 @HiltViewModel
 class OnlineSearchViewModel
 @Inject
@@ -34,6 +36,7 @@ constructor(
     val filter = MutableStateFlow<YouTube.SearchFilter?>(YouTube.SearchFilter.Companion.FILTER_SONG)
     var summaryPage by mutableStateOf<SearchSummaryPage?>(null)
     val viewStateMap = mutableStateMapOf<String, ItemsPage?>()
+
     init {
         viewModelScope.launch {
             filter.collect { filter ->
@@ -77,6 +80,7 @@ constructor(
             }
         }
     }
+
     fun loadMore() {
         val filter = filter.value?.value
         viewModelScope.launch {

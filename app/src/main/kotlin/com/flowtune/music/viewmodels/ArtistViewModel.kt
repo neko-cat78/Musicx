@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
@@ -55,7 +57,9 @@ class ArtistViewModel @Inject constructor(
             database.artistAlbumsPreview(artistId).map { it.filterExplicitAlbums(hideExplicit) }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     init {
+        
         viewModelScope.launch {
             context.dataStore.data
                 .map { (it[HideExplicitKey] ?: false) to (it[HideVideoSongsKey] ?: false) }
@@ -65,6 +69,7 @@ class ArtistViewModel @Inject constructor(
                 }
         }
     }
+
     fun fetchArtistsFromYTM() {
         viewModelScope.launch {
             val hideExplicit = context.dataStore.get(HideExplicitKey, false)
@@ -76,6 +81,7 @@ class ArtistViewModel @Inject constructor(
                             section.copy(items = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs))
                         }
                         .filter { section -> section.items.isNotEmpty() }
+
                     artistPage = page.copy(sections = filteredSections)
                 }.onFailure {
                     reportException(it)

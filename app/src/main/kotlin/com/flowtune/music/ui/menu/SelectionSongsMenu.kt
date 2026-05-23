@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -62,6 +63,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun SelectionSongMenu(
@@ -76,6 +78,7 @@ fun SelectionSongMenu(
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
     val syncUtils = LocalSyncUtils.current
+
     val allInLibrary by remember {
         mutableStateOf(
             songSelection.all {
@@ -83,6 +86,7 @@ fun SelectionSongMenu(
             },
         )
     }
+
     val allLiked by remember(songSelection) {
         mutableStateOf(
             songSelection.isNotEmpty() && songSelection.all {
@@ -90,9 +94,11 @@ fun SelectionSongMenu(
             },
         )
     }
+
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     LaunchedEffect(songSelection) {
         if (songSelection.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -111,12 +117,15 @@ fun SelectionSongMenu(
                 }
         }
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val notAddedList by remember {
         mutableStateOf(mutableListOf<Song>())
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -133,9 +142,11 @@ fun SelectionSongMenu(
             showChoosePlaylistDialog = false
         },
     )
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -154,6 +165,7 @@ fun SelectionSongMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -172,8 +184,10 @@ fun SelectionSongMenu(
             },
         )
     }
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -372,7 +386,9 @@ fun SelectionSongMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -501,6 +517,7 @@ fun SelectionSongMenu(
         }
     }
 }
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun SelectionMediaMetadataMenu(
@@ -514,15 +531,19 @@ fun SelectionMediaMetadataMenu(
     val downloadUtil = LocalDownloadUtil.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
+
     val allLiked by remember(songSelection) {
         mutableStateOf(songSelection.isNotEmpty() && songSelection.all { it.liked })
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val notAddedList by remember {
         mutableStateOf(mutableListOf<Song>())
     }
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = {
@@ -537,9 +558,11 @@ fun SelectionMediaMetadataMenu(
         },
         onDismiss = { showChoosePlaylistDialog = false }
     )
+
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     LaunchedEffect(songSelection) {
         if (songSelection.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -558,9 +581,11 @@ fun SelectionMediaMetadataMenu(
                 }
         }
     }
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -579,6 +604,7 @@ fun SelectionMediaMetadataMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -597,6 +623,7 @@ fun SelectionMediaMetadataMenu(
             },
         )
     }
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -709,7 +736,9 @@ fun SelectionMediaMetadataMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

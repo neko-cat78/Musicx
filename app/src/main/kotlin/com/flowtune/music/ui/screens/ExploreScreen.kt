@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -51,6 +52,7 @@ import com.flowtune.music.ui.menu.YouTubeSongMenu
 import com.flowtune.music.ui.utils.SnapLayoutInfoProvider
 import com.flowtune.music.viewmodels.ChartsViewModel
 import com.flowtune.music.viewmodels.ExploreViewModel
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExploreScreen(
@@ -63,25 +65,31 @@ fun ExploreScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val explorePage by exploreViewModel.explorePage.collectAsState()
     val chartsPage by chartsViewModel.chartsPage.collectAsState()
     val isChartsLoading by chartsViewModel.isLoading.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop by backStackEntry?.savedStateHandle
         ?.getStateFlow("scrollToTop", false)?.collectAsState() ?: return
+
     LaunchedEffect(Unit) {
         if (chartsPage == null) {
             chartsViewModel.loadCharts()
         }
     }
+
     LaunchedEffect(scrollToTop) {
         if (scrollToTop) {
             scrollState.animateScrollTo(0)
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -93,6 +101,7 @@ fun ExploreScreen(
                     LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateTopPadding(),
                 ),
             )
+
             if (isChartsLoading || chartsPage == null || explorePage == null) {
                 ShimmerHost {
                     TextPlaceholder(
@@ -104,6 +113,7 @@ fun ExploreScreen(
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
                         val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
+
                         LazyHorizontalGrid(
                             rows = GridCells.Fixed(4),
                             contentPadding = PaddingValues(start = 4.dp),
@@ -147,6 +157,7 @@ fun ExploreScreen(
                             }
                         }
                     }
+
                     TextPlaceholder(
                         height = 36.dp,
                         modifier = Modifier
@@ -158,6 +169,7 @@ fun ExploreScreen(
                             GridItemPlaceHolder()
                         }
                     }
+
                     TextPlaceholder(
                         height = 36.dp,
                         modifier = Modifier
@@ -169,6 +181,7 @@ fun ExploreScreen(
                             GridItemPlaceHolder()
                         }
                     }
+
                     TextPlaceholder(
                         height = 36.dp,
                         modifier = Modifier
@@ -201,6 +214,7 @@ fun ExploreScreen(
                     ) {
                         val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
                         val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
+
                         val lazyGridState = rememberLazyGridState()
                         val snapLayoutInfoProvider = remember(lazyGridState) {
                             SnapLayoutInfoProvider(
@@ -210,6 +224,7 @@ fun ExploreScreen(
                                 },
                             )
                         }
+
                         LazyHorizontalGrid(
                             state = lazyGridState,
                             rows = GridCells.Fixed(4),
@@ -279,6 +294,7 @@ fun ExploreScreen(
                         }
                     }
                 }
+
                 explorePage?.newReleaseAlbums?.let { newReleaseAlbums ->
                     NavigationTitle(
                         title = stringResource(R.string.new_release_albums),
@@ -321,6 +337,7 @@ fun ExploreScreen(
                         }
                     }
                 }
+
                 chartsPage?.sections?.find { it.title == "Top music videos" }?.let { topVideosSection ->
                     NavigationTitle(
                         title = stringResource(R.string.top_music_videos),
@@ -369,6 +386,7 @@ fun ExploreScreen(
                         }
                     }
                 }
+
                 explorePage?.moodAndGenres?.let { moodAndGenres ->
                     NavigationTitle(
                         title = stringResource(R.string.mood_and_genres),
@@ -395,6 +413,7 @@ fun ExploreScreen(
                     }
                 }
             }
+
             Spacer(
                 Modifier.height(
                     LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()

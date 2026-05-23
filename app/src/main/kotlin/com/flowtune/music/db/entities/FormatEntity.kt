@@ -1,6 +1,8 @@
 package com.flowtune.music.db.entities
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 @Entity(tableName = "format")
 data class FormatEntity(
     @PrimaryKey val id: String,

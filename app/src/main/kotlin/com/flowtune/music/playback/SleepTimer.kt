@@ -1,4 +1,5 @@
 package com.flowtune.music.playback
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
+
 class SleepTimer(
     private val scope: CoroutineScope,
     val player: Player,
@@ -21,6 +23,7 @@ class SleepTimer(
         private set
     val isActive: Boolean
         get() = triggerTime != -1L || pauseWhenSongEnd
+
     fun start(minute: Int) {
         sleepTimerJob?.cancel()
         sleepTimerJob = null
@@ -36,12 +39,14 @@ class SleepTimer(
                 }
         }
     }
+
     fun clear() {
         sleepTimerJob?.cancel()
         sleepTimerJob = null
         pauseWhenSongEnd = false
         triggerTime = -1L
     }
+
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
@@ -51,6 +56,7 @@ class SleepTimer(
             player.pause()
         }
     }
+
     override fun onPlaybackStateChanged(
         @Player.State playbackState: Int,
     ) {

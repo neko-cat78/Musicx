@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import com.flowtune.music.R
 import com.flowtune.music.ui.screens.wrapped.components.AnimatedBackground
 import com.flowtune.music.ui.screens.wrapped.components.ShapeType
 import com.flowtune.music.ui.theme.bbh_bartle
+
 @Composable
 fun WrappedTotalSongsScreen(
     uniqueSongCount: Int,
@@ -38,11 +40,13 @@ fun WrappedTotalSongsScreen(
 ) {
     val animatedSongs = remember { Animatable(0f) }
     val textMeasurer = rememberTextMeasurer()
+
     LaunchedEffect(isVisible, uniqueSongCount) {
         if (isVisible && uniqueSongCount > 0) {
             animatedSongs.animateTo(targetValue = uniqueSongCount.toFloat(), animationSpec = tween(1500, easing = FastOutSlowInEasing))
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(shapeTypes = listOf(ShapeType.Line))
         Column(

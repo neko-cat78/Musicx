@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -46,6 +47,7 @@ import com.flowtune.music.ui.menu.YouTubeSongMenu
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.ui.utils.SnapLayoutInfoProvider
 import com.flowtune.music.viewmodels.ChartsViewModel
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChartsScreen(
@@ -57,15 +59,19 @@ fun ChartsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val chartsPage by viewModel.chartsPage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         if (chartsPage == null) {
             viewModel.loadCharts()
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,6 +111,7 @@ fun ChartsScreen(
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
                             val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
+
                             LazyHorizontalGrid(
                                 rows = GridCells.Fixed(4),
                                 contentPadding = PaddingValues(start = 4.dp),
@@ -182,6 +189,7 @@ fun ChartsScreen(
                             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                                 val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
                                 val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
+
                                 val lazyGridState = rememberLazyGridState()
                                 val snapLayoutInfoProvider = remember(lazyGridState) {
                                     SnapLayoutInfoProvider(
@@ -191,6 +199,7 @@ fun ChartsScreen(
                                         },
                                     )
                                 }
+
                                 LazyHorizontalGrid(
                                     state = lazyGridState,
                                     rows = GridCells.Fixed(4),
@@ -262,6 +271,7 @@ fun ChartsScreen(
                             }
                         }
                     }
+
                     chartsPage?.sections?.find { it.title == "Top music videos" }?.let { topVideosSection ->
                         item(key = "top_videos_title") {
                             NavigationTitle(

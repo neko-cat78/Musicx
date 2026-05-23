@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -19,6 +20,7 @@ import com.flowtune.music.ui.menu.ArtistMenu
 import com.flowtune.music.ui.menu.PlaylistMenu
 import com.flowtune.music.ui.menu.YouTubePlaylistMenu
 import kotlinx.coroutines.CoroutineScope
+
 @Composable
 fun LibraryArtistListItem(
     navController: NavController,
@@ -52,6 +54,7 @@ fun LibraryArtistListItem(
             navController.navigate("artist/${artist.id}")
         }
 )
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryArtistGridItem(
@@ -80,6 +83,7 @@ fun LibraryArtistGridItem(
             }
         )
 )
+
 @Composable
 fun LibraryAlbumListItem(
     modifier: Modifier = Modifier,
@@ -116,6 +120,7 @@ fun LibraryAlbumListItem(
             navController.navigate("album/${album.id}")
         }
 )
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryAlbumGridItem(
@@ -149,6 +154,7 @@ fun LibraryAlbumGridItem(
             }
         )
 )
+
 @Composable
 fun LibraryPlaylistListItem(
     navController: NavController,
@@ -214,6 +220,7 @@ fun LibraryPlaylistListItem(
                 navController.navigate("local_playlist/${playlist.id}")
         }
 )
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryPlaylistGridItem(

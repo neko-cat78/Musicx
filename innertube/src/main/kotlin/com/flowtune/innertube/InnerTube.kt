@@ -1,4 +1,5 @@
 package com.flowtune.innertube
+
 import com.flowtune.innertube.models.Context
 import com.flowtune.innertube.models.MediaInfo
 import com.flowtune.innertube.models.ReturnYouTubeDislikeResponse
@@ -24,8 +25,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import java.net.Proxy
 import java.util.*
+
 class InnerTube {
     private var httpClient = createClient()
+
     var locale = YouTubeLocale(
         gl = Locale.getDefault().country,
         hl = Locale.getDefault().toLanguageTag()
@@ -38,17 +41,22 @@ class InnerTube {
             cookieMap = if (value == null) emptyMap() else parseCookieString(value)
         }
     private var cookieMap = emptyMap<String, String>()
+
     var proxy: Proxy? = null
         set(value) {
             field = value
             httpClient.close()
             httpClient = createClient()
         }
+    
     var proxyAuth: String? = null
+
     var useLoginForBrowse: Boolean = false
+
     @OptIn(ExperimentalSerializationApi::class)
     private fun createClient() = HttpClient(OkHttp) {
         expectSuccess = true
+
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -56,12 +64,15 @@ class InnerTube {
                 encodeDefaults = true
             })
         }
+
         install(ContentEncoding) {
             gzip(0.9F)
             deflate(0.8F)
         }
+
         engine {
             config {
+                
                 connectionPool(
                     okhttp3.ConnectionPool(
                         10, 
@@ -69,20 +80,26 @@ class InnerTube {
                         java.util.concurrent.TimeUnit.MINUTES
                     )
                 )
+                
                 connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                 readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
                 writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                
                 protocols(listOf(okhttp3.Protocol.HTTP_2, okhttp3.Protocol.HTTP_1_1))
+                
                 retryOnConnectionFailure(true)
+                
                 cache(
                     okhttp3.Cache(
                         directory = java.io.File(System.getProperty("java.io.tmpdir"), "http_cache"),
                         maxSize = 50L * 1024L * 1024L 
                     )
                 )
+                
                 this@InnerTube.proxy?.let { proxyConfig ->
                     proxy(proxyConfig)
                 }
+                
                 this@InnerTube.proxyAuth?.let { auth ->
                     proxyAuthenticator { _, response ->
                         response.request.newBuilder()
@@ -92,18 +109,22 @@ class InnerTube {
                 }
             }
         }
+
         install(HttpTimeout) {
             requestTimeoutMillis = 60000
             connectTimeoutMillis = 30000
             socketTimeoutMillis = 60000
         }
+
         defaultRequest {
             url(YouTubeClient.API_URL_YOUTUBE_MUSIC)
+            
             header("Accept", "application/json")
             header("Accept-Language", "en-US,en;q=0.9")
             header("Cache-Control", "no-cache")
         }
     }
+
     private fun HttpRequestBuilder.ytClient(client: YouTubeClient, setLogin: Boolean = false) {
         contentType(ContentType.Application.Json)
         headers {
@@ -125,6 +146,7 @@ class InnerTube {
         userAgent(client.userAgent)
         parameter("prettyPrint", false)
     }
+
     suspend fun search(
         client: YouTubeClient,
         query: String? = null,
@@ -146,6 +168,7 @@ class InnerTube {
         parameter("continuation", continuation)
         parameter("ctoken", continuation)
     }
+
     suspend fun player(
         client: YouTubeClient,
         videoId: String,
@@ -159,7 +182,7 @@ class InnerTube {
                     if (client.isEmbedded) {
                         it.copy(
                             thirdParty = Context.ThirdParty(
-                                embedUrl = "https:
+                                embedUrl = "https://www.youtube.com/watch?v=${videoId}"
                             )
                         )
                     } else it
@@ -176,6 +199,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun registerPlayback(
         url: String,
         cpn: String,
@@ -186,11 +210,13 @@ class InnerTube {
         parameter("ver", "2")
         parameter("c", client.clientName)
         parameter("cpn", cpn)
+
         if (playlistId != null) {
             parameter("list", playlistId)
-            parameter("referrer", "https:
+            parameter("referrer", "https://music.youtube.com/playlist?list=$playlistId")
         }
     }
+
     suspend fun browse(
         client: YouTubeClient,
         browseId: String? = null,
@@ -212,6 +238,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun next(
         client: YouTubeClient,
         videoId: String?,
@@ -234,6 +261,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun feedback(
         client: YouTubeClient,
         tokens: List<String>
@@ -246,6 +274,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun getSearchSuggestions(
         client: YouTubeClient,
         input: String,
@@ -258,6 +287,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun getQueue(
         client: YouTubeClient,
         videoIds: List<String>?,
@@ -272,10 +302,11 @@ class InnerTube {
             )
         )
     }
+
     suspend fun getTranscript(
         client: YouTubeClient,
         videoId: String,
-    ) = httpClient.post("https:
+    ) = httpClient.post("https://music.youtube.com/youtubei/v1/get_transcript") {
         parameter("key", "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX3")
         headers {
             append("Content-Type", "application/json")
@@ -287,11 +318,14 @@ class InnerTube {
             )
         )
     }
-    suspend fun getSwJsData() = httpClient.get("https:
+
+    suspend fun getSwJsData() = httpClient.get("https://music.youtube.com/sw.js_data")
+
     suspend fun accountMenu(client: YouTubeClient) = httpClient.post("account/account_menu") {
         ytClient(client, setLogin = true)
         setBody(AccountMenuBody(client.toContext(locale, visitorData, dataSyncId)))
     }
+
     suspend fun likeVideo(
         client: YouTubeClient,
         videoId: String,
@@ -304,6 +338,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun unlikeVideo(
         client: YouTubeClient,
         videoId: String,
@@ -316,6 +351,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun subscribeChannel(
         client: YouTubeClient,
         channelId: String,
@@ -328,6 +364,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun unsubscribeChannel(
         client: YouTubeClient,
         channelId: String,
@@ -340,6 +377,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun likePlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -352,6 +390,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun unlikePlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -364,6 +403,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun addToPlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -380,6 +420,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun addPlaylistToPlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -396,6 +437,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun removeFromPlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -416,6 +458,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun moveSongPlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -433,9 +476,11 @@ class InnerTube {
                         setVideoId = setVideoId,
                     )
                 )
+
             )
         )
     }
+
     suspend fun createPlaylist(
         client: YouTubeClient,
         title: String,
@@ -448,6 +493,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun renamePlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -466,10 +512,11 @@ class InnerTube {
             )
         )
     }
+    
     suspend fun getUploadCustomThumbnailLink(
         client: YouTubeClient,
         contentLength: Int
-    ) = httpClient.post("https:
+    ) = httpClient.post("https://music.youtube.com/playlist_image_upload/playlist_custom_thumbnail") {
         ytClient(client, setLogin = true)
         headers {
             append("X-Goog-Upload-Command", "start")
@@ -477,11 +524,12 @@ class InnerTube {
             append("X-Goog-Upload-Header-Content-Length", contentLength.toString())
         }
     }
+
     suspend fun uploadCustomThumbnail(
         client: YouTubeClient,
         uploadId: String,
         image: ByteArray,
-    ) = httpClient.post("https:
+    ) = httpClient.post("https://music.youtube.com/playlist_image_upload/playlist_custom_thumbnail") {
         ytClient(client, setLogin = true)
         parameter("upload_id", uploadId)
         parameter("upload_protocol", "resumable")
@@ -491,6 +539,7 @@ class InnerTube {
         }
         setBody(image)
     }
+
     suspend fun setThumbnailPlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -511,6 +560,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun removeThumbnailPlaylist(
         client: YouTubeClient,
         playlistId: String
@@ -526,6 +576,7 @@ class InnerTube {
             )
         )
     }
+
     suspend fun deletePlaylist(
         client: YouTubeClient,
         playlistId: String,
@@ -539,13 +590,16 @@ class InnerTube {
             )
         )
     }
+
     private suspend fun returnYouTubeDislike(videoId: String) =
-        httpClient.get("https:
+        httpClient.get("https://returnyoutubedislikeapi.com/Votes?videoId=$videoId") {
             contentType(ContentType.Application.Json)
         }
+
     suspend fun getMediaInfo(videoId: String): Result<MediaInfo> =
         runCatching {
             val response = next(client = YouTubeClient.WEB, videoId, null, null, null, null, null).body<NextResponse>()
+
             val baseForInfo =
                 response.contents.twoColumnWatchNextResults
                     ?.results
@@ -554,6 +608,7 @@ class InnerTube {
                     ?.find {
                         it?.videoSecondaryInfoRenderer != null
                     }?.videoSecondaryInfoRenderer
+
             val baseForTitle =
                 response.contents.twoColumnWatchNextResults
                     ?.results
@@ -562,8 +617,10 @@ class InnerTube {
                     ?.find {
                         it?.videoPrimaryInfoRenderer != null
                     }?.videoPrimaryInfoRenderer
+
             val returnYouTubeDislikeResponse =
                 returnYouTubeDislike(videoId).body<ReturnYouTubeDislikeResponse>()
+
             return@runCatching MediaInfo(
                 videoId = videoId,
                 title = baseForTitle
@@ -607,5 +664,7 @@ class InnerTube {
                 like = returnYouTubeDislikeResponse.likes,
                 dislike = returnYouTubeDislikeResponse.dislikes,
             )
+
         }
+
 }

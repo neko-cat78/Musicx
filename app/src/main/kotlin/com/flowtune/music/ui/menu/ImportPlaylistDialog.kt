@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import com.flowtune.music.ui.component.TextFieldDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+
 @Composable
 fun ImportPlaylistDialog(
     isVisible: Boolean,
@@ -26,10 +28,12 @@ fun ImportPlaylistDialog(
 ) {
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
+
     val textFieldValue by remember { mutableStateOf(TextFieldValue(text = playlistTitle)) }
     var songIds by remember {
         mutableStateOf<List<String>?>(null) 
     }
+
     if (isVisible) {
         TextFieldDialog(
             icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = null) },
@@ -42,12 +46,15 @@ fun ImportPlaylistDialog(
                     name = finalName
                 )
                 database.query { insert(newPlaylist) }
+
                 coroutineScope.launch(Dispatchers.IO) {
                     val playlist = database.playlist(newPlaylist.id).firstOrNull()
+
                     if (playlist != null) {
                         songIds = onGetSong()
                         database.addSongToPlaylist(playlist, songIds!!)
                     }
+
                     onDismiss()
                 }
             }

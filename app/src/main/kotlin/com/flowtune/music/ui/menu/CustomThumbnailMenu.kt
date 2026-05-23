@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.flowtune.music.R
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomThumbnailMenu(

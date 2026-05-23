@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.player
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -77,6 +78,7 @@ import com.flowtune.music.ui.component.CastButton
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import kotlinx.coroutines.delay
+
 @Immutable
 data class ThumbnailDimensions(
     val itemWidth: Dp,
@@ -84,11 +86,13 @@ data class ThumbnailDimensions(
     val thumbnailSize: Dp,
     val cornerRadius: Dp
 )
+
 @Immutable
 data class MediaItemsData(
     val items: List<MediaItem>,
     val currentIndex: Int
 )
+
 @Stable
 private fun calculateThumbnailDimensions(
     containerWidth: Dp,
@@ -97,6 +101,7 @@ private fun calculateThumbnailDimensions(
     cornerRadius: Dp = ThumbnailCornerRadius,
     isLandscape: Boolean = false
 ): ThumbnailDimensions {
+    
     val effectiveSize = if (isLandscape) {
         minOf(containerWidth, containerHeight) - (horizontalPadding * 2)
     } else {
@@ -109,6 +114,7 @@ private fun calculateThumbnailDimensions(
         cornerRadius = cornerRadius * 2
     )
 }
+
 @Stable
 private fun getMediaItems(
     player: Player,
@@ -117,9 +123,11 @@ private fun getMediaItems(
     val timeline = player.currentTimeline
     val currentIndex = player.currentMediaItemIndex
     val shuffleModeEnabled = player.shuffleModeEnabled
+    
     val currentMediaItem = try {
         player.currentMediaItem
     } catch (e: Exception) { null }
+    
     val previousMediaItem = if (swipeThumbnail && !timeline.isEmpty) {
         val previousIndex = timeline.getPreviousWindowIndex(
             currentIndex,
@@ -130,6 +138,7 @@ private fun getMediaItems(
             try { player.getMediaItemAt(previousIndex) } catch (e: Exception) { null }
         } else null
     } else null
+
     val nextMediaItem = if (swipeThumbnail && !timeline.isEmpty) {
         val nextIndex = timeline.getNextWindowIndex(
             currentIndex,
@@ -140,10 +149,13 @@ private fun getMediaItems(
             try { player.getMediaItemAt(nextIndex) } catch (e: Exception) { null }
         } else null
     } else null
+
     val items = listOfNotNull(previousMediaItem, currentMediaItem, nextMediaItem)
     val currentMediaIndex = items.indexOf(currentMediaItem)
+    
     return MediaItemsData(items, currentMediaIndex)
 }
+
 @Stable
 @Composable
 private fun getTextColor(playerBackground: PlayerBackgroundStyle): Color {
@@ -153,6 +165,7 @@ private fun getTextColor(playerBackground: PlayerBackgroundStyle): Color {
         PlayerBackgroundStyle.GRADIENT -> Color.White
     }
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Thumbnail(
@@ -164,19 +177,24 @@ fun Thumbnail(
     val playerConnection = LocalPlayerConnection.current ?: return
     val context = LocalContext.current
     val layoutDirection = LocalLayoutDirection.current
+
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val error by playerConnection.error.collectAsState()
     val queueTitle by playerConnection.queueTitle.collectAsState()
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
+
     val swipeThumbnail by rememberPreference(SwipeThumbnailKey, true)
     val hidePlayerThumbnail by rememberPreference(HidePlayerThumbnailKey, false)
     val playerBackground by rememberEnumPreference(
         key = PlayerBackgroundStyleKey,
         defaultValue = PlayerBackgroundStyle.GRADIENT
     )
+    
     val textBackgroundColor = getTextColor(playerBackground)
+    
     val thumbnailLazyGridState = rememberLazyGridState()
+    
     val mediaItemsData by remember(
         playerConnection.player.currentMediaItemIndex,
         playerConnection.player.shuffleModeEnabled,
@@ -186,8 +204,10 @@ fun Thumbnail(
             getMediaItems(playerConnection.player, swipeThumbnail)
         }
     }
+    
     val mediaItems = mediaItemsData.items
     val currentMediaIndex = mediaItemsData.currentIndex
+
     val thumbnailSnapLayoutInfoProvider = remember(thumbnailLazyGridState) {
         ThumbnailSnapLayoutInfoProvider(
             lazyGridState = thumbnailLazyGridState,
@@ -197,16 +217,20 @@ fun Thumbnail(
             velocityThreshold = 500f
         )
     }
+
     val currentItem by remember { derivedStateOf { thumbnailLazyGridState.firstVisibleItemIndex } }
     val itemScrollOffset by remember { derivedStateOf { thumbnailLazyGridState.firstVisibleItemScrollOffset } }
+
     LaunchedEffect(itemScrollOffset) {
         if (!thumbnailLazyGridState.isScrollInProgress || !swipeThumbnail || itemScrollOffset != 0 || currentMediaIndex < 0) return@LaunchedEffect
+
         if (currentItem > currentMediaIndex && canSkipNext) {
             playerConnection.player.seekToNext()
         } else if (currentItem < currentMediaIndex && canSkipPrevious) {
             playerConnection.player.seekToPreviousMediaItem()
         }
     }
+
     LaunchedEffect(mediaMetadata, canSkipPrevious, canSkipNext) {
         val index = maxOf(0, currentMediaIndex)
         if (index >= 0 && index < mediaItems.size) {
@@ -217,20 +241,25 @@ fun Thumbnail(
             }
         }
     }
+
     LaunchedEffect(playerConnection.player.currentMediaItemIndex) {
         val index = mediaItemsData.currentIndex
         if (index >= 0 && index != currentItem) {
             thumbnailLazyGridState.scrollToItem(index)
         }
     }
+
     var showSeekEffect by remember { mutableStateOf(false) }
     var seekDirection by remember { mutableStateOf("") }
+
     Box(
         modifier = modifier
             .graphicsLayer {
+                
                 compositingStrategy = CompositingStrategy.Offscreen
             }
     ) {
+        
         AnimatedVisibility(
             visible = error != null,
             enter = fadeIn(),
@@ -246,6 +275,7 @@ fun Thumbnail(
                 )
             }
         }
+
         AnimatedVisibility(
             visible = error == null,
             enter = fadeIn(),
@@ -259,9 +289,11 @@ fun Thumbnail(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = if (isLandscape) Arrangement.Center else Arrangement.Top
             ) {
+                
                 if (!isLandscape) {
                     Spacer(modifier = Modifier.height(40.dp))
                 }
+                
                 BoxWithConstraints(
                     contentAlignment = Alignment.Center,
                     modifier = if (isLandscape) {
@@ -270,6 +302,7 @@ fun Thumbnail(
                         Modifier.fillMaxSize()
                     }
                 ) {
+                    
                     val dimensions = remember(maxWidth, maxHeight, isLandscape) {
                         calculateThumbnailDimensions(
                             containerWidth = maxWidth,
@@ -277,15 +310,18 @@ fun Thumbnail(
                             isLandscape = isLandscape
                         )
                     }
+
                     val onSeekCallback = remember {
                         { direction: String, showEffect: Boolean ->
                             seekDirection = direction
                             showSeekEffect = showEffect
                         }
                     }
+                    
                     val isScrollEnabled by remember(swipeThumbnail) {
                         derivedStateOf { swipeThumbnail && isPlayerExpanded() }
                     }
+                    
                     LazyHorizontalGrid(
                         state = thumbnailLazyGridState,
                         rows = GridCells.Fixed(1),
@@ -319,12 +355,14 @@ fun Thumbnail(
                 }
             }
         }
+
         LaunchedEffect(showSeekEffect) {
             if (showSeekEffect) {
                 delay(1000)
                 showSeekEffect = false
             }
         }
+
         AnimatedVisibility(
             visible = showSeekEffect,
             enter = fadeIn(),
@@ -335,6 +373,7 @@ fun Thumbnail(
         }
     }
 }
+
 @Composable
 private fun ThumbnailHeader(
     queueTitle: String?,
@@ -372,6 +411,7 @@ private fun ThumbnailHeader(
         }
     }
 }
+
 @Composable
 private fun ThumbnailItem(
     item: MediaItem,
@@ -388,6 +428,7 @@ private fun ThumbnailItem(
     val incrementalSeekSkipEnabled by rememberPreference(SeekExtraSeconds, defaultValue = false)
     var skipMultiplier by remember { mutableIntStateOf(1) }
     var lastTapTime by remember { mutableLongStateOf(0L) }
+
     Box(
         modifier = modifier
             .then(
@@ -401,6 +442,7 @@ private fun ThumbnailItem(
             )
             .padding(horizontal = PlayerHorizontalPadding)
             .graphicsLayer {
+                
                 compositingStrategy = CompositingStrategy.Offscreen
             }
             .pointerInput(Unit) {
@@ -408,6 +450,7 @@ private fun ThumbnailItem(
                     onDoubleTap = { offset ->
                         val currentPosition = playerConnection.player.currentPosition
                         val duration = playerConnection.player.duration
+
                         val now = System.currentTimeMillis()
                         if (incrementalSeekSkipEnabled && now - lastTapTime < 1000) {
                             skipMultiplier++
@@ -415,9 +458,12 @@ private fun ThumbnailItem(
                             skipMultiplier = 1
                         }
                         lastTapTime = now
+
                         val skipAmount = 5000 * skipMultiplier
+
                         val isLeftSide = (layoutDirection == LayoutDirection.Ltr && offset.x < size.width / 2) ||
                                 (layoutDirection == LayoutDirection.Rtl && offset.x > size.width / 2)
+
                         if (isLeftSide) {
                             playerConnection.player.seekTo((currentPosition - skipAmount).coerceAtLeast(0))
                             onSeek(context.getString(R.string.seek_backward_dynamic, skipAmount / 1000), true)
@@ -440,6 +486,7 @@ private fun ThumbnailItem(
             } else {
                 ThumbnailImage(artworkUri = item.mediaMetadata.artworkUri?.toString())
             }
+            
             CastButton(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -449,6 +496,7 @@ private fun ThumbnailItem(
         }
     }
 }
+
 @Composable
 private fun HiddenThumbnailPlaceholder(
     textBackgroundColor: Color,
@@ -468,6 +516,7 @@ private fun HiddenThumbnailPlaceholder(
         )
     }
 }
+
 @Composable
 private fun ThumbnailImage(
     artworkUri: String?,
@@ -477,6 +526,7 @@ private fun ThumbnailImage(
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer {
+                
                 compositingStrategy = CompositingStrategy.Offscreen
             }
             .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -494,6 +544,7 @@ private fun ThumbnailImage(
         )
     }
 }
+
 @Composable
 private fun SeekEffectOverlay(
     seekDirection: String,

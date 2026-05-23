@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -56,6 +57,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+
 @Composable
 fun AddToPlaylistDialogOnline(
     isVisible: Boolean,
@@ -79,9 +81,11 @@ fun AddToPlaylistDialogOnline(
         false
     )
     val playlists by viewModel.allPlaylists.collectAsState()
+
     var showCreatePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showDuplicateDialog by remember {
         mutableStateOf(false)
     }
@@ -94,6 +98,7 @@ fun AddToPlaylistDialogOnline(
     val duplicates by remember {
         mutableStateOf(emptyList<String>())
     }
+
     if (isVisible) {
         ListDialog(
             onDismiss = onDismiss
@@ -114,6 +119,7 @@ fun AddToPlaylistDialogOnline(
                     }
                 )
             }
+
             if (playlists.isNotEmpty()) {
                 item {
                     Row(
@@ -137,6 +143,7 @@ fun AddToPlaylistDialogOnline(
                     }
                 }
             }
+
             items(playlists) { playlist ->
                 PlaylistListItem(
                     playlist = playlist,
@@ -155,6 +162,7 @@ fun AddToPlaylistDialogOnline(
                                     allArtists += " ${URLDecoder.decode(artist.name, StandardCharsets.UTF_8.toString())}"
                                 }
                                 val query = "${song.title} - $allArtists"
+
                                 coroutineScope.launch {
                                     try {
                                         YouTube.search(query, YouTube.SearchFilter.FILTER_SONG)
@@ -181,19 +189,25 @@ fun AddToPlaylistDialogOnline(
                                                 reportException(it)
                                                 songsIdx += 1
                                             }
+
                                         if (songsIdx.toInt() == songsTot.toInt() - 1) {
                                             onProgressStart(false)
                                         }
                                         onPercentageChange(((songsIdx / songsTot) * 100).toInt())
+
                                     } catch (e: Exception){
                                         Timber.tag("ERROR").v(e.toString())
                                     }
+
                                 }
+
                             }
+
                         }
                     }
                 )
             }
+
             item {
                 ListItem(
                     modifier = Modifier.clickable {
@@ -210,6 +224,7 @@ fun AddToPlaylistDialogOnline(
                                     allArtists += " ${URLDecoder.decode(artist.name, StandardCharsets.UTF_8.toString())}"
                                 }
                                 val query = "${song.title} - $allArtists"
+
                                 coroutineScope.launch {
                                     try {
                                         YouTube.search(query, YouTube.SearchFilter.FILTER_SONG)
@@ -238,15 +253,20 @@ fun AddToPlaylistDialogOnline(
                                                 reportException(it)
                                                 songsIdx += 1
                                             }
+
                                         if (songsIdx.toInt() == songsTot.toInt() - 1) {
                                             onProgressStart(false)
                                         }
                                         onPercentageChange(((songsIdx / songsTot) * 100).toInt())
+
                                     } catch (e: Exception){
                                         Timber.tag("ERROR").v(e.toString())
                                     }
+
                                 }
+
                             }
+
                         }
                     },
                     title = stringResource(R.string.liked_songs),
@@ -261,6 +281,7 @@ fun AddToPlaylistDialogOnline(
                     trailingContent = {}
                 )
             }
+
             item {
                 Text(
                     text = stringResource(R.string.playlist_add_local_to_synced_note),
@@ -270,6 +291,7 @@ fun AddToPlaylistDialogOnline(
             }
         }
     }
+
     if (showCreatePlaylistDialog) {
         CreatePlaylistDialog(
             onDismiss = { showCreatePlaylistDialog = false },
@@ -277,6 +299,7 @@ fun AddToPlaylistDialogOnline(
             allowSyncing = allowSyncing
         )
     }
+
     if (showDuplicateDialog) {
         DefaultDialog(
             title = { Text(stringResource(R.string.duplicates)) },
@@ -297,6 +320,7 @@ fun AddToPlaylistDialogOnline(
                 ) {
                     Text(stringResource(R.string.skip_duplicates))
                 }
+
                 TextButton(
                     onClick = {
                         showDuplicateDialog = false
@@ -308,6 +332,7 @@ fun AddToPlaylistDialogOnline(
                 ) {
                     Text(stringResource(R.string.add_anyway))
                 }
+
                 TextButton(
                     onClick = {
                         showDuplicateDialog = false

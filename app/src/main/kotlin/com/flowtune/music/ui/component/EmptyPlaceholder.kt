@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun EmptyPlaceholder(
     @DrawableRes icon: Int,
@@ -34,7 +36,9 @@ fun EmptyPlaceholder(
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
             modifier = Modifier.size(64.dp),
         )
+
         Spacer(Modifier.height(12.dp))
+
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,

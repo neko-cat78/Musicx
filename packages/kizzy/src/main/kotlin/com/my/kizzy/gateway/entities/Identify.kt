@@ -1,6 +1,8 @@
 package com.my.kizzy.gateway.entities
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class Identify(
     @SerialName("capabilities")
@@ -28,6 +30,7 @@ data class Identify(
         )
     }
 }
+
 @Serializable
 data class Properties(
     @SerialName("browser")

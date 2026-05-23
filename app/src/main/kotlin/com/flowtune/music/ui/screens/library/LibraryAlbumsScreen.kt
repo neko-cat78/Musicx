@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.library
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -63,6 +64,7 @@ import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.LibraryAlbumsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryAlbumsScreen(
@@ -76,11 +78,14 @@ fun LibraryAlbumsScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val viewType = LibraryViewType.GRID
     var filter by rememberEnumPreference(AlbumFilterKey, AlbumFilter.LIKED)
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
+
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+
     val filterContent = @Composable {
         Row {
             Spacer(Modifier.width(12.dp))
@@ -109,6 +114,7 @@ fun LibraryAlbumsScreen(
             )
         }
     }
+
     LaunchedEffect(Unit) {
         if (ytmSync) {
             withContext(Dispatchers.IO) {
@@ -116,12 +122,15 @@ fun LibraryAlbumsScreen(
             }
         }
     }
+
     val albums by viewModel.allAlbums.collectAsState()
+
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             when (viewType) {
@@ -131,6 +140,7 @@ fun LibraryAlbumsScreen(
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -146,6 +156,7 @@ fun LibraryAlbumsScreen(
                     ) {
                         filterContent()
                     }
+
                     albums.let { albums ->
                         if (albums.isEmpty()) {
                             item(key = "empty_placeholder") {
@@ -156,6 +167,7 @@ fun LibraryAlbumsScreen(
                                 )
                             }
                         }
+
                         val filteredAlbumsForList = if (hideExplicit) {
                             albums.filter { !it.album.explicit }
                         } else {
@@ -178,6 +190,7 @@ fun LibraryAlbumsScreen(
                         }
                     }
                 }
+
             LibraryViewType.GRID ->
                 LazyVerticalGrid(
                     state = lazyGridState,
@@ -194,6 +207,7 @@ fun LibraryAlbumsScreen(
                     ) {
                         filterContent()
                     }
+
                     albums.let { albums ->
                         if (albums.isEmpty()) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -204,6 +218,7 @@ fun LibraryAlbumsScreen(
                                 )
                             }
                         }
+
                         val filteredAlbumsForGrid = if (hideExplicit) {
                             albums.filter { !it.album.explicit }
                         } else {

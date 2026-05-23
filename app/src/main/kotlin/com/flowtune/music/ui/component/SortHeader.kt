@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flowtune.music.R
 import com.flowtune.music.constants.PlaylistSongSortType
+
 @Composable
 inline fun <reified T : Enum<T>> SortHeader(
     sortType: T,
@@ -36,6 +38,7 @@ inline fun <reified T : Enum<T>> SortHeader(
     showDescending: Boolean? = true,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(vertical = 8.dp),
@@ -53,6 +56,7 @@ inline fun <reified T : Enum<T>> SortHeader(
                     menuExpanded = !menuExpanded
                 }.padding(horizontal = 4.dp, vertical = 8.dp),
         )
+
         DropdownMenu(
             expanded = menuExpanded,
             onDismissRequest = { menuExpanded = false },
@@ -89,6 +93,7 @@ inline fun <reified T : Enum<T>> SortHeader(
                 )
             }
         }
+
         if (sortType != PlaylistSongSortType.CUSTOM && showDescending == true) {
             ResizableIconButton(
                 icon = if (sortDescending) R.drawable.arrow_downward else R.drawable.arrow_upward,

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -58,6 +59,7 @@ import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import kotlin.math.roundToInt
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSettings(
@@ -84,18 +86,22 @@ fun PlayerSettings(
         AudioNormalizationKey,
         defaultValue = true
     )
+
     val (audioOffload, onAudioOffloadChange) = rememberPreference(
         key = AudioOffload,
         defaultValue = false
     )
+
     val (enableGoogleCast, onEnableGoogleCastChange) = rememberPreference(
         key = EnableGoogleCastKey,
         defaultValue = true
     )
+
     val (seekExtraSeconds, onSeekExtraSeconds) = rememberPreference(
         SeekExtraSeconds,
         defaultValue = false
     )
+
     val (autoLoadMore, onAutoLoadMoreChange) = rememberPreference(
         AutoLoadMoreKey,
         defaultValue = true
@@ -140,9 +146,11 @@ fun PlayerSettings(
         HistoryDuration,
         defaultValue = 30f
     )
+
     var showAudioQualityDialog by remember {
         mutableStateOf(false)
     }
+
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
@@ -162,6 +170,7 @@ fun PlayerSettings(
             }
         )
     }
+
     Column(
         Modifier
             .windowInsetsPadding(
@@ -179,6 +188,7 @@ fun PlayerSettings(
                 )
             )
         )
+
         Material3SettingsGroup(
             title = stringResource(R.string.player),
             items = buildList {
@@ -294,6 +304,7 @@ fun PlayerSettings(
                     },
                     onClick = { onAudioOffloadChange(!audioOffload) }
                 ))
+                
                 if (BuildConfig.CAST_AVAILABLE) {
                     add(Material3SettingsItem(
                         icon = painterResource(R.drawable.cast),
@@ -340,7 +351,9 @@ fun PlayerSettings(
                 ))
             }
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.queue),
             items = listOf(
@@ -535,7 +548,9 @@ fun PlayerSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.misc),
             items = listOf(
@@ -583,6 +598,7 @@ fun PlayerSettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.player_and_audio)) },
         navigationIcon = {

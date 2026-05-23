@@ -1,13 +1,16 @@
 package com.flowtune.music.lyrics
+
 import android.content.Context
 import com.flowtune.kugou.KuGou
 import com.flowtune.music.constants.EnableKugouKey
 import com.flowtune.music.utils.dataStore
 import com.flowtune.music.utils.get
+
 object KuGouLyricsProvider : LyricsProvider {
     override val name = "Kugou"
     override fun isEnabled(context: Context): Boolean =
         context.dataStore[EnableKugouKey] ?: true
+
     override suspend fun getLyrics(
         id: String,
         title: String,
@@ -16,6 +19,7 @@ object KuGouLyricsProvider : LyricsProvider {
         album: String?,
     ): Result<String> =
         KuGou.getLyrics(title, artist, duration, album)
+
     override suspend fun getAllLyrics(
         id: String,
         title: String,

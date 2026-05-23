@@ -1,4 +1,5 @@
 package com.my.kizzy.remote
+
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -8,6 +9,7 @@ import io.ktor.client.request.url
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.util.logging.Logger
+
 class ApiService {
     private val logger = Logger.getLogger(ApiService::class.java.name)
     private val client = HttpClient {
@@ -19,6 +21,7 @@ class ApiService {
         }
         install(HttpCache)
     }
+
     suspend fun getImage(urls: List<String>) = runCatching {
         logger.info("Requesting image proxy for URLs: $urls")
         client.get {
@@ -28,7 +31,8 @@ class ApiService {
     }.onFailure {
         logger.severe("Image proxy request failed: ${it.stackTraceToString()}")
     }
+
     companion object {
-        const val BASE_URL = "https:
+        const val BASE_URL = "https://metrolist-discord-rpc-api.adrieldsilvas-2.workers.dev"
     }
 }

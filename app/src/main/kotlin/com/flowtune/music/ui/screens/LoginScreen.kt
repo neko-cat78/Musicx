@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import android.annotation.SuppressLint
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -36,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
@@ -49,7 +51,9 @@ fun LoginScreen(
     var accountName by rememberPreference(AccountNameKey, "")
     var accountEmail by rememberPreference(AccountEmailKey, "")
     var accountChannelHandle by rememberPreference(AccountChannelHandleKey, "")
+
     var webView: WebView? = null
+
     AndroidView(
         modifier = Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
@@ -60,7 +64,8 @@ fun LoginScreen(
                     override fun onPageFinished(view: WebView, url: String?) {
                         loadUrl("javascript:Android.onRetrieveVisitorData(window.yt.config_.VISITOR_DATA)")
                         loadUrl("javascript:Android.onRetrieveDataSyncId(window.yt.config_.DATASYNC_ID)")
-                        if (url?.startsWith("https:
+
+                        if (url?.startsWith("https://music.youtube.com") == true) {
                             innerTubeCookie = CookieManager.getInstance().getCookie(url)
                             coroutineScope.launch {
                                 YouTube.accountInfo().onSuccess {
@@ -95,10 +100,11 @@ fun LoginScreen(
                     }
                 }, "Android")
                 webView = this
-                loadUrl("https:
+                loadUrl("https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fmusic.youtube.com")
             }
         }
     )
+
     TopAppBar(
         title = { Text(stringResource(R.string.login)) },
         navigationIcon = {
@@ -113,6 +119,7 @@ fun LoginScreen(
             }
         }
     )
+
     BackHandler(enabled = webView?.canGoBack() == true) {
         webView?.goBack()
     }

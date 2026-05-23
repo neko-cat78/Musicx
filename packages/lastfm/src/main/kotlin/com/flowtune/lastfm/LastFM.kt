@@ -1,4 +1,5 @@
 package com.flowtune.lastfm
+
 import com.flowtune.lastfm.models.Authentication
 import com.flowtune.lastfm.models.LastFmError
 import com.flowtune.lastfm.models.TokenResponse
@@ -14,27 +15,32 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.security.MessageDigest
+
 object LastFM {
     var sessionKey: String? = null
+
     private val json = Json {
         isLenient = true
         ignoreUnknownKeys = true
     }
+
     private val client by lazy {
         HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(json)
             }
-            defaultRequest { url("https:
+            defaultRequest { url("https://ws.audioscrobbler.com/2.0/") }
             expectSuccess = false
         }
     }
+
     private fun Map<String, String>.apiSig(secret: String): String {
         val sorted = toSortedMap()
         val toHash = sorted.entries.joinToString("") { it.key + it.value } + secret
         val digest = MessageDigest.getInstance("MD5").digest(toHash.toByteArray())
         return digest.joinToString("") { "%02x".format(it) }
     }
+
     private fun HttpRequestBuilder.lastfmParams(
         method: String,
         apiKey: String,
@@ -44,7 +50,7 @@ object LastFM {
         format: String = "json"
     ) {
         contentType(ContentType.Application.FormUrlEncoded)
-        userAgent("flowtune (https:
+        userAgent("Flowtune (https://github.com/mostafaalagamy/Flowtune)")
         val paramsForSig = mutableMapOf(
             "method" to method,
             "api_key" to apiKey
@@ -59,6 +65,7 @@ object LastFM {
             append("format", format)
         }))
     }
+
     suspend fun getToken() = runCatching {
         client.post {
             lastfmParams(
@@ -68,6 +75,7 @@ object LastFM {
             )
         }.body<TokenResponse>()
     }
+
     suspend fun getSession(token: String) = runCatching {
         client.post {
             lastfmParams(
@@ -78,9 +86,11 @@ object LastFM {
             )
         }.body<Authentication>()
     }
+
     fun getAuthUrl(token: String): String {
-        return "https:
+        return "https://www.last.fm/api/auth/?api_key=$API_KEY&token=$token"
     }
+
     suspend fun getMobileSession(username: String, password: String) = runCatching {
         val response = client.post {
             lastfmParams(
@@ -91,6 +101,7 @@ object LastFM {
             )
             parameter("format", "json")
         }
+
         val responseText = response.bodyAsText()
         if (responseText.contains("\"error\"")) {
             val error = json.decodeFromString<LastFmError>(responseText)
@@ -98,9 +109,11 @@ object LastFM {
         }
         json.decodeFromString<Authentication>(responseText)
     }
+
     class LastFmException(val code: Int, override val message: String) : Exception(message) {
         override fun toString(): String = "LastFmException(code=$code, message=$message)"
     }
+
     suspend fun updateNowPlaying(
         artist: String, track: String,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
@@ -122,6 +135,7 @@ object LastFM {
             parameter("format", "json")
         }
     }
+
     suspend fun scrobble(
         artist: String, track: String, timestamp: Long,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
@@ -144,6 +158,7 @@ object LastFM {
             parameter("format", "json")
         }
     }
+
     suspend fun setLoveStatus(
         artist: String, track: String, love: Boolean
     ) = runCatching {
@@ -162,13 +177,17 @@ object LastFM {
             parameter("format", "json")
         }
     }
+
     private var API_KEY = ""
     private var SECRET = ""
+
     fun initialize(apiKey: String, secret: String) {
         API_KEY = apiKey
         SECRET = secret
     }
+
     fun isInitialized(): Boolean = API_KEY.isNotEmpty() && SECRET.isNotEmpty()
+
     const val DEFAULT_SCROBBLE_DELAY_PERCENT = 0.5f
     const val DEFAULT_SCROBBLE_MIN_SONG_DURATION = 30
     const val DEFAULT_SCROBBLE_DELAY_SECONDS = 180

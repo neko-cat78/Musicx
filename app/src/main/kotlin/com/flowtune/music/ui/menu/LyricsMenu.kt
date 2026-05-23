@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.app.SearchManager
 import android.content.Intent
 import android.content.res.Configuration
@@ -64,6 +65,7 @@ import com.flowtune.music.ui.component.NewAction
 import com.flowtune.music.ui.component.NewActionGrid
 import com.flowtune.music.ui.component.TextFieldDialog
 import com.flowtune.music.viewmodels.LyricsMenuViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LyricsMenu(
@@ -76,9 +78,11 @@ fun LyricsMenu(
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
+
     var showEditDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showEditDialog) {
         TextFieldDialog(
             onDismiss = { showEditDialog = false },
@@ -99,12 +103,14 @@ fun LyricsMenu(
             },
         )
     }
+
     var showSearchDialog by rememberSaveable {
         mutableStateOf(false)
     }
     var showSearchResultDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     val searchMediaMetadata =
         remember(showSearchDialog) {
             mediaMetadataProvider()
@@ -125,7 +131,9 @@ fun LyricsMenu(
                 ),
             )
         }
+
     val isNetworkAvailable by viewModel.isNetworkAvailable.collectAsState()
+
     if (showSearchDialog) {
         DefaultDialog(
             modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -143,7 +151,9 @@ fun LyricsMenu(
                 ) {
                     Text(stringResource(android.R.string.cancel))
                 }
+
                 Spacer(Modifier.width(8.dp))
+
                 TextButton(
                     onClick = {
                         showSearchDialog = false
@@ -163,9 +173,12 @@ fun LyricsMenu(
                 ) {
                     Text(stringResource(R.string.search_online))
                 }
+
                 Spacer(Modifier.width(8.dp))
+
                 TextButton(
                     onClick = {
+                        
                         viewModel.search(
                             searchMediaMetadata.id,
                             titleField.text,
@@ -174,6 +187,7 @@ fun LyricsMenu(
                             searchMediaMetadata.album?.title
                         )
                         showSearchResultDialog = true
+                        
                         if (!isNetworkAvailable) {
                             Toast.makeText(context, context.getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show()
                         }
@@ -189,7 +203,9 @@ fun LyricsMenu(
                 singleLine = true,
                 label = { Text(stringResource(R.string.song_title)) },
             )
+
             Spacer(Modifier.height(12.dp))
+
             OutlinedTextField(
                 value = artistField,
                 onValueChange = onArtistFieldChange,
@@ -198,12 +214,15 @@ fun LyricsMenu(
             )
         }
     }
+
     if (showSearchResultDialog) {
         val results by viewModel.results.collectAsState()
         val isLoading by viewModel.isLoading.collectAsState()
+
         var expandedItemIndex by rememberSaveable {
             mutableStateOf(-1)
         }
+
         ListDialog(
             onDismiss = { showSearchResultDialog = false },
         ) {
@@ -238,6 +257,7 @@ fun LyricsMenu(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(bottom = 4.dp),
                         )
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -260,6 +280,7 @@ fun LyricsMenu(
                             }
                         }
                     }
+
                     IconButton(
                         onClick = {
                             expandedItemIndex = if (expandedItemIndex == index) -1 else index
@@ -272,6 +293,7 @@ fun LyricsMenu(
                     }
                 }
             }
+
             if (isLoading) {
                 item {
                     Box(
@@ -282,6 +304,7 @@ fun LyricsMenu(
                     }
                 }
             }
+
             if (!isLoading && results.isEmpty()) {
                 item {
                     Text(
@@ -295,20 +318,27 @@ fun LyricsMenu(
             }
         }
     }
+
     var showRomanizationDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showRomanization by rememberSaveable { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(songProvider()?.romanizeLyrics ?: true) }
+
     var lyricsOffset by rememberSaveable { mutableIntStateOf(songProvider()?.lyricsOffset ?: 0) }
+
     LaunchedEffect(songProvider()) {
         isChecked = songProvider()?.romanizeLyrics ?: true
     }
+
     LaunchedEffect(songProvider()) {
         lyricsOffset = songProvider()?.lyricsOffset ?: 0
     }
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -367,6 +397,7 @@ fun LyricsMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -424,4 +455,5 @@ fun LyricsMenu(
             )
         }
     }
+    
 }

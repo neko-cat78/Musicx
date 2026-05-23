@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun Material3MenuGroup(
     items: List<Material3MenuItemData>
@@ -37,6 +39,7 @@ fun Material3MenuGroup(
                 index == items.size - 1 -> RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
                 else -> RoundedCornerShape(6.dp)
             }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -52,6 +55,7 @@ fun Material3MenuGroup(
         }
     }
 }
+
 @Composable
 private fun Material3MenuItemRow(
     item: Material3MenuItemData
@@ -70,12 +74,14 @@ private fun Material3MenuItemRow(
             icon()
             Spacer(modifier = Modifier.width(16.dp))
         }
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
             ProvideTextStyle(MaterialTheme.typography.titleMedium) {
                 item.title()
             }
+
             item.description?.let { desc ->
                 Spacer(modifier = Modifier.height(2.dp))
                 ProvideTextStyle(
@@ -93,6 +99,7 @@ private fun Material3MenuItemRow(
         }
     }
 }
+
 data class Material3MenuItemData(
     val icon: (@Composable () -> Unit)? = null,
     val title: @Composable () -> Unit,

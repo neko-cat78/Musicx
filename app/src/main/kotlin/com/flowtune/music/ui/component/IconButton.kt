@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun ResizableIconButton(
     @DrawableRes icon: Int,
@@ -52,6 +54,7 @@ fun ResizableIconButton(
             .alpha(if (enabled) 1f else 0.5f),
     )
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IconButton(

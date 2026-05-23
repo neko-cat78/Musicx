@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -108,6 +109,7 @@ import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.viewmodels.AlbumViewModel
 import com.flowtune.music.utils.makeTimeString
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AlbumScreen(
@@ -121,14 +123,18 @@ fun AlbumScreen(
     val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
+
     val scope = rememberCoroutineScope()
+
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val playlistId by viewModel.playlistId.collectAsState()
     val albumWithSongs by viewModel.albumWithSongs.collectAsState()
     val otherVersions by viewModel.otherVersions.collectAsState()
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
     val hideVideoSongs by rememberPreference(key = HideVideoSongsKey, defaultValue = false)
+
     val filteredSongs = remember(albumWithSongs, hideExplicit, hideVideoSongs) {
         var songs = albumWithSongs?.songs ?: emptyList()
         if (hideExplicit) {
@@ -139,6 +145,7 @@ fun AlbumScreen(
         }
         songs
     }
+
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
     val selection = rememberSaveable(
         saver = listSaver<MutableList<String>, String>(
@@ -153,6 +160,7 @@ fun AlbumScreen(
     if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
     }
+
     LaunchedEffect(filteredSongs) {
         selection.fastForEachReversed { songId ->
             if (filteredSongs.find { it.id == songId } == null) {
@@ -160,10 +168,12 @@ fun AlbumScreen(
             }
         }
     }
+
     val downloadUtil = LocalDownloadUtil.current
     var downloadState by remember {
         mutableStateOf(Download.STATE_STOPPED)
     }
+
     LaunchedEffect(albumWithSongs) {
         val songs = albumWithSongs?.songs?.map { it.id }
         if (songs.isNullOrEmpty()) return@LaunchedEffect
@@ -183,6 +193,7 @@ fun AlbumScreen(
                 }
         }
     }
+
     LazyColumn(
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) {
@@ -195,6 +206,7 @@ fun AlbumScreen(
                         .padding(top = 8.dp, bottom = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    
                     Surface(
                         modifier = Modifier
                             .size(240.dp)
@@ -212,7 +224,9 @@ fun AlbumScreen(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+
                     Spacer(modifier = Modifier.height(20.dp))
+
                     Text(
                         text = albumWithSongs.album.title,
                         style = MaterialTheme.typography.headlineSmall,
@@ -222,7 +236,9 @@ fun AlbumScreen(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(horizontal = 32.dp)
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
+
                     Text(buildAnnotatedString {
                         withStyle(
                             style = MaterialTheme.typography.titleMedium.copy(
@@ -243,12 +259,15 @@ fun AlbumScreen(
                             }
                         }
                     }, textAlign = TextAlign.Center)
+
                     Spacer(modifier = Modifier.height(12.dp))
+
                     val totalDuration = albumWithSongs.songs.sumOf { it.song.duration }
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
+                        
                         if (albumWithSongs.album.year != null) {
                             Text(
                                 text = albumWithSongs.album.year.toString(),
@@ -256,6 +275,7 @@ fun AlbumScreen(
                                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                             )
                         }
+
                         Text(
                             text = buildString {
                                 append(pluralStringResource(
@@ -272,7 +292,9 @@ fun AlbumScreen(
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
                     }
+
                     Spacer(modifier = Modifier.height(24.dp))
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -280,6 +302,7 @@ fun AlbumScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        
                         Surface(
                             onClick = {
                                 database.query {
@@ -307,6 +330,7 @@ fun AlbumScreen(
                                 )
                             }
                         }
+
                         Surface(
                             onClick = {
                                 playerConnection.service.getAutomix(playlistId)
@@ -330,6 +354,7 @@ fun AlbumScreen(
                                 )
                             }
                         }
+
                         Surface(
                             onClick = {
                                 menuState.show {
@@ -361,6 +386,7 @@ fun AlbumScreen(
                     }
                 }
             }
+
             if (filteredSongs.isNotEmpty()) {
                 itemsIndexed(
                     items = filteredSongs,
@@ -373,6 +399,7 @@ fun AlbumScreen(
                             selection.remove(song.id)
                         }
                     }
+
                     SongListItem(
                         song = song,
                         albumIndex = index + 1,
@@ -432,6 +459,7 @@ fun AlbumScreen(
                     )
                 }
             }
+
             if (otherVersions.isNotEmpty()) {
                 item(key = "other_versions_title") {
                     NavigationTitle(
@@ -486,6 +514,7 @@ fun AlbumScreen(
             }
         }
     }
+
     TopAppBar(
         title = {
             if (inSelectMode) {

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -58,6 +59,7 @@ import com.flowtune.music.utils.makeTimeString
 import com.flowtune.music.viewmodels.StatsViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun StatsScreen(
@@ -70,6 +72,7 @@ fun StatsScreen(
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val context = LocalContext.current
+
     val indexChips by viewModel.indexChips.collectAsState()
     val mostPlayedSongs by viewModel.mostPlayedSongs.collectAsState()
     val mostPlayedSongsStats by viewModel.mostPlayedSongsStats.collectAsState()
@@ -77,9 +80,11 @@ fun StatsScreen(
     val mostPlayedAlbums by viewModel.mostPlayedAlbums.collectAsState()
     val firstEvent by viewModel.firstEvent.collectAsState()
     val currentDate = LocalDateTime.now()
+
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val selectedOption by viewModel.selectedOption.collectAsState()
+
     val weeklyDates =
         if (currentDate != null && firstEvent != null) {
             generateSequence(currentDate) { it.minusWeeks(1) }
@@ -87,12 +92,15 @@ fun StatsScreen(
                 .mapIndexed { index, date ->
                     val endDate = date.plusWeeks(1).minusDays(1).coerceAtMost(currentDate)
                     val formatter = DateTimeFormatter.ofPattern("dd MMM")
+
                     val startDateFormatted = formatter.format(date)
                     val endDateFormatted = formatter.format(endDate)
+
                     val startMonth = date.month
                     val endMonth = endDate.month
                     val startYear = date.year
                     val endYear = endDate.year
+
                     val text =
                         when {
                             startYear != currentDate.year -> "$startDateFormatted, $startYear - $endDateFormatted, $endYear"
@@ -104,6 +112,7 @@ fun StatsScreen(
         } else {
             emptyList()
         }
+
     val monthlyDates =
         if (currentDate != null && firstEvent != null) {
             generateSequence(
@@ -130,6 +139,7 @@ fun StatsScreen(
         } else {
             emptyList()
         }
+
     val yearlyDates =
         if (currentDate != null && firstEvent != null) {
             generateSequence(
@@ -150,6 +160,7 @@ fun StatsScreen(
         } else {
             emptyList()
         }
+
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = lazyListState,
@@ -214,11 +225,13 @@ fun StatsScreen(
                     onValueUpdate = { viewModel.indexChips.value = it },
                 )
             }
+
             item(key = "mostPlayedSongs") {
                 NavigationTitle(
                     title = "${mostPlayedSongsStats.size} ${stringResource(id = R.string.songs)}",
                     modifier = Modifier.animateItem(),
                 )
+
                 LazyRow(
                     modifier = Modifier.animateItem(),
                 ) {
@@ -272,11 +285,13 @@ fun StatsScreen(
                     }
                 }
             }
+
             item(key = "mostPlayedArtists") {
                 NavigationTitle(
                     title = "${mostPlayedArtists.size} ${stringResource(id = R.string.artists)}",
                     modifier = Modifier.animateItem(),
                 )
+
                 LazyRow(
                     modifier = Modifier.animateItem(),
                 ) {
@@ -318,11 +333,13 @@ fun StatsScreen(
                     }
                 }
             }
+
             item(key = "mostPlayedAlbums") {
                 NavigationTitle(
                     title = "${mostPlayedAlbums.size} ${stringResource(id = R.string.albums)}",
                     modifier = Modifier.animateItem(),
                 )
+
                 if (mostPlayedAlbums.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier.animateItem(),
@@ -370,6 +387,7 @@ fun StatsScreen(
                 }
             }
         }
+
         if (mostPlayedSongs.isNotEmpty()) {
             HideOnScrollFAB(
                 visible = true,
@@ -385,6 +403,7 @@ fun StatsScreen(
                 }
             )
         }
+
         TopAppBar(
             title = { Text(stringResource(R.string.stats)) },
             navigationIcon = {
@@ -401,4 +420,5 @@ fun StatsScreen(
         )
     }
 }
+
 enum class OptionStats { WEEKS, MONTHS, YEARS, CONTINUOUS }

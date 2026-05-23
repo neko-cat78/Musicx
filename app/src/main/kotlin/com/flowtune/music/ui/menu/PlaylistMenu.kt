@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -66,6 +67,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
+
 @Composable
 fun PlaylistMenu(
     playlist: Playlist,
@@ -83,6 +85,7 @@ fun PlaylistMenu(
     var songs by remember {
         mutableStateOf(emptyList<Song>())
     }
+
     LaunchedEffect(Unit) {
         if (autoPlaylist == false) {
             database.playlistSongs(playlist.id).collect {
@@ -94,10 +97,13 @@ fun PlaylistMenu(
             }
         }
     }
+
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
     }
+
     val editable: Boolean = playlist.playlist.isEditable == true
+
     LaunchedEffect(songs) {
         if (songs.isEmpty()) return@LaunchedEffect
         downloadUtil.downloads.collect { downloads ->
@@ -116,9 +122,11 @@ fun PlaylistMenu(
                 }
         }
     }
+
     var showEditDialog by remember {
         mutableStateOf(false)
     }
+
     if (showEditDialog) {
         TextFieldDialog(
             icon = { Icon(painter = painterResource(R.drawable.edit), contentDescription = null) },
@@ -145,9 +153,11 @@ fun PlaylistMenu(
             },
         )
     }
+
     var showRemoveDownloadDialog by remember {
         mutableStateOf(false)
     }
+
     if (showRemoveDownloadDialog) {
         DefaultDialog(
             onDismiss = { showRemoveDownloadDialog = false },
@@ -169,6 +179,7 @@ fun PlaylistMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showRemoveDownloadDialog = false
@@ -187,9 +198,11 @@ fun PlaylistMenu(
             },
         )
     }
+
     var showDeletePlaylistDialog by remember {
         mutableStateOf(false)
     }
+
     if (showDeletePlaylistDialog) {
         DefaultDialog(
             onDismiss = { showDeletePlaylistDialog = false },
@@ -208,16 +221,21 @@ fun PlaylistMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showDeletePlaylistDialog = false
                         onDismiss()
                         database.transaction {
+                            
                             if (playlist.playlist.bookmarkedAt != null) {
+                                
                                 update(playlist.playlist.toggleLike())
                             }
+                            
                             delete(playlist.playlist)
                         }
+
                         coroutineScope.launch(Dispatchers.IO) {
                             playlist.playlist.browseId?.let { YouTube.deletePlaylist(it) }
                         }
@@ -228,6 +246,7 @@ fun PlaylistMenu(
             }
         )
     }
+
     PlaylistListItem(
         playlist = playlist,
         trailingContent = {
@@ -248,10 +267,14 @@ fun PlaylistMenu(
             }
         },
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -322,7 +345,7 @@ fun PlaylistMenu(
                             val intent = Intent().apply {
                                 action = Intent.ACTION_SEND
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "https:
+                                putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/playlist?list=${dbPlaylist?.playlist?.browseId}")
                             }
                             context.startActivity(Intent.createChooser(intent, null))
                         }
@@ -331,6 +354,7 @@ fun PlaylistMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -397,7 +421,9 @@ fun PlaylistMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

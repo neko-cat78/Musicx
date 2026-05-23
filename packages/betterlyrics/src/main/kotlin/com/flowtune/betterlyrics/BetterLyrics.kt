@@ -1,4 +1,5 @@
 package com.flowtune.betterlyrics
+
 import com.flowtune.betterlyrics.models.TTMLResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,6 +12,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+
 object BetterLyrics {
     private val client by lazy {
         HttpClient(CIO) {
@@ -22,17 +24,21 @@ object BetterLyrics {
                     },
                 )
             }
+
             install(HttpTimeout) {
                 requestTimeoutMillis = 15000
                 connectTimeoutMillis = 10000
                 socketTimeoutMillis = 15000
             }
+
             defaultRequest {
-                url("https:
+                url("https://lyrics-api.boidu.dev")
             }
+
             expectSuccess = false
         }
     }
+
     private suspend fun fetchTTML(
         artist: String,
         title: String,
@@ -55,20 +61,25 @@ object BetterLyrics {
             null
         }
     }.getOrNull()
+
     suspend fun getLyrics(
         title: String,
         artist: String,
         duration: Int,
         album: String? = null,
     ) = runCatching {
+        
         val ttml = fetchTTML(artist, title, duration, album)
             ?: throw IllegalStateException("Lyrics unavailable")
+        
         val parsedLines = TTMLParser.parseTTML(ttml)
         if (parsedLines.isEmpty()) {
             throw IllegalStateException("Failed to parse lyrics")
         }
+        
         TTMLParser.toLRC(parsedLines)
     }
+
     suspend fun getAllLyrics(
         title: String,
         artist: String,

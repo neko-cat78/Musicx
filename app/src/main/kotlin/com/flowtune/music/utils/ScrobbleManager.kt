@@ -1,9 +1,11 @@
 package com.flowtune.music.utils
+
 import com.flowtune.music.models.MediaMetadata
 import com.flowtune.lastfm.LastFM
 import kotlinx.coroutines.*
 import timber.log.Timber
 import kotlin.math.min
+
 class ScrobbleManager(
     private val scope: CoroutineScope,
     var minSongDuration: Int = 30,
@@ -16,6 +18,7 @@ class ScrobbleManager(
     private var songStartedAt: Long = 0L
     private var songStarted = false
     var useNowPlaying = true
+
     fun destroy() {
         scrobbleJob?.cancel()
         scrobbleRemainingMillis = 0L
@@ -23,6 +26,7 @@ class ScrobbleManager(
         songStartedAt = 0L
         songStarted = false
     }
+
     fun onSongStart(metadata: MediaMetadata?, duration: Long? = null) {
         if (metadata == null) return
         songStartedAt = System.currentTimeMillis() / 1000
@@ -32,22 +36,29 @@ class ScrobbleManager(
             updateNowPlaying(metadata)
         }
     }
+
     fun onSongResume(metadata: MediaMetadata) {
         resumeScrobbleTimer(metadata)
     }
+
     fun onSongPause() {
         pauseScrobbleTimer()
     }
+
     fun onSongStop() {
         stopScrobbleTimer()
         songStarted = false
     }
+
     private fun startScrobbleTimer(metadata: MediaMetadata, duration: Long? = null) {
         scrobbleJob?.cancel()
         val duration = duration?.toInt()?.div(1000) ?: metadata.duration
+
         if (duration <= minSongDuration) return
+
         val threshold = duration * 1000L * scrobbleDelayPercent
         scrobbleRemainingMillis = min(threshold.toLong(), scrobbleDelaySeconds * 1000L)
+
         if (scrobbleRemainingMillis <= 0) {
             scrobbleSong(metadata)
             return
@@ -59,6 +70,7 @@ class ScrobbleManager(
             scrobbleJob = null
         }
     }
+
     private fun pauseScrobbleTimer() {
         scrobbleJob?.cancel()
         if (scrobbleTimerStartedAt != 0L) {
@@ -69,6 +81,7 @@ class ScrobbleManager(
         } else {
         }
     }
+
     private fun resumeScrobbleTimer(metadata: MediaMetadata) {
         if (scrobbleRemainingMillis <= 0) return
         scrobbleJob?.cancel()
@@ -79,11 +92,13 @@ class ScrobbleManager(
             scrobbleJob = null
         }
     }
+
     private fun stopScrobbleTimer() {
         scrobbleJob?.cancel()
         scrobbleJob = null
         scrobbleRemainingMillis = 0
     }
+
     private fun scrobbleSong(metadata: MediaMetadata) {
         scope.launch {
             LastFM.scrobble(
@@ -95,6 +110,7 @@ class ScrobbleManager(
             )
         }
     }
+
     private fun updateNowPlaying(metadata: MediaMetadata) {
         scope.launch {
             LastFM.updateNowPlaying(
@@ -105,6 +121,7 @@ class ScrobbleManager(
             )
         }
     }
+
     fun onPlayerStateChanged(isPlaying: Boolean, metadata: MediaMetadata?, duration: Long? = null) {
         if (metadata == null) return
         if (isPlaying) {

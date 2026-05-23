@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import android.os.Build
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -106,6 +107,7 @@ import kotlinx.coroutines.launch
 import android.content.Intent
 import android.app.Activity
 import androidx.compose.material3.SnackbarHostState
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppearanceSettings(
@@ -123,6 +125,7 @@ fun AppearanceSettings(
         defaultValue = true
     )
     val coroutineScope = rememberCoroutineScope()
+
     fun handleIconChange(enabled: Boolean) {
         onEnableDynamicIconChange(enabled)
         IconUtils.setIcon(activity, enabled)
@@ -141,6 +144,7 @@ fun AppearanceSettings(
             }
         }
     }
+
     val (darkMode, onDarkModeChange) = rememberEnumPreference(
         DarkModeKey,
         defaultValue = DarkMode.ON
@@ -187,6 +191,7 @@ fun AppearanceSettings(
     val (lyricsTextSize, onLyricsTextSizeChange) = rememberPreference(LyricsTextSizeKey, defaultValue = 24f)
     val (lyricsLineSpacing, onLyricsLineSpacingChange) = rememberPreference(LyricsLineSpacingKey, defaultValue = 1.3f)
     val (lyricsGlowEffect, onLyricsGlowEffectChange) = rememberPreference(LyricsGlowEffectKey, defaultValue = false)
+
     val (sliderStyle, onSliderStyleChange) = rememberEnumPreference(
         SliderStyleKey,
         defaultValue = SliderStyle.SLIM
@@ -207,18 +212,22 @@ fun AppearanceSettings(
         GridItemsSizeKey,
         defaultValue = GridItemSize.SMALL
     )
+
     val (slimNav, onSlimNavChange) = rememberPreference(
         SlimNavBarKey,
         defaultValue = false
     )
+
     val (swipeToSong, onSwipeToSongChange) = rememberPreference(
         SwipeToSongKey,
         defaultValue = false
     )
+
     val (swipeToRemoveSong, onSwipeToRemoveSongChange) = rememberPreference(
         SwipeToRemoveSongKey,
         defaultValue = false
     )
+
     val (showLikedPlaylist, onShowLikedPlaylistChange) = rememberPreference(
         ShowLikedPlaylistKey,
         defaultValue = true
@@ -239,42 +248,54 @@ fun AppearanceSettings(
         ShowUploadedPlaylistKey,
         defaultValue = true
     )
+
     val availableBackgroundStyles = PlayerBackgroundStyle.entries.filter {
         it != PlayerBackgroundStyle.BLUR || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     }
+
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val useDarkTheme =
         remember(darkMode, isSystemInDarkTheme) {
             if (darkMode == DarkMode.AUTO) isSystemInDarkTheme else darkMode == DarkMode.ON
         }
+
     val (defaultChip, onDefaultChipChange) = rememberEnumPreference(
         key = ChipSortTypeKey,
         defaultValue = LibraryFilter.LIBRARY
     )
+
     var showSliderOptionDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showDarkModeDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showPlayerBackgroundDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showPlayerButtonsStyleDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showLyricsPositionDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showLyricsAnimationStyleDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showLyricsTextSizeDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showLyricsLineSpacingDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showLyricsPositionDialog) {
         EnumDialog(
             onDismiss = { showLyricsPositionDialog = false },
@@ -294,6 +315,7 @@ fun AppearanceSettings(
             }
         )
     }
+
     if (showLyricsAnimationStyleDialog) {
         EnumDialog(
             onDismiss = { showLyricsAnimationStyleDialog = false },
@@ -316,8 +338,10 @@ fun AppearanceSettings(
             }
         )
     }
+
     if (showLyricsTextSizeDialog) {
         var tempTextSize by remember { mutableFloatStateOf(lyricsTextSize) }
+        
         DefaultDialog(
             onDismiss = { 
                 tempTextSize = lyricsTextSize
@@ -331,7 +355,9 @@ fun AppearanceSettings(
                 ) {
                     Text(stringResource(R.string.reset))
                 }
+                
                 Spacer(modifier = Modifier.weight(1f))
+                
                 TextButton(
                     onClick = { 
                         tempTextSize = lyricsTextSize
@@ -359,11 +385,13 @@ fun AppearanceSettings(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
                 Text(
                     text = "${tempTextSize.roundToInt()} sp",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
                 Slider(
                     value = tempTextSize,
                     onValueChange = { tempTextSize = it },
@@ -374,8 +402,10 @@ fun AppearanceSettings(
             }
         }
     }
+
     if (showLyricsLineSpacingDialog) {
         var tempLineSpacing by remember { mutableFloatStateOf(lyricsLineSpacing) }
+        
         DefaultDialog(
             onDismiss = { 
                 tempLineSpacing = lyricsLineSpacing
@@ -389,7 +419,9 @@ fun AppearanceSettings(
                 ) {
                     Text(stringResource(R.string.reset))
                 }
+                
                 Spacer(modifier = Modifier.weight(1f))
+                
                 TextButton(
                     onClick = { 
                         tempLineSpacing = lyricsLineSpacing
@@ -417,11 +449,13 @@ fun AppearanceSettings(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
                 Text(
                     text = "${String.format("%.1f", tempLineSpacing)}x",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
                 Slider(
                     value = tempLineSpacing,
                     onValueChange = { tempLineSpacing = it },
@@ -432,6 +466,7 @@ fun AppearanceSettings(
             }
         }
     }
+
     if (showPlayerButtonsStyleDialog) {
         EnumDialog(
             onDismiss = { showPlayerButtonsStyleDialog = false },
@@ -451,6 +486,7 @@ fun AppearanceSettings(
             }
         )
     }
+
     if (showPlayerBackgroundDialog) {
         EnumDialog(
             onDismiss = { showPlayerBackgroundDialog = false },
@@ -470,6 +506,7 @@ fun AppearanceSettings(
             }
         )
     }
+
     if (showDarkModeDialog) {
         EnumDialog(
             onDismiss = { showDarkModeDialog = false },
@@ -489,9 +526,11 @@ fun AppearanceSettings(
             }
         )
     }
+
     var showDefaultOpenTabDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showDefaultOpenTabDialog) {
         EnumDialog(
             onDismiss = { showDefaultOpenTabDialog = false },
@@ -511,9 +550,11 @@ fun AppearanceSettings(
             }
         )
     }
+
     var showDefaultChipDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showDefaultChipDialog) {
         EnumDialog(
             onDismiss = { showDefaultChipDialog = false },
@@ -535,9 +576,11 @@ fun AppearanceSettings(
             }
         )
     }
+
     var showGridSizeDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showGridSizeDialog) {
         EnumDialog(
             onDismiss = { showGridSizeDialog = false },
@@ -556,6 +599,7 @@ fun AppearanceSettings(
             }
         )
     }
+
     if (showSliderOptionDialog) {
         DefaultDialog(
             buttons = {
@@ -574,6 +618,7 @@ fun AppearanceSettings(
                 PlayerBackgroundStyle.DEFAULT,
                 isSystemInDarkTheme()
             )
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -690,6 +735,7 @@ fun AppearanceSettings(
                             enabled = false,
                             modifier = Modifier.weight(1f)
                         )
+
                         Text(
                             text = stringResource(R.string.slim),
                             style = MaterialTheme.typography.labelSmall,
@@ -746,6 +792,7 @@ fun AppearanceSettings(
             }
         }
     }
+
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
@@ -841,11 +888,14 @@ fun AppearanceSettings(
                 }
             }
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         val (pureBlackMiniPlayer, onPureBlackMiniPlayerChange) = rememberPreference(
             PureBlackMiniPlayerKey,
             defaultValue = false
         )
+
         Material3SettingsGroup(
             title = stringResource(id = R.string.mini_player),
             items = buildList {
@@ -895,8 +945,11 @@ fun AppearanceSettings(
                 )
             }
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         var showSensitivityDialog by rememberSaveable { mutableStateOf(false) }
+
         Material3SettingsGroup(
             title = stringResource(R.string.player),
             items = listOf(
@@ -1019,8 +1072,10 @@ fun AppearanceSettings(
                 )
             ) else emptyList()
         )
+
         if (showSensitivityDialog) {
             var tempSensitivity by remember { mutableFloatStateOf(swipeSensitivity) }
+
             DefaultDialog(
                 onDismiss = {
                     tempSensitivity = swipeSensitivity
@@ -1034,7 +1089,9 @@ fun AppearanceSettings(
                     ) {
                         Text(stringResource(R.string.reset))
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     TextButton(
                         onClick = {
                             tempSensitivity = swipeSensitivity
@@ -1062,6 +1119,7 @@ fun AppearanceSettings(
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Text(
                         text = stringResource(
                             R.string.sensitivity_percentage,
@@ -1070,6 +1128,7 @@ fun AppearanceSettings(
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
+
                     Slider(
                         value = tempSensitivity,
                         onValueChange = { tempSensitivity = it },
@@ -1079,7 +1138,9 @@ fun AppearanceSettings(
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.lyrics),
             items = listOf(
@@ -1189,7 +1250,9 @@ fun AppearanceSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.misc),
             items = listOf(
@@ -1298,7 +1361,9 @@ fun AppearanceSettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.auto_playlists),
             items = listOf(
@@ -1406,6 +1471,7 @@ fun AppearanceSettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.appearance)) },
         navigationIcon = {
@@ -1421,21 +1487,25 @@ fun AppearanceSettings(
         }
     )
 }
+
 enum class DarkMode {
     ON,
     OFF,
     AUTO,
 }
+
 enum class NavigationTab {
     HOME,
     SEARCH,
     LIBRARY,
 }
+
 enum class LyricsPosition {
     LEFT,
     CENTER,
     RIGHT,
 }
+
 enum class PlayerTextAlignment {
     SIDED,
     CENTER,

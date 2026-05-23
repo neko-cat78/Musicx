@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.components
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+
 @Composable
 fun AnimatedDecorativeElement(modifier: Modifier = Modifier, isVisible: Boolean) {
     val rotation = remember { Animatable(0f) }

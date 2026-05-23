@@ -1,9 +1,11 @@
 package com.flowtune.innertube.models.response
+
 import com.flowtune.innertube.models.NavigationEndpoint
 import com.flowtune.innertube.models.PlaylistPanelRenderer
 import com.flowtune.innertube.models.Tabs
 import com.flowtune.innertube.models.YouTubeDataPage
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class NextResponse(
     val contents: Contents,
@@ -30,6 +32,7 @@ data class NextResponse(
             }
         }
     }
+
     @Serializable
     data class ContinuationContents(
         val playlistPanelContinuation: PlaylistPanelRenderer,

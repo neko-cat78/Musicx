@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.search
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,7 @@ import com.flowtune.music.viewmodels.LocalFilter
 import com.flowtune.music.viewmodels.LocalSearchViewModel
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.collect
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocalSearchScreen(
@@ -50,11 +52,15 @@ fun LocalSearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
+
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val searchFilter by viewModel.filter.collectAsState()
     val result by viewModel.result.collectAsState()
+
     val lazyListState = rememberLazyListState()
+
     LaunchedEffect(Unit) {
         snapshotFlow { lazyListState.firstVisibleItemScrollOffset }
             .drop(1)
@@ -62,11 +68,14 @@ fun LocalSearchScreen(
                 keyboardController?.hide()
             }
     }
+
     LaunchedEffect(query) {
         viewModel.query.value = query
     }
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.screenWidthDp > configuration.screenHeightDp
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,6 +99,7 @@ fun LocalSearchScreen(
             currentValue = searchFilter,
             onValueUpdate = { viewModel.filter.value = it },
         )
+
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.weight(1f),
@@ -122,6 +132,7 @@ fun LocalSearchScreen(
                                 style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier.weight(1f),
                             )
+
                             Icon(
                                 painter = painterResource(R.drawable.navigate_next),
                                 contentDescription = null,
@@ -129,6 +140,7 @@ fun LocalSearchScreen(
                         }
                     }
                 }
+
                 items(
                     items = items.distinctBy { it.id },
                     key = { it.id },
@@ -197,6 +209,7 @@ fun LocalSearchScreen(
                                 )
                                 .animateItem(),
                         )
+
                         is Album -> AlbumListItem(
                             album = item,
                             isActive = item.id == mediaMetadata?.album?.id,
@@ -208,6 +221,7 @@ fun LocalSearchScreen(
                                 }
                                 .animateItem(),
                         )
+
                         is Artist -> ArtistListItem(
                             artist = item,
                             modifier = Modifier
@@ -217,6 +231,7 @@ fun LocalSearchScreen(
                                 }
                                 .animateItem(),
                         )
+
                         is Playlist -> PlaylistListItem(
                             playlist = item,
                             modifier = Modifier
@@ -229,6 +244,7 @@ fun LocalSearchScreen(
                     }
                 }
             }
+
             if (result.query.isNotEmpty() && result.map.isEmpty()) {
                 item(key = "no_result") {
                     EmptyPlaceholder(

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,7 @@ import com.flowtune.music.di.PlayerCache
 import com.flowtune.music.di.DownloadCache
 import androidx.media3.datasource.cache.SimpleCache
 import java.time.LocalDateTime
+
 @HiltViewModel
 class CachePlaylistViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -27,8 +29,10 @@ class CachePlaylistViewModel @Inject constructor(
     @PlayerCache private val playerCache: SimpleCache,
     @DownloadCache private val downloadCache: SimpleCache
 ) : ViewModel() {
+
     private val _cachedSongs = MutableStateFlow<List<Song>>(emptyList())
     val cachedSongs: StateFlow<List<Song>> = _cachedSongs
+
     init {
         viewModelScope.launch {
             while (true) {
@@ -37,15 +41,18 @@ class CachePlaylistViewModel @Inject constructor(
                 val cachedIds = playerCache.keys.toSet()
                 val downloadedIds = downloadCache.keys.toSet()
                 val pureCacheIds = cachedIds.subtract(downloadedIds)
+
                 val songs = if (pureCacheIds.isNotEmpty()) {
                     database.getSongsByIds(pureCacheIds.toList())
                 } else {
                     emptyList()
                 }
+
                 val completeSongs = songs.filter {
                     val contentLength = it.format?.contentLength
                     contentLength != null && playerCache.isCached(it.song.id, 0, contentLength)
                 }
+
                 if (completeSongs.isNotEmpty()) {
                     database.query {
                         completeSongs.forEach {
@@ -55,15 +62,18 @@ class CachePlaylistViewModel @Inject constructor(
                         }
                     }
                 }
+
                 _cachedSongs.value = completeSongs
                     .filter { it.song.dateDownload != null }
                     .sortedByDescending { it.song.dateDownload }
                     .filterExplicit(hideExplicit)
                     .filterVideoSongs(hideVideoSongs)
+
                 delay(1000)
             }
         }
     }
+
     fun removeSongFromCache(songId: String) {
         playerCache.removeResource(songId)
     }

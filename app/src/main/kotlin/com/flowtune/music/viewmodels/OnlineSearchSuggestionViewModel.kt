@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class OnlineSearchSuggestionViewModel
@@ -32,6 +34,7 @@ constructor(
     val query = MutableStateFlow("")
     private val _viewState = MutableStateFlow(SearchSuggestionViewState())
     val viewState = _viewState.asStateFlow()
+
     init {
         viewModelScope.launch {
             query
@@ -46,6 +49,7 @@ constructor(
                         val result = YouTube.searchSuggestions(query).getOrNull()
                         val hideExplicit = context.dataStore.get(HideExplicitKey, false)
                         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+
                         database
                             .searchHistory(query)
                             .map { it.take(3) }
@@ -74,6 +78,7 @@ constructor(
         }
     }
 }
+
 data class SearchSuggestionViewState(
     val history: List<SearchHistory> = emptyList(),
     val suggestions: List<String> = emptyList(),

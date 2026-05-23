@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,6 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
 @OptIn(ExperimentalCoilApi::class, ExperimentalMaterial3Api::class, DelicateCoilApi::class)
 @Composable
 fun StorageSettings(
@@ -68,6 +70,7 @@ fun StorageSettings(
     val imageDiskCache = context.imageLoader.diskCache ?: return
     val playerCache = LocalPlayerConnection.current?.service?.playerCache ?: return
     val downloadCache = LocalPlayerConnection.current?.service?.downloadCache ?: return
+
     val coroutineScope = rememberCoroutineScope()
     val songCacheString = stringResource(R.string.song_cache).lowercase()
     val imageCacheString = stringResource(R.string.image_cache).lowercase()
@@ -79,13 +82,16 @@ fun StorageSettings(
         key = MaxSongCacheSizeKey,
         defaultValue = 1024
     )
+
     var clearDownloads by remember { mutableStateOf(false) }
     var clearCacheDialog by remember { mutableStateOf(false) }
     var clearImageCacheDialog by remember { mutableStateOf(false) }
+
     var showCacheWarningDialog by remember { mutableStateOf(false) }
     var cacheType by remember { mutableStateOf("") }
     var cacheUsage by remember { mutableStateOf(0L) }
     var onConfirmAction by remember { mutableStateOf<() -> Unit>({}) }
+
     var imageCacheSize by remember {
         mutableStateOf(imageDiskCache.size)
     }
@@ -109,6 +115,7 @@ fun StorageSettings(
         ),
         label = "playerCacheProgress",
     )
+
     LaunchedEffect(maxImageCacheSize) {
         SingletonImageLoader.reset()
         if (maxImageCacheSize == 0) {
@@ -126,6 +133,7 @@ fun StorageSettings(
             }
         }
     }
+
     LaunchedEffect(imageDiskCache) {
         while (isActive) {
             delay(500)
@@ -144,6 +152,7 @@ fun StorageSettings(
             downloadCacheSize = tryOrNull { downloadCache.cacheSpace } ?: 0
         }
     }
+
     if (clearDownloads) {
         ActionPromptDialog(
             title = stringResource(R.string.clear_all_downloads),
@@ -196,6 +205,7 @@ fun StorageSettings(
             }
         )
     }
+
     if (showCacheWarningDialog) {
         AlertDialog(
             onDismissRequest = { showCacheWarningDialog = false },
@@ -229,6 +239,7 @@ fun StorageSettings(
             }
         )
     }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -279,6 +290,7 @@ fun StorageSettings(
                     )
                 )
             )
+
             Material3SettingsGroup(
                 title = stringResource(R.string.song_cache),
                 items = listOf(
@@ -305,6 +317,7 @@ fun StorageSettings(
                                         } else {
                                             newValue * 1024 * 1024L
                                         }
+
                                         if (newLimitInBytes < playerCacheSize) {
                                             cacheUsage = playerCacheSize
                                             cacheType = songCacheString
@@ -347,6 +360,7 @@ fun StorageSettings(
                     )
                 )
             )
+
             Material3SettingsGroup(
                 title = stringResource(R.string.image_cache),
                 items = listOf(
@@ -368,6 +382,7 @@ fun StorageSettings(
                                     onValueChange = {
                                         val newValue = imageCacheValues[it.roundToInt()]
                                         val newLimitInBytes = newValue * 1024 * 1024L
+
                                         if (newLimitInBytes < imageCacheSize) {
                                             cacheUsage = imageCacheSize
                                             cacheType = imageCacheString

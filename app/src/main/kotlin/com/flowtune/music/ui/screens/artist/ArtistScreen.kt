@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.artist
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -126,6 +127,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
@@ -149,22 +151,28 @@ fun ArtistScreen(
     val showArtistDescription by rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val showArtistSubscriberCount by rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
     val showMonthlyListeners by rememberPreference(key = ShowMonthlyListenersKey, defaultValue = true)
+
     val lazyListState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
     var showLocal by rememberSaveable { mutableStateOf(false) }
     val density = LocalDensity.current
+
     val systemBarsTopPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
     val headerOffset = with(density) {
         -(systemBarsTopPadding + AppBarHeight).roundToPx()
     }
+
     val transparentAppBar by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset < 100
         }
     }
+
     LaunchedEffect(libraryArtist) {
+        
         showLocal = libraryArtist?.artist?.isLocal == true
     }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -180,6 +188,7 @@ fun ArtistScreen(
                                 IntOffset(x = 0, y = headerOffset)
                             }
                     ) {
+                        
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -196,36 +205,44 @@ fun ArtistScreen(
                                     ),
                             )
                         }
+                        
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
+                            
                             TextPlaceholder(
                                 height = 36.dp,
                                 modifier = Modifier
                                     .fillMaxWidth(0.7f)
                                     .padding(bottom = 16.dp)
                             )
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                
                                 ButtonPlaceholder(
                                     modifier = Modifier
                                         .width(120.dp)
                                         .height(40.dp)
                                 )
+
                                 Spacer(modifier = Modifier.weight(1f))
+
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    
                                     ButtonPlaceholder(
                                         modifier = Modifier
                                             .width(100.dp)
                                             .height(40.dp)
                                     )
+
                                     Box(
                                         modifier = Modifier
                                             .size(48.dp)
@@ -238,6 +255,7 @@ fun ArtistScreen(
                                 }
                             }
                         }
+                        
                         repeat(6) {
                             ListItemPlaceHolder()
                         }
@@ -247,7 +265,9 @@ fun ArtistScreen(
                 item(key = "header") {
                     val thumbnail = artistPage?.artist?.thumbnail ?: libraryArtist?.artist?.thumbnailUrl
                     val artistName = artistPage?.artist?.title ?: libraryArtist?.artist?.name
+
                     Box {
+                        
                         if (thumbnail != null) {
                             Box(
                                 modifier = Modifier
@@ -269,11 +289,13 @@ fun ArtistScreen(
                                 )
                             }
                         }
+
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
                                     top = if (thumbnail != null) {
+                                        
                                         LocalResources.current.displayMetrics.widthPixels.let { screenWidth ->
                                             with(density) {
                                                 ((screenWidth / 1.2f) - 144).toDp()
@@ -289,6 +311,7 @@ fun ArtistScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp)
                             ) {
+                                
                                 Text(
                                     text = artistName ?: "Unknown",
                                     style = MaterialTheme.typography.headlineLarge,
@@ -298,10 +321,12 @@ fun ArtistScreen(
                                     fontSize = 32.sp,
                                     modifier = Modifier.padding(bottom = 16.dp)
                                 )
+
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    
                                     OutlinedButton(
                                         onClick = {
                                             database.transaction {
@@ -338,11 +363,14 @@ fun ArtistScreen(
                                             color = if (!isSubscribed) MaterialTheme.colorScheme.error else LocalContentColor.current
                                         )
                                     }
+
                                     Spacer(modifier = Modifier.weight(1f))
+
                                     Row(
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
+                                        
                                         if (!showLocal) {
                                             artistPage?.artist?.shuffleEndpoint?.let { shuffleEndpoint ->
                                                 IconButton(
@@ -399,11 +427,13 @@ fun ArtistScreen(
                         }
                     }
                 }
+
                 if (!showLocal && (showArtistDescription || showArtistSubscriberCount || showMonthlyListeners)) {
                     val description = artistPage?.description
                     val descriptionRuns = artistPage?.descriptionRuns
                     val subscriberCount = artistPage?.subscriberCountText
                     val monthlyListeners = artistPage?.monthlyListenerCount
+
                     if ((showArtistDescription && !description.isNullOrEmpty()) ||
                         (showArtistSubscriberCount && !subscriberCount.isNullOrEmpty()) ||
                         (showMonthlyListeners && !monthlyListeners.isNullOrEmpty())) {
@@ -423,6 +453,7 @@ fun ArtistScreen(
                                         modifier = Modifier.padding(bottom = 8.dp)
                                     )
                                 }
+
                                 if (showArtistSubscriberCount && !subscriberCount.isNullOrEmpty()) {
                                     Text(
                                         text = subscriberCount,
@@ -431,6 +462,7 @@ fun ArtistScreen(
                                         modifier = Modifier.padding(bottom = 4.dp)
                                     )
                                 }
+
                                 if (showMonthlyListeners && !monthlyListeners.isNullOrEmpty()) {
                                     Text(
                                         text = monthlyListeners,
@@ -439,6 +471,7 @@ fun ArtistScreen(
                                         modifier = Modifier.padding(bottom = if (showArtistDescription && !description.isNullOrEmpty()) 8.dp else 0.dp)
                                     )
                                 }
+
                                 if (showArtistDescription && (!description.isNullOrEmpty() || !descriptionRuns.isNullOrEmpty())) {
                                     ExpandableText(
                                         text = description.orEmpty(),
@@ -455,6 +488,7 @@ fun ArtistScreen(
                         }
                     }
                 }
+
                 if (showLocal) {
                     if (librarySongs.isNotEmpty()) {
                         item(key = "local_songs_title") {
@@ -466,6 +500,7 @@ fun ArtistScreen(
                                 }
                             )
                         }
+
                         val filteredLibrarySongs = if (hideExplicit) {
                             librarySongs.filter { !it.song.explicit }
                         } else {
@@ -529,6 +564,7 @@ fun ArtistScreen(
                             )
                         }
                     }
+
                     if (libraryAlbums.isNotEmpty()) {
                         item(key = "local_albums_title") {
                             NavigationTitle(
@@ -539,6 +575,7 @@ fun ArtistScreen(
                                 }
                             )
                         }
+
                         item(key = "local_albums_list") {
                             val filteredLibraryAlbums = if (hideExplicit) {
                                 libraryAlbums.filter { !it.album.explicit }
@@ -596,6 +633,7 @@ fun ArtistScreen(
                                 )
                             }
                         }
+
                         if ((section.items.firstOrNull() as? SongItem)?.album != null) {
                             items(
                                 items = section.items.distinctBy { it.id },
@@ -681,6 +719,7 @@ fun ArtistScreen(
                                                                         item.toMediaMetadata()
                                                                     ),
                                                                 )
+
                                                             is AlbumItem -> navController.navigate("album/${item.id}")
                                                             is ArtistItem -> navController.navigate("artist/${item.id}")
                                                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
@@ -696,17 +735,20 @@ fun ArtistScreen(
                                                                         navController = navController,
                                                                         onDismiss = menuState::dismiss,
                                                                     )
+
                                                                 is AlbumItem ->
                                                                     YouTubeAlbumMenu(
                                                                         albumItem = item,
                                                                         navController = navController,
                                                                         onDismiss = menuState::dismiss,
                                                                     )
+
                                                                 is ArtistItem ->
                                                                     YouTubeArtistMenu(
                                                                         artist = item,
                                                                         onDismiss = menuState::dismiss,
                                                                     )
+
                                                                 is PlaylistItem ->
                                                                     YouTubePlaylistMenu(
                                                                         playlist = item,
@@ -727,6 +769,7 @@ fun ArtistScreen(
                 }
             }
         }
+
         HideOnScrollFAB(
             visible = librarySongs.isNotEmpty() && libraryArtist?.artist?.isLocal != true,
             lazyListState = lazyListState,
@@ -736,6 +779,7 @@ fun ArtistScreen(
                 if (!showLocal && artistPage == null) viewModel.fetchArtistsFromYTM()
             }
         )
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
@@ -743,6 +787,7 @@ fun ArtistScreen(
                 .align(Alignment.BottomCenter)
         )
     }
+
     TopAppBar(
         title = { if (!transparentAppBar) Text(artistPage?.artist?.title.orEmpty()) },
         navigationIcon = {

@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -32,11 +33,13 @@ import com.flowtune.music.ui.screens.wrapped.components.ShapeType
 import com.flowtune.music.ui.theme.bbh_bartle
 import com.flowtune.music.ui.utils.resize
 import kotlinx.coroutines.delay
+
 @Composable
 fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
     val animatedAlbums = remember { Animatable(0f) }
     val textMeasurer = rememberTextMeasurer()
     var visible by remember { mutableStateOf(false) }
+
     LaunchedEffect(isVisible, uniqueAlbumCount) {
         if (isVisible) {
             visible = true
@@ -48,6 +51,7 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
             }
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(shapeTypes = listOf(ShapeType.Circle))
         Column(
@@ -71,6 +75,7 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
                 )
             }
             Spacer(Modifier.height(32.dp))
+
             BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 val density = LocalDensity.current
                 val baseStyle = MaterialTheme.typography.displayLarge.copy(
@@ -80,6 +85,7 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
                     fontFamily = bbh_bartle,
                     drawStyle = Stroke(with(density) { 2.dp.toPx() })
                 )
+
                 val textStyle = remember(uniqueAlbumCount, maxWidth) {
                     val finalText = uniqueAlbumCount.toString()
                     var style = baseStyle.copy(fontSize = 96.sp)
@@ -90,6 +96,7 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
                     }
                     style.copy(lineHeight = style.fontSize * 1.08f)
                 }
+
                 Text(
                     text = animatedAlbums.value.toInt().toString(),
                     style = textStyle,
@@ -98,7 +105,9 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
                     textAlign = TextAlign.Center
                 )
             }
+
             Spacer(Modifier.height(16.dp))
+
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(animationSpec = tween(1000, delayMillis = 600)) + slideInVertically(animationSpec = tween(1000, delayMillis = 600))
@@ -115,6 +124,7 @@ fun WrappedTotalAlbumsScreen(uniqueAlbumCount: Int, isVisible: Boolean) {
         }
     }
 }
+
 @Composable
 fun WrappedTopAlbumScreen(topAlbum: Album?, isVisible: Boolean) {
     var visible by remember { mutableStateOf(false) }
@@ -123,6 +133,7 @@ fun WrappedTopAlbumScreen(topAlbum: Album?, isVisible: Boolean) {
             visible = true
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(shapeTypes = listOf(ShapeType.Rect))
         Column(
@@ -189,15 +200,18 @@ fun WrappedTopAlbumScreen(topAlbum: Album?, isVisible: Boolean) {
         }
     }
 }
+
 @Composable
 fun WrappedTop5AlbumsScreen(topAlbums: List<Album>, isVisible: Boolean) {
     var visible by remember { mutableStateOf(false) }
+
     LaunchedEffect(isVisible) {
         if (isVisible) {
             delay(200)
             visible = true
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground(shapeTypes = listOf(ShapeType.Circle))
         Column(
@@ -222,7 +236,9 @@ fun WrappedTop5AlbumsScreen(topAlbums: List<Album>, isVisible: Boolean) {
                     )
                 )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
+
             Column {
                 topAlbums.forEachIndexed { index, album ->
                     AnimatedVisibility(

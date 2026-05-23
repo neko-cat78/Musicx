@@ -1,13 +1,16 @@
 package com.flowtune.music.utils
+
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+
 object IconUtils {
     fun setIcon(context: Context, enabled: Boolean) {
         val pm = context.packageManager
         val dynamic = ComponentName(context, "com.flowtune.music.MainActivityAlias")
         val static = ComponentName(context, "com.flowtune.music.MainActivityStatic")
+
         pm.setComponentEnabledSetting(
             dynamic,
             if (enabled) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,

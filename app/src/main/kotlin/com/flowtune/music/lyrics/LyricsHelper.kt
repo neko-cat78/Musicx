@@ -1,4 +1,5 @@
 package com.flowtune.music.lyrics
+
 import android.content.Context
 import android.util.LruCache
 import com.flowtune.music.constants.PreferredLyricsProvider
@@ -22,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
+
 class LyricsHelper
 @Inject
 constructor(
@@ -37,6 +39,7 @@ constructor(
             YouTubeSubtitleLyricsProvider,
             YouTubeLyricsProvider
         )
+
     val preferred =
         context.dataStore.data
             .map {
@@ -78,22 +81,30 @@ constructor(
                     )
                 }
             }
+
     private val cache = LruCache<String, List<LyricsResult>>(MAX_CACHE_SIZE)
     private var currentLyricsJob: Job? = null
+
     suspend fun getLyrics(mediaMetadata: MediaMetadata): LyricsWithProvider {
         currentLyricsJob?.cancel()
+
         val cached = cache.get(mediaMetadata.id)?.firstOrNull()
         if (cached != null) {
             return LyricsWithProvider(cached.lyrics, cached.providerName)
         }
+
         val isNetworkAvailable = try {
             networkConnectivity.isCurrentlyConnected()
         } catch (e: Exception) {
+            
             true
         }
+        
         if (!isNetworkAvailable) {
+            
             return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
         }
+
         val scope = CoroutineScope(SupervisorJob())
         val deferred = scope.async {
             for (provider in lyricsProviders) {
@@ -112,16 +123,19 @@ constructor(
                             reportException(it)
                         }
                     } catch (e: Exception) {
+                        
                         reportException(e)
                     }
                 }
             }
             return@async LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
         }
+
         val result = deferred.await()
         scope.cancel()
         return result
     }
+
     suspend fun getAllLyrics(
         mediaId: String,
         songTitle: String,
@@ -131,6 +145,7 @@ constructor(
         callback: (LyricsResult) -> Unit,
     ) {
         currentLyricsJob?.cancel()
+
         val cacheKey = "$songArtists-$songTitle".replace(" ", "")
         cache.get(cacheKey)?.let { results ->
             results.forEach {
@@ -138,14 +153,19 @@ constructor(
             }
             return
         }
+
         val isNetworkAvailable = try {
             networkConnectivity.isCurrentlyConnected()
         } catch (e: Exception) {
+            
             true
         }
+        
         if (!isNetworkAvailable) {
+            
             return
         }
+
         val allResult = mutableListOf<LyricsResult>()
         currentLyricsJob = CoroutineScope(SupervisorJob()).launch {
             lyricsProviders.forEach { provider ->
@@ -157,26 +177,32 @@ constructor(
                             callback(result)
                         }
                     } catch (e: Exception) {
+                        
                         reportException(e)
                     }
                 }
             }
             cache.put(cacheKey, allResult)
         }
+
         currentLyricsJob?.join()
     }
+
     fun cancelCurrentLyricsJob() {
         currentLyricsJob?.cancel()
         currentLyricsJob = null
     }
+
     companion object {
         private const val MAX_CACHE_SIZE = 3
     }
 }
+
 data class LyricsResult(
     val providerName: String,
     val lyrics: String,
 )
+
 data class LyricsWithProvider(
     val lyrics: String,
     val provider: String,

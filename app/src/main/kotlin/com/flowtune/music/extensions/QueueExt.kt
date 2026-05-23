@@ -1,10 +1,12 @@
 package com.flowtune.music.extensions
+
 import com.flowtune.music.models.PersistQueue
 import com.flowtune.music.models.QueueData
 import com.flowtune.music.models.QueueType
 import com.flowtune.music.models.MediaMetadata
 import com.flowtune.music.playback.queues.*
 import com.flowtune.music.db.entities.AlbumEntity
+
 fun Queue.toPersistQueue(
     title: String?,
     items: List<MediaMetadata>,
@@ -20,6 +22,7 @@ fun Queue.toPersistQueue(
             queueType = QueueType.LIST
         )
         is YouTubeQueue -> {
+            
             val endpoint = "youtube_queue"
             PersistQueue(
                 title = title,
@@ -31,6 +34,7 @@ fun Queue.toPersistQueue(
             )
         }
         is YouTubeAlbumRadio -> {
+            
             PersistQueue(
                 title = title,
                 items = items,
@@ -43,6 +47,7 @@ fun Queue.toPersistQueue(
             )
         }
         is LocalAlbumRadio -> {
+            
             PersistQueue(
                 title = title,
                 items = items,
@@ -64,6 +69,7 @@ fun Queue.toPersistQueue(
         )
     }
 }
+
 fun PersistQueue.toQueue(): Queue {
     return when (queueType) {
         is QueueType.LIST -> ListQueue(
@@ -73,6 +79,7 @@ fun PersistQueue.toQueue(): Queue {
             position = position
         )
         is QueueType.YOUTUBE -> {
+            
             ListQueue(
                 title = title,
                 items = items.map { it.toMediaItem() },
@@ -81,6 +88,7 @@ fun PersistQueue.toQueue(): Queue {
             )
         }
         is QueueType.YOUTUBE_ALBUM_RADIO -> {
+            
             ListQueue(
                 title = title,
                 items = items.map { it.toMediaItem() },
@@ -89,6 +97,7 @@ fun PersistQueue.toQueue(): Queue {
             )
         }
         is QueueType.LOCAL_ALBUM_RADIO -> {
+            
             ListQueue(
                 title = title,
                 items = items.map { it.toMediaItem() },

@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class OnlinePlaylistViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -30,28 +32,38 @@ class OnlinePlaylistViewModel @Inject constructor(
     database: MusicDatabase
 ) : ViewModel() {
     private val playlistId = savedStateHandle.get<String>("playlistId")!!
+
     val playlist = MutableStateFlow<PlaylistItem?>(null)
     val playlistSongs = MutableStateFlow<List<SongItem>>(emptyList())
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
+
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
+
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore = _isLoadingMore.asStateFlow()
+
     val dbPlaylist = database.playlistByBrowseId(playlistId)
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     var continuation: String? = null
         private set
+
     private var proactiveLoadJob: Job? = null
+
     init {
         fetchInitialPlaylistData()
     }
+
     private fun fetchInitialPlaylistData() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
             _error.value = null
             continuation = null
             proactiveLoadJob?.cancel() 
+
             YouTube.playlist(playlistId)
                 .onSuccess { playlistPage ->
                     playlist.value = playlistPage.playlist
@@ -68,33 +80,43 @@ class OnlinePlaylistViewModel @Inject constructor(
                 }
         }
     }
+
     private fun startProactiveBackgroundLoading() {
         proactiveLoadJob?.cancel() 
         proactiveLoadJob = viewModelScope.launch(Dispatchers.IO) {
             var currentProactiveToken = continuation
             while (currentProactiveToken != null && isActive) {
+                
                 if (_isLoadingMore.value) {
+                    
                     break 
                 }
+
                 YouTube.playlistContinuation(currentProactiveToken)
                     .onSuccess { playlistContinuationPage ->
                         val currentSongs = playlistSongs.value.toMutableList()
                         currentSongs.addAll(playlistContinuationPage.songs)
                         playlistSongs.value = applySongFilters(currentSongs)
                         currentProactiveToken = playlistContinuationPage.continuation
+                        
                         this@OnlinePlaylistViewModel.continuation = currentProactiveToken 
                     }.onFailure { throwable ->
                         reportException(throwable)
                         currentProactiveToken = null 
                     }
             }
+            
         }
     }
+
     fun loadMoreSongs() {
         if (_isLoadingMore.value) return 
+        
         val tokenForManualLoad = continuation ?: return 
+
         proactiveLoadJob?.cancel() 
         _isLoadingMore.value = true
+
         viewModelScope.launch(Dispatchers.IO) {
             YouTube.playlistContinuation(tokenForManualLoad)
                 .onSuccess { playlistContinuationPage ->
@@ -106,22 +128,26 @@ class OnlinePlaylistViewModel @Inject constructor(
                     reportException(throwable)
                 }.also {
                     _isLoadingMore.value = false
+                    
                     if (continuation != null && isActive) {
                         startProactiveBackgroundLoading()
                     }
                 }
         }
     }
+
     fun retry() {
         proactiveLoadJob?.cancel()
         fetchInitialPlaylistData() 
     }
+
     private fun applySongFilters(songs: List<SongItem>): List<SongItem> {
         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
         return songs
             .distinctBy { it.id }
             .filterVideoSongs(hideVideoSongs)
     }
+
     override fun onCleared() {
         super.onCleared()
         proactiveLoadJob?.cancel()

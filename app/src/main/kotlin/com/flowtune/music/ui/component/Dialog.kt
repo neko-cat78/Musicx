@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -68,6 +69,7 @@ import androidx.navigation.NavController
 import com.flowtune.music.R
 import com.flowtune.music.ui.screens.settings.AccountSettings
 import kotlinx.coroutines.delay
+
 @Composable
 fun DefaultDialog(
     onDismiss: () -> Unit,
@@ -101,23 +103,29 @@ fun DefaultDialog(
                             icon()
                         }
                     }
+
                     Spacer(Modifier.height(16.dp))
                 }
                 if (title != null) {
                     CompositionLocalProvider(LocalContentColor provides AlertDialogDefaults.titleContentColor) {
                         ProvideTextStyle(MaterialTheme.typography.headlineSmall) {
                             Box(
+                                
                                 Modifier.align(if (icon == null) Alignment.Start else Alignment.CenterHorizontally)
                             ) {
                                 title()
                             }
                         }
                     }
+
                     Spacer(Modifier.height(16.dp))
                 }
+
                 content()
+
                 if (buttons != null) {
                     Spacer(Modifier.height(24.dp))
+
                     FlowRow(
                         modifier = Modifier.align(Alignment.End)
                     ) {
@@ -134,6 +142,7 @@ fun DefaultDialog(
         }
     }
 }
+
 @Composable
 fun AccountSettingsDialog(
     navController: NavController,
@@ -176,6 +185,7 @@ fun AccountSettingsDialog(
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionPromptDialog(
@@ -201,6 +211,7 @@ fun ActionPromptDialog(
                 modifier = Modifier.padding(24.dp)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
+                    
                     if (titleBar != null) {
                         Row {
                             titleBar()
@@ -214,8 +225,10 @@ fun ActionPromptDialog(
                         )
                         Spacer(Modifier.height(16.dp))
                     }
+
                     content() 
                 }
+
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()
@@ -229,6 +242,7 @@ fun ActionPromptDialog(
                             }
                         }
                     }
+
                     if (onCancel != null) {
                         TextButton(
                             onClick = { onCancel() }
@@ -236,6 +250,7 @@ fun ActionPromptDialog(
                             Text(stringResource(android.R.string.cancel))
                         }
                     }
+
                     TextButton(
                         onClick = { onConfirm() }
                     ) {
@@ -246,6 +261,7 @@ fun ActionPromptDialog(
         }
     }
 }
+
 @Composable
 fun ListDialog(
     onDismiss: () -> Unit,
@@ -271,6 +287,7 @@ fun ListDialog(
         }
     }
 }
+
 @Composable
 fun InfoLabel(
     text: String
@@ -290,6 +307,7 @@ fun InfoLabel(
         modifier = Modifier.padding(horizontal = 4.dp)
     )
 }
+
 @Composable
 fun TextFieldDialog(
     modifier: Modifier = Modifier,
@@ -303,20 +321,25 @@ fun TextFieldDialog(
     isInputValid: (String) -> Boolean = { it.isNotEmpty() },
     keyboardType: KeyboardType = KeyboardType.Text,
     onDone: (String) -> Unit = {},
+
     textFields: List<Pair<String, TextFieldValue>>? = null,
     onTextFieldsChange: ((Int, TextFieldValue) -> Unit)? = null,
     onDoneMultiple: ((List<String>) -> Unit)? = null,
+
     onDismiss: () -> Unit,
     extraContent: (@Composable () -> Unit)? = null,
 ) {
     val legacyFieldState = remember { mutableStateOf(initialTextFieldValue) }
+
     val focusRequester = remember { FocusRequester() }
+
     LaunchedEffect(Unit) {
         if (autoFocus) {
             delay(300)
             focusRequester.requestFocus()
         }
     }
+
     DefaultDialog(
         onDismiss = onDismiss,
         modifier = modifier,
@@ -326,8 +349,10 @@ fun TextFieldDialog(
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(android.R.string.cancel))
             }
+
             val isValid = textFields?.all { isInputValid(it.second.text) }
                 ?: isInputValid(legacyFieldState.value.text)
+
             TextButton(
                 enabled = isValid,
                 onClick = {
@@ -396,6 +421,7 @@ fun TextFieldDialog(
                         .focusRequester(focusRequester)
                 )
             }
+
             extraContent?.invoke()
         }
     }

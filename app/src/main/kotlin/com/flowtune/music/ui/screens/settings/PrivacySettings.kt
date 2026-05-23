@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.settings
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -40,6 +41,7 @@ import com.flowtune.music.ui.component.Material3SettingsGroup
 import com.flowtune.music.ui.component.Material3SettingsItem
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.utils.rememberPreference
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrivacySettings(
@@ -59,9 +61,11 @@ fun PrivacySettings(
         key = DisableScreenshotKey,
         defaultValue = false
     )
+
     var showClearListenHistoryDialog by remember {
         mutableStateOf(false)
     }
+
     if (showClearListenHistoryDialog) {
         DefaultDialog(
             onDismiss = { showClearListenHistoryDialog = false },
@@ -78,6 +82,7 @@ fun PrivacySettings(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showClearListenHistoryDialog = false
@@ -91,9 +96,11 @@ fun PrivacySettings(
             },
         )
     }
+
     var showClearSearchHistoryDialog by remember {
         mutableStateOf(false)
     }
+
     if (showClearSearchHistoryDialog) {
         DefaultDialog(
             onDismiss = { showClearSearchHistoryDialog = false },
@@ -110,6 +117,7 @@ fun PrivacySettings(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
+
                 TextButton(
                     onClick = {
                         showClearSearchHistoryDialog = false
@@ -123,6 +131,7 @@ fun PrivacySettings(
             },
         )
     }
+
     Column(
         Modifier
             .windowInsetsPadding(
@@ -140,6 +149,7 @@ fun PrivacySettings(
                 )
             )
         )
+
         Material3SettingsGroup(
             title = stringResource(R.string.listen_history),
             items = listOf(
@@ -170,7 +180,9 @@ fun PrivacySettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.search_history),
             items = listOf(
@@ -201,7 +213,9 @@ fun PrivacySettings(
                 )
             )
         )
+
         Spacer(modifier = Modifier.height(27.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.misc),
             items = listOf(
@@ -230,6 +244,7 @@ fun PrivacySettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+
     TopAppBar(
         title = { Text(stringResource(R.string.privacy)) },
         navigationIcon = {

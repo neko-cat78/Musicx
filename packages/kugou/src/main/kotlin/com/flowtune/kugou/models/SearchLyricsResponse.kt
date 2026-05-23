@@ -1,6 +1,8 @@
 package com.flowtune.kugou.models
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class SearchLyricsResponse(
     val status: Int,

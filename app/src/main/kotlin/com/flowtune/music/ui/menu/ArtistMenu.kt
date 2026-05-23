@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -53,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 @Composable
 fun ArtistMenu(
     originalArtist: Artist,
@@ -64,15 +66,20 @@ fun ArtistMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val artistState = database.artist(originalArtist.id).collectAsState(initial = originalArtist)
     val artist = artistState.value ?: originalArtist
+
     ArtistListItem(
         artist = artist,
         badges = {},
         trailingContent = {},
     )
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -115,6 +122,7 @@ fun ArtistMenu(
                                 }
                             )
                         )
+
                         add(
                             NewAction(
                                 icon = {
@@ -147,6 +155,7 @@ fun ArtistMenu(
                             )
                         )
                     }
+
                     if (artist.artist.isYouTubeArtist) {
                         add(
                             NewAction(
@@ -166,7 +175,7 @@ fun ArtistMenu(
                                         type = "text/plain"
                                         putExtra(
                                             Intent.EXTRA_TEXT,
-                                            "https:
+                                            "https://music.youtube.com/channel/${artist.id}"
                                         )
                                     }
                                     context.startActivity(Intent.createChooser(intent, null))
@@ -178,6 +187,7 @@ fun ArtistMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(

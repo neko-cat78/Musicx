@@ -1,4 +1,5 @@
 package com.flowtune.music.playback
+
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
@@ -15,6 +16,7 @@ import androidx.media3.exoplayer.scheduler.Scheduler
 import com.flowtune.music.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 @AndroidEntryPoint
 class ExoDownloadService : DownloadService(
     NOTIFICATION_ID,
@@ -25,6 +27,7 @@ class ExoDownloadService : DownloadService(
 ) {
     @Inject
     lateinit var downloadUtil: DownloadUtil
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == REMOVE_ALL_PENDING_DOWNLOADS) {
             downloadManager.currentDownloads.forEach { download ->
@@ -33,8 +36,11 @@ class ExoDownloadService : DownloadService(
         }
         return super.onStartCommand(intent, flags, startId)
     }
+
     override fun getDownloadManager() = downloadUtil.downloadManager
+
     override fun getScheduler(): Scheduler = PlatformScheduler(this, JOB_ID)
+
     override fun getForegroundNotification(
         downloads: MutableList<Download>,
         notMetRequirements: Int
@@ -63,6 +69,7 @@ class ExoDownloadService : DownloadService(
                 )
             ).build()
         ).build()
+
     class TerminalStateNotificationHelper(
         private val context: Context,
         private val notificationHelper: DownloadNotificationHelper,
@@ -84,6 +91,7 @@ class ExoDownloadService : DownloadService(
             }
         }
     }
+
     companion object {
         const val CHANNEL_ID = "download"
         const val NOTIFICATION_ID = 1

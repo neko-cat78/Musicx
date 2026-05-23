@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -28,6 +29,7 @@ import com.flowtune.music.constants.ThumbnailCornerRadius
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+
 @Composable
 fun PlayingIndicator(
     color: Color,
@@ -42,6 +44,7 @@ fun PlayingIndicator(
                 Animatable(0.1f)
             }
         }
+
     LaunchedEffect(Unit) {
         delay(300)
         animatables.forEach { animatable ->
@@ -53,6 +56,7 @@ fun PlayingIndicator(
             }
         }
     }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.Bottom,
@@ -75,6 +79,7 @@ fun PlayingIndicator(
         }
     }
 }
+
 @Composable
 fun PlayingIndicatorBox(
     modifier: Modifier = Modifier,

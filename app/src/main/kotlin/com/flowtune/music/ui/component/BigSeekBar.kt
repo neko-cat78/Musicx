@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun BigSeekBar(
     progressProvider: () -> Float,
@@ -27,6 +29,7 @@ fun BigSeekBar(
     var width by remember {
         mutableFloatStateOf(0f)
     }
+
     Canvas(
         modifier
             .fillMaxWidth()
@@ -46,6 +49,7 @@ fun BigSeekBar(
             },
     ) {
         drawRect(color = background)
+
         drawRect(
             color = color,
             size = size.copy(width = size.width * progressProvider()),

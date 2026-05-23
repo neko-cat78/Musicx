@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.wrapped.pages
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.flowtune.music.R
 import com.flowtune.music.ui.screens.wrapped.components.AnimatedBackground
 import com.flowtune.music.ui.screens.wrapped.components.ShapeType
+
 @Composable
 fun ConclusionPage(onClose: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {

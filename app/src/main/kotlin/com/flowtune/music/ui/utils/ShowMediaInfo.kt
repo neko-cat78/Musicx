@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.utils
+
 import android.text.format.Formatter
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -66,19 +67,26 @@ import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import android.content.ClipData
 import android.content.ClipboardManager
+
 @Composable
 fun ShowMediaInfo(videoId: String) {
     if (videoId.isBlank() || videoId.isEmpty()) return
+
     val windowInsets = WindowInsets.systemBars
+
     var info by remember {
         mutableStateOf<MediaInfo?>(null)
     }
+
     val database = LocalDatabase.current
     var song by remember { mutableStateOf<Song?>(null) }
+
     var currentFormat by remember { mutableStateOf<FormatEntity?>(null) }
+
     val playerConnection = LocalPlayerConnection.current
     val context = LocalContext.current
     val clipboardManager = LocalClipboard.current
+
     LaunchedEffect(Unit, videoId) {
         info = YouTube.getMediaInfo(videoId).getOrNull()
     }
@@ -92,6 +100,7 @@ fun ShowMediaInfo(videoId: String) {
             currentFormat = it
         }
     }
+
     LazyColumn(
         state = rememberLazyListState(),
         modifier = Modifier
@@ -124,6 +133,7 @@ fun ShowMediaInfo(videoId: String) {
                     )
                 }
             }
+
             item(contentType = "MediaDetails") {
                 Column {
                     val baseList = listOf(
@@ -152,6 +162,7 @@ fun ShowMediaInfo(videoId: String) {
                     } else {
                         emptyList()
                     }
+
                     extendedList.forEach { (label, text) ->
                         val displayText = text ?: stringResource(R.string.unknown)
                         Text(
@@ -169,6 +180,7 @@ fun ShowMediaInfo(videoId: String) {
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null,
                                     onClick = {
+                                        
                                         val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
                                         cm.setPrimaryClip(ClipData.newPlainText("text", displayText))
                                         Toast.makeText(
@@ -186,6 +198,7 @@ fun ShowMediaInfo(videoId: String) {
                 }
             }
         }
+
         item(contentType = "TitleMediaInfo") {
             Text(
                 text = stringResource(R.string.information),
@@ -213,6 +226,7 @@ fun ShowMediaInfo(videoId: String) {
                         )
                     }
                 }
+
             item(contentType = "MediaAuthor") {
                 Column(
                     horizontalAlignment = Alignment.Start,

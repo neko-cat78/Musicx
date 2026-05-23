@@ -1,4 +1,5 @@
 package com.my.kizzy.rpc
+
 import com.my.kizzy.gateway.DiscordWebSocket
 import com.my.kizzy.gateway.entities.presence.Activity
 import com.my.kizzy.gateway.entities.presence.Assets
@@ -11,15 +12,19 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import org.json.JSONObject
+
 open class KizzyRPC(token: String) {
     private val kizzyRepository = KizzyRepository()
     private val discordWebSocket = DiscordWebSocket(token)
+
     fun closeRPC() {
         discordWebSocket.close()
     }
+
     fun isRpcRunning(): Boolean {
         return discordWebSocket.isWebSocketConnected()
     }
+
     open suspend fun close() {
         if (!isRpcRunning()) {
             discordWebSocket.connect()
@@ -29,6 +34,7 @@ open class KizzyRPC(token: String) {
         )
         discordWebSocket.sendActivity(presence)
     }
+
     suspend fun setActivity(
         name: String,
         state: String?,
@@ -52,10 +58,12 @@ open class KizzyRPC(token: String) {
         if (!isRpcRunning()) {
             discordWebSocket.connect()
         }
+        
         val images = listOfNotNull(largeImage, smallImage)
         val externalImages = images.filterIsInstance<RpcImage.ExternalImage>()
         val imageUrls = externalImages.map { it.image }
         val resolvedImages = kizzyRepository.getImages(imageUrls)?.results?.associate { it.originalUrl to it.id } ?: emptyMap()
+
         val presence = Presence(
             activities = listOf(
                 Activity(
@@ -95,6 +103,7 @@ open class KizzyRPC(token: String) {
         )
         discordWebSocket.sendActivity(presence)
     }
+
     enum class Type(val value: Int) {
         PLAYING(0),
         STREAMING(1),
@@ -102,21 +111,24 @@ open class KizzyRPC(token: String) {
         WATCHING(3),
         COMPETING(5)
     }
+
     enum class StatusDisplayType(val value: Int) {
         NAME(0),
         STATE(1),
         DETAILS(2)
     }
+
     companion object {
         suspend fun getUserInfo(token: String): Result<UserInfo> = runCatching {
             val client = HttpClient()
-            val response = client.get("https:
+            val response = client.get("https://discord.com/api/v10/users/@me") {
                 header("Authorization", token)
             }.bodyAsText()
             val json = JSONObject(response)
             val username = json.getString("username")
             val name = json.optString("global_name", username)
             client.close()
+
             UserInfo(username, name)
         }
     }

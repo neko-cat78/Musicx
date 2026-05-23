@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.player
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -165,6 +166,7 @@ import me.saket.squiggles.SquigglySlider
 import kotlin.math.max
 import kotlin.math.roundToInt
 import com.flowtune.music.ui.component.Icon as MIcon
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetPlayer(
@@ -179,6 +181,7 @@ fun BottomSheetPlayer(
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
+
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
         defaultValue = false
@@ -192,11 +195,13 @@ fun BottomSheetPlayer(
         key = PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT
     )
+
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.ON)
     val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
+
     val shouldUseDarkButtonColors = remember(playerBackground, useDarkTheme) {
         when (playerBackground) {
             PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT -> true
@@ -207,6 +212,7 @@ fun BottomSheetPlayer(
         val window = (context as? android.app.Activity)?.window
         if (window != null && state.isExpanded) {
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+            
             when (playerBackground) {
                 PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT -> {
                     insetsController.isAppearanceLightStatusBars = false
@@ -216,6 +222,7 @@ fun BottomSheetPlayer(
                 }
             }
         }
+        
         onDispose {
             if (window != null) {
                 val insetsController = WindowCompat.getInsetsController(window, window.decorView)
@@ -233,6 +240,7 @@ fun BottomSheetPlayer(
                 if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
             useDarkTheme && pureBlack
         }
+
     val playbackState by playerConnection.playbackState.collectAsState()
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -243,16 +251,21 @@ fun BottomSheetPlayer(
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val sliderStyle by rememberEnumPreference(SliderStyleKey, SliderStyle.SLIM)
     val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = false)
+    
     val castHandler = playerConnection.service.castConnectionHandler
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
     val castPosition by castHandler?.castPosition?.collectAsState() ?: remember { mutableStateOf(0L) }
     val castDuration by castHandler?.castDuration?.collectAsState() ?: remember { mutableStateOf(0L) }
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
+    
     val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+
     val positionState = remember { mutableLongStateOf(0L) }
     val durationState = remember { mutableLongStateOf(0L) }
+    
     var position by positionState
     var duration by durationState
+    
     val effectivePosition by remember {
         derivedStateOf {
             if (isCasting) {
@@ -262,19 +275,25 @@ fun BottomSheetPlayer(
             }
         }
     }
+    
     var sliderPosition by remember {
         mutableStateOf<Long?>(null)
     }
+    
     var lastManualSeekTime by remember { mutableStateOf(0L) }
+    
     var gradientColors by remember {
         mutableStateOf<List<Color>>(emptyList())
     }
     val gradientColorsCache = remember { mutableMapOf<String, List<Color>>() }
+
     if (!canSkipNext && automix.isNotEmpty()) {
         playerConnection.service.addToQueueAutomix(automix[0], 0)
     }
+
     val defaultGradientColors = listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surfaceVariant)
     val fallbackColor = MaterialTheme.colorScheme.surface.toArgb()
+
     LaunchedEffect(mediaMetadata?.id, playerBackground) {
         if (playerBackground == PlayerBackgroundStyle.GRADIENT) {
             val currentMetadata = mediaMetadata
@@ -291,6 +310,7 @@ fun BottomSheetPlayer(
                         .allowHardware(false)
                         .memoryCacheKey("gradient_${currentMetadata.id}")
                         .build()
+
                     val result = runCatching { context.imageLoader.execute(request) }.getOrNull()
                     if (result != null) {
                         val bitmap = result.image?.toBitmap()
@@ -315,6 +335,7 @@ fun BottomSheetPlayer(
             gradientColors = emptyList()
         }
     }
+
     val TextBackgroundColor by animateColorAsState(
         targetValue = when (playerBackground) {
             PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
@@ -323,6 +344,7 @@ fun BottomSheetPlayer(
         },
         label = "TextBackgroundColor"
     )
+
     val icBackgroundColor by animateColorAsState(
         targetValue = when (playerBackground) {
             PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.surface
@@ -331,6 +353,7 @@ fun BottomSheetPlayer(
         },
         label = "icBackgroundColor"
     )
+
     val (textButtonColor, iconButtonColor) = when {
         playerBackground == PlayerBackgroundStyle.BLUR || 
         playerBackground == PlayerBackgroundStyle.GRADIENT -> {
@@ -362,6 +385,7 @@ fun BottomSheetPlayer(
             }
         }
     }
+
     val (sideButtonContainerColor, sideButtonContentColor) = when {
         playerBackground == PlayerBackgroundStyle.BLUR || 
         playerBackground == PlayerBackgroundStyle.GRADIENT -> {
@@ -397,8 +421,10 @@ fun BottomSheetPlayer(
             }
         }
     }
+
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata?.id ?: "")
         .collectAsState(initial = null)
+
     val sleepTimerEnabled =
         remember(
             playerConnection.service.sleepTimer.triggerTime,
@@ -406,9 +432,11 @@ fun BottomSheetPlayer(
         ) {
             playerConnection.service.sleepTimer.isActive
         }
+
     var sleepTimerTimeLeft by remember {
         mutableLongStateOf(0L)
     }
+
     LaunchedEffect(sleepTimerEnabled) {
         if (sleepTimerEnabled) {
             while (isActive) {
@@ -422,9 +450,11 @@ fun BottomSheetPlayer(
             }
         }
     }
+
     var showSleepTimerDialog by remember {
         mutableStateOf(false)
     }
+
     var sleepTimerValue by remember {
         mutableFloatStateOf(30f)
     }
@@ -466,12 +496,14 @@ fun BottomSheetPlayer(
                         ),
                         style = MaterialTheme.typography.bodyLarge,
                     )
+
                     Slider(
                         value = sleepTimerValue,
                         onValueChange = { sleepTimerValue = it },
                         valueRange = 5f..120f,
                         steps = (120 - 5) / 5 - 1,
                     )
+
                     OutlinedIconButton(
                         onClick = {
                             showSleepTimerDialog = false
@@ -484,15 +516,19 @@ fun BottomSheetPlayer(
             },
         )
     }
+
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showInlineLyrics by rememberSaveable {
         mutableStateOf(false)
     }
+
     var isFullScreen by rememberSaveable {
         mutableStateOf(false)
     }
+
     LaunchedEffect(isPlaying, isCasting) {
         if (!isCasting && isPlaying) {
             while (isActive) {
@@ -504,28 +540,34 @@ fun BottomSheetPlayer(
             }
         }
     }
+    
     LaunchedEffect(playbackState, mediaMetadata?.id) {
         if (!isCasting) {
             position = playerConnection.player.currentPosition
             duration = playerConnection.player.duration
         }
     }
+    
     LaunchedEffect(isCasting, castPosition, castDuration) {
         if (isCasting && sliderPosition == null) {
             val timeSinceManualSeek = System.currentTimeMillis() - lastManualSeekTime
             if (timeSinceManualSeek > 1500) {
+                
                 position = castPosition
                 if (castDuration > 0) duration = castDuration
             }
         }
     }
+
     val dismissedBound = QueuePeekHeight + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+
     val queueSheetState = rememberBottomSheetState(
         dismissedBound = dismissedBound,
         expandedBound = state.expandedBound,
         collapsedBound = dismissedBound + 1.dp,
         initialAnchor = 1
     )
+
     val bottomSheetBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT ->
             MaterialTheme.colorScheme.surfaceContainer
@@ -533,7 +575,9 @@ fun BottomSheetPlayer(
             if (useBlackBackground) Color.Black
             else MaterialTheme.colorScheme.surfaceContainer
     }
+
     val backgroundAlpha = state.progress.coerceIn(0f, 1f)
+
     BottomSheet(
         state = state,
         modifier = modifier,
@@ -632,6 +676,7 @@ fun BottomSheetPlayer(
                 animationSpec = tween(durationMillis = 90, easing = LinearEasing),
                 label = "playPauseRoundness",
             )
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -716,12 +761,15 @@ fun BottomSheetPlayer(
                             ,
                         )
                     }
+
                     Spacer(Modifier.height(6.dp))
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (mediaMetadata.explicit) MIcon.Explicit()
+
                         if (mediaMetadata.artists.any { it.name.isNotBlank() }) {
                             val annotatedString = buildAnnotatedString {
                                 mediaMetadata.artists.forEachIndexed { index, artist ->
@@ -734,6 +782,7 @@ fun BottomSheetPlayer(
                                     if (index != mediaMetadata.artists.lastIndex) append(", ")
                                 }
                             }
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -802,16 +851,20 @@ fun BottomSheetPlayer(
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.width(12.dp))
+
                 if (useNewPlayerDesign) {
                     val shareShape = RoundedCornerShape(
                         topStart = 50.dp, bottomStart = 50.dp,
                         topEnd = 5.dp, bottomEnd = 5.dp
                     )
+
                     val favShape = RoundedCornerShape(
                         topStart = 5.dp, bottomStart = 5.dp,
                         topEnd = 50.dp, bottomEnd = 50.dp
                     )
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -846,7 +899,9 @@ fun BottomSheetPlayer(
                     )
                 }
             }
+
             Spacer(Modifier.height(24.dp))
+
             when (sliderStyle) {
                 SliderStyle.DEFAULT -> {
                     Slider(
@@ -871,6 +926,7 @@ fun BottomSheetPlayer(
                         modifier = Modifier.padding(horizontal = PlayerHorizontalPadding),
                     )
                 }
+
                 SliderStyle.WAVY -> {
                     if (squigglySlider) {
                         SquigglySlider(
@@ -922,6 +978,7 @@ fun BottomSheetPlayer(
                         )
                     }
                 }
+
                 SliderStyle.SLIM -> {
                     Slider(
                         value = (sliderPosition ?: effectivePosition).toFloat(),
@@ -952,7 +1009,9 @@ fun BottomSheetPlayer(
                     )
                 }
             }
+
             Spacer(Modifier.height(4.dp))
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -968,6 +1027,7 @@ fun BottomSheetPlayer(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+
                 Text(
                     text = if (duration != C.TIME_UNSET) makeTimeString(duration) else "",
                     style = MaterialTheme.typography.labelMedium,
@@ -976,7 +1036,9 @@ fun BottomSheetPlayer(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+
             Spacer(Modifier.height(24.dp))
+
             AnimatedVisibility(
                 visible = !isFullScreen,
                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -994,9 +1056,11 @@ fun BottomSheetPlayer(
                             val backInteractionSource = remember { MutableInteractionSource() }
                             val nextInteractionSource = remember { MutableInteractionSource() }
                             val playPauseInteractionSource = remember { MutableInteractionSource() }
+
                             val isPlayPausePressed by playPauseInteractionSource.collectIsPressedAsState()
                             val isBackPressed by backInteractionSource.collectIsPressedAsState()
                             val isNextPressed by nextInteractionSource.collectIsPressedAsState()
+
                             val playPauseWeight by animateFloatAsState(
                                 targetValue = if (isPlayPausePressed) 1.9f else if (isBackPressed || isNextPressed) 1.1f else 1.3f,
                                 animationSpec = spring(
@@ -1005,6 +1069,7 @@ fun BottomSheetPlayer(
                                 ),
                                 label = "playPauseWeight"
                             )
+
                             val backButtonWeight by animateFloatAsState(
                                 targetValue = if (isBackPressed) 0.65f else if (isPlayPausePressed) 0.35f else 0.45f,
                                 animationSpec = spring(
@@ -1013,6 +1078,7 @@ fun BottomSheetPlayer(
                                 ),
                                 label = "backButtonWeight"
                             )
+
                             val nextButtonWeight by animateFloatAsState(
                                 targetValue = if (isNextPressed) 0.65f else if (isPlayPausePressed) 0.35f else 0.45f,
                                 animationSpec = spring(
@@ -1021,6 +1087,7 @@ fun BottomSheetPlayer(
                                 ),
                                 label = "nextButtonWeight"
                             )
+
                             FilledIconButton(
                                 onClick = playerConnection::seekToPrevious,
                                 enabled = canSkipPrevious,
@@ -1040,7 +1107,9 @@ fun BottomSheetPlayer(
                                     modifier = Modifier.size(32.dp)
                                 )
                             }
+
                             Spacer(modifier = Modifier.width(8.dp))
+
                             FilledIconButton(
                                 onClick = {
                                     if (isCasting) {
@@ -1084,7 +1153,9 @@ fun BottomSheetPlayer(
                                     )
                                 }
                             }
+
                             Spacer(modifier = Modifier.width(8.dp))
+
                             FilledIconButton(
                                 onClick = playerConnection::seekToNext,
                                 enabled = canSkipNext,
@@ -1131,6 +1202,7 @@ fun BottomSheetPlayer(
                                     },
                                 )
                             }
+
                             Box(modifier = Modifier.weight(1f)) {
                                 ResizableIconButton(
                                     icon = R.drawable.skip_previous,
@@ -1143,7 +1215,9 @@ fun BottomSheetPlayer(
                                     onClick = playerConnection::seekToPrevious,
                                 )
                             }
+
                             Spacer(Modifier.width(8.dp))
+
                             Box(
                                 modifier =
                                 Modifier
@@ -1186,7 +1260,9 @@ fun BottomSheetPlayer(
                                         .size(36.dp),
                                 )
                             }
+
                             Spacer(Modifier.width(8.dp))
+
                             Box(modifier = Modifier.weight(1f)) {
                                 ResizableIconButton(
                                     icon = R.drawable.skip_next,
@@ -1199,6 +1275,7 @@ fun BottomSheetPlayer(
                                     onClick = playerConnection::seekToNext,
                                 )
                             }
+
                             Box(modifier = Modifier.weight(1f)) {
                                 ResizableIconButton(
                                     icon = if (currentSong?.song?.liked == true) R.drawable.favorite else R.drawable.favorite_border,
@@ -1216,8 +1293,10 @@ fun BottomSheetPlayer(
                 }
             }
         }
+
         when (LocalConfiguration.current.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
+                
                 val density = LocalDensity.current
                 val verticalPadding = max(
                     WindowInsets.systemBars.getTop(density),
@@ -1225,6 +1304,7 @@ fun BottomSheetPlayer(
                 )
                 val verticalPaddingDp = with(density) { verticalPadding.toDp() }
                 val verticalWindowInsets = WindowInsets(left = 0.dp, top = verticalPaddingDp, right = 0.dp, bottom = verticalPaddingDp)
+                
                 Row(
                     modifier = Modifier
                         .windowInsetsPadding(
@@ -1239,6 +1319,7 @@ fun BottomSheetPlayer(
                             .weight(1f)
                             .nestedScroll(state.preUpPostDownNestedScrollConnection)
                     ) {
+                        
                         val currentSliderPosition by rememberUpdatedState(sliderPosition)
                         val sliderPositionProvider = remember { { currentSliderPosition } }
                         val isExpandedProvider = remember(state) { { state.isExpanded } }
@@ -1263,6 +1344,7 @@ fun BottomSheetPlayer(
                             }
                         }
                     }
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -1271,13 +1353,16 @@ fun BottomSheetPlayer(
                             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
                     ) {
                         Spacer(Modifier.weight(1f))
+
                         mediaMetadata?.let {
                             controlsContent(it)
                         }
+
                         Spacer(Modifier.weight(1f))
                     }
                 }
             }
+
             else -> {
                 val bottomPadding by animateDpAsState(
                     targetValue = if (isFullScreen) 0.dp else queueSheetState.collapsedBound,
@@ -1295,6 +1380,7 @@ fun BottomSheetPlayer(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f),
                     ) {
+                        
                         val currentSliderPosition by rememberUpdatedState(sliderPosition)
                         val sliderPositionProvider = remember { { currentSliderPosition } }
                         val isExpandedProvider = remember(state) { { state.isExpanded } }
@@ -1318,13 +1404,16 @@ fun BottomSheetPlayer(
                             }
                         }
                     }
+
                     mediaMetadata?.let {
                         controlsContent(it)
                     }
+
                     Spacer(Modifier.height(30.dp))
                 }
             }
         }
+
         AnimatedVisibility(
             visible = !isFullScreen,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -1354,6 +1443,7 @@ fun BottomSheetPlayer(
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InlineLyricsView(
@@ -1367,6 +1457,7 @@ fun InlineLyricsView(
     val context = LocalContext.current
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(mediaMetadata?.id, currentLyrics) {
         if (mediaMetadata != null && currentLyrics == null) {
             delay(500)
@@ -1382,10 +1473,12 @@ fun InlineLyricsView(
                         upsert(LyricsEntity(mediaMetadata.id, fetchedLyricsWithProvider.lyrics, fetchedLyricsWithProvider.provider))
                     }
                 } catch (e: Exception) {
+                    
                 }
             }
         }
     }
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -1424,6 +1517,7 @@ fun InlineLyricsView(
         }
     }
 }
+
 @Composable
 fun MoreActionsButton(
     mediaMetadata: MediaMetadata,
@@ -1434,6 +1528,7 @@ fun MoreActionsButton(
 ) {
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
+
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -1464,6 +1559,7 @@ fun MoreActionsButton(
         )
     }
 }
+
 @Composable
 private fun PlayerMoreMenuButton(
     mediaMetadata: MediaMetadata,
@@ -1474,6 +1570,7 @@ private fun PlayerMoreMenuButton(
 ) {
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
+
     Box(
         contentAlignment = Alignment.Center,
         modifier =

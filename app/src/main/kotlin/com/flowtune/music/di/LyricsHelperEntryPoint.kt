@@ -1,8 +1,10 @@
 package com.flowtune.music.di
+
 import com.flowtune.music.lyrics.LyricsHelper
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface LyricsHelperEntryPoint {

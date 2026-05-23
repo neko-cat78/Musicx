@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.screens.library
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -73,6 +74,7 @@ import com.flowtune.music.viewmodels.LibraryPlaylistsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryPlaylistsScreen(
@@ -84,10 +86,14 @@ fun LibraryPlaylistsScreen(
 ) {
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
+
     val coroutineScope = rememberCoroutineScope()
+
     val viewType = LibraryViewType.GRID
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.SMALL)
+
     val playlists by viewModel.allPlaylists.collectAsState()
+
     val likedPlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -97,6 +103,7 @@ fun LibraryPlaylistsScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val downloadPlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -106,6 +113,7 @@ fun LibraryPlaylistsScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val cachePlaylist =
         Playlist(
             playlist = PlaylistEntity(
@@ -115,19 +123,25 @@ fun LibraryPlaylistsScreen(
             songCount = 0,
             songThumbnails = emptyList(),
         )
+
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
+
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
     val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
     }
+
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
+
     LaunchedEffect(Unit) {
         if (ytmSync) {
             withContext(Dispatchers.IO) {
@@ -135,6 +149,7 @@ fun LibraryPlaylistsScreen(
             }
         }
     }
+
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
             when (viewType) {
@@ -144,7 +159,9 @@ fun LibraryPlaylistsScreen(
             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
         }
     }
+
     var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+
     if (showCreatePlaylistDialog) {
         CreatePlaylistDialog(
             onDismiss = { showCreatePlaylistDialog = false },
@@ -152,6 +169,7 @@ fun LibraryPlaylistsScreen(
             allowSyncing = allowSyncing
         )
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -167,6 +185,7 @@ fun LibraryPlaylistsScreen(
                     ) {
                         filterContent()
                     }
+
                     if (showLiked) {
                         item(
                             key = "likedPlaylist",
@@ -185,6 +204,7 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     if (showDownloaded) {
                         item(
                             key = "downloadedPlaylist",
@@ -203,6 +223,7 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     if (showCached) {
                         item(
                             key = "cachePlaylist",
@@ -221,11 +242,13 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     playlists.let { playlists ->
                         if (playlists.isEmpty()) {
                             item(key = "empty_placeholder") {
                             }
                         }
+
                         items(
                             items = playlists.distinctBy { it.id },
                             key = { it.id },
@@ -241,6 +264,7 @@ fun LibraryPlaylistsScreen(
                         }
                     }
                 }
+
                 HideOnScrollFAB(
                     lazyListState = lazyListState,
                     icon = R.drawable.add,
@@ -249,6 +273,7 @@ fun LibraryPlaylistsScreen(
                     },
                 )
             }
+
             LibraryViewType.GRID -> {
                 LazyVerticalGrid(
                     state = lazyGridState,
@@ -265,6 +290,7 @@ fun LibraryPlaylistsScreen(
                     ) {
                         filterContent()
                     }
+
                     if (showLiked) {
                         item(
                             key = "likedPlaylist",
@@ -286,6 +312,7 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     if (showDownloaded) {
                         item(
                             key = "downloadedPlaylist",
@@ -307,6 +334,7 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     if (showCached) {
                         item(
                             key = "cachePlaylist",
@@ -328,11 +356,13 @@ fun LibraryPlaylistsScreen(
                             )
                         }
                     }
+
                     playlists.let { playlists ->
                         if (playlists.isEmpty()) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                             }
                         }
+
                         items(
                             items = playlists.distinctBy { it.id },
                             key = { it.id },
@@ -348,6 +378,7 @@ fun LibraryPlaylistsScreen(
                         }
                     }
                 }
+
                 HideOnScrollFAB(
                     lazyListState = lazyGridState,
                     icon = R.drawable.add,

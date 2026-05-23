@@ -1,8 +1,10 @@
 package com.flowtune.innertube.models.response
+
 import com.flowtune.innertube.models.Continuation
 import com.flowtune.innertube.models.MusicResponsiveListItemRenderer
 import com.flowtune.innertube.models.Tabs
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class SearchResponse(
     val contents: Contents?,
@@ -12,6 +14,7 @@ data class SearchResponse(
     data class Contents(
         val tabbedSearchResultsRenderer: Tabs?,
     )
+
     @Serializable
     data class ContinuationContents(
         val musicShelfContinuation: MusicShelfContinuation,

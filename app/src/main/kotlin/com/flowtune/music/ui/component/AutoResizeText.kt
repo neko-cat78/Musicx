@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+
 @Composable
 fun AutoResizeText(
     text: String,
@@ -39,6 +41,7 @@ fun AutoResizeText(
 ) {
     var fontSizeValue by remember { mutableFloatStateOf(fontSizeRange.max.value) }
     var readyToDraw by remember { mutableStateOf(false) }
+
     Text(
         text = text,
         color = color,
@@ -56,20 +59,25 @@ fun AutoResizeText(
         fontSize = fontSizeValue.sp,
         onTextLayout = {
             if (it.didOverflowHeight && !readyToDraw) {
+                
                 val nextFontSizeValue = fontSizeValue - fontSizeRange.step.value
                 if (nextFontSizeValue <= fontSizeRange.min.value) {
+                    
                     fontSizeValue = fontSizeRange.min.value
                     readyToDraw = true
                 } else {
+                    
                     fontSizeValue = nextFontSizeValue
                 }
             } else {
+                
                 readyToDraw = true
             }
         },
         modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
     )
 }
+
 data class FontSizeRange(
     val min: TextUnit,
     val max: TextUnit,
@@ -79,6 +87,7 @@ data class FontSizeRange(
         require(min < max) { "min should be less than max, $this" }
         require(step.value > 0) { "step should be greater than 0, $this" }
     }
+
     companion object {
         private val DEFAULT_TEXT_STEP = 1.sp
     }

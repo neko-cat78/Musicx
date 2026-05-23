@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun NavigationTile(
     title: String,
@@ -44,6 +46,7 @@ fun NavigationTile(
                 contentDescription = null,
             )
         }
+
         Text(
             text = title,
             style = MaterialTheme.typography.labelMedium,

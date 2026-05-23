@@ -1,5 +1,7 @@
 @file:Suppress("UNUSED_EXPRESSION")
+
 package com.flowtune.music.ui.screens
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -66,6 +68,7 @@ import com.flowtune.music.ui.menu.YouTubeSongMenu
 import com.flowtune.music.ui.utils.SnapLayoutInfoProvider
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.viewmodels.YouTubeBrowseViewModel
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun YouTubeBrowseScreen(
@@ -77,8 +80,11 @@ fun YouTubeBrowseScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+
     val browseResult by viewModel.result.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
+
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -116,6 +122,7 @@ fun YouTubeBrowseScreen(
                     }
                 }
             }
+
             browseResult?.items?.fastForEach {
                 if (it.items.isNotEmpty()) {
                     it.title?.let { title ->
@@ -221,17 +228,20 @@ fun YouTubeBrowseScreen(
                                                                     navController = navController,
                                                                     onDismiss = menuState::dismiss,
                                                                 )
+
                                                             is AlbumItem ->
                                                                 YouTubeAlbumMenu(
                                                                     albumItem = item,
                                                                     navController = navController,
                                                                     onDismiss = menuState::dismiss,
                                                                 )
+
                                                             is ArtistItem ->
                                                                 YouTubeArtistMenu(
                                                                     artist = item,
                                                                     onDismiss = menuState::dismiss,
                                                                 )
+
                                                             is PlaylistItem ->
                                                                 YouTubePlaylistMenu(
                                                                     playlist = item,
@@ -252,6 +262,7 @@ fun YouTubeBrowseScreen(
             }
         }
     }
+
     TopAppBar(
         title = { Text(browseResult?.title.orEmpty()) },
         navigationIcon = {

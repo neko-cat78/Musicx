@@ -1,4 +1,5 @@
 package com.flowtune.kugou
+
 import com.flowtune.kugou.models.DownloadLyricsResponse
 import com.flowtune.kugou.models.Keyword
 import com.flowtune.kugou.models.SearchLyricsResponse
@@ -17,9 +18,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import java.lang.Integer.min
 import kotlin.math.abs
+
 @OptIn(ExperimentalSerializationApi::class)
 private val client = HttpClient {
     expectSuccess = true
+
     install(ContentNegotiation) {
         val json = Json {
             ignoreUnknownKeys = true
@@ -30,15 +33,19 @@ private val client = HttpClient {
         json(json, ContentType.Text.Html)
         json(json, ContentType.Text.Plain)
     }
+
     install(ContentEncoding) {
         gzip()
         deflate()
     }
 }
+
 private const val PAGE_SIZE = 8
 private const val HEAD_CUT_LIMIT = 30
+
 object KuGou {
     var useTraditionalChinese: Boolean = false
+
     suspend fun getLyrics(title: String, artist: String, duration: Int, album: String? = null): Result<String> =
         runCatching {
             val keyword = generateKeyword(title, artist, album)
@@ -47,6 +54,7 @@ object KuGou {
                     .normalize()
             } ?: throw IllegalStateException("No lyrics candidate")
         }
+
     suspend fun getAllPossibleLyricsOptions(
         title: String, artist: String, duration: Int, album: String? = null, callback: (String) -> Unit
     ) {
@@ -64,6 +72,7 @@ object KuGou {
                 .normalize().let(callback)
         }
     }
+
     suspend fun getLyricsCandidate(
         keyword: Keyword, duration: Int
     ): SearchLyricsResponse.Candidate? {
@@ -75,8 +84,9 @@ object KuGou {
         }
         return searchLyricsByKeyword(keyword, duration).candidates.firstOrNull()
     }
+
     suspend fun searchSongs(keyword: Keyword) =
-        client.get("https:
+        client.get("https://mobileservice.kugou.com/api/v3/search/song") {
             parameter("version", 9108)
             parameter("plat", 0)
             parameter("pagesize", PAGE_SIZE)
@@ -95,8 +105,9 @@ object KuGou {
                 searchQuery.encodeURLParameter(spaceToPlus = false)
             )
         }.body<SearchSongResponse>()
+
     private suspend fun searchLyricsByKeyword(keyword: Keyword, duration: Int) =
-        client.get("https:
+        client.get("https://lyrics.kugou.com/search") {
             parameter("ver", 1)
             parameter("man", "yes")
             parameter("client", "pc")
@@ -117,15 +128,17 @@ object KuGou {
                 searchQuery.encodeURLParameter(spaceToPlus = false)
             )
         }.body<SearchLyricsResponse>()
+
     private suspend fun searchLyricsByHash(hash: String) =
-        client.get("https:
+        client.get("https://lyrics.kugou.com/search") {
             parameter("ver", 1)
             parameter("man", "yes")
             parameter("client", "pc")
             parameter("hash", hash)
         }.body<SearchLyricsResponse>()
+
     private suspend fun downloadLyrics(id: Long, accessKey: String) =
-        client.get("https:
+        client.get("https://lyrics.kugou.com/download") {
             parameter("fmt", "lrc")
             parameter("charset", "utf8")
             parameter("client", "pc")
@@ -133,19 +146,24 @@ object KuGou {
             parameter("id", id)
             parameter("accesskey", accessKey)
         }.body<DownloadLyricsResponse>()
+
     private fun normalizeTitle(title: String) =
         title.replace("\\(.*\\)".toRegex(), "").replace("（.*）".toRegex(), "")
             .replace("「.*」".toRegex(), "").replace("『.*』".toRegex(), "")
             .replace("<.*>".toRegex(), "").replace("《.*》".toRegex(), "")
             .replace("〈.*〉".toRegex(), "").replace("＜.*＞".toRegex(), "")
+
     private fun normalizeArtist(artist: String) =
         artist.replace(", ", "、").replace(" & ", "、").replace(".", "").replace("和", "、")
             .replace("\\(.*\\)".toRegex(), "").replace("（.*）".toRegex(), "")
+
     fun generateKeyword(title: String, artist: String, album: String? = null) =
         Keyword(normalizeTitle(title), normalizeArtist(artist), album)
+
     private fun String.normalize(): String =
         replace("&apos;", "'").lines().filter { line -> line.matches(ACCEPTED_REGEX) }
             .let { lines ->
+                
                 var headCutLine = 0
                 for (i in min(HEAD_CUT_LIMIT, lines.lastIndex) downTo 0) {
                     if (lines[i].matches(BANNED_REGEX)) {
@@ -154,6 +172,7 @@ object KuGou {
                     }
                 }
                 val filteredLines = lines.drop(headCutLine)
+
                 var tailCutLine = 0
                 for (i in min(lines.size - HEAD_CUT_LIMIT, lines.lastIndex) downTo 0) {
                     if (lines[lines.lastIndex - i].matches(BANNED_REGEX)) {
@@ -162,10 +181,13 @@ object KuGou {
                     }
                 }
                 val finalLines = filteredLines.dropLast(tailCutLine)
+
                 return@let finalLines.joinToString("\n")
             }
+
     @Suppress("RegExpRedundantEscape")
     private val ACCEPTED_REGEX = "\\[(\\d\\d):(\\d\\d)\\.(\\d{2,3})\\].*".toRegex()
     private val BANNED_REGEX = ".+].+[:：].+".toRegex()
+
     private const val DURATION_TOLERANCE = 8
 }

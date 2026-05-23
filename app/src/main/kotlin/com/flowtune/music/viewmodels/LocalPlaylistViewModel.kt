@@ -1,4 +1,5 @@
 package com.flowtune.music.viewmodels
+
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.Locale
 import javax.inject.Inject
+
 @HiltViewModel
 class LocalPlaylistViewModel
 @Inject
@@ -77,9 +79,11 @@ constructor(
                             }
                         }
                 }
+
                 PlaylistSongSortType.PLAY_TIME -> filteredSongs.sortedBy { it.song.song.totalPlayTime }
             }.reversed(sortDescending && sortType != PlaylistSongSortType.CUSTOM)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     init {
         viewModelScope.launch {
             val sortedSongs =

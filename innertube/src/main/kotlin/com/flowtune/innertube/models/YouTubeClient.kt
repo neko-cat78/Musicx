@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class YouTubeClient(
     val clientName: String,
@@ -37,17 +39,22 @@ data class YouTubeClient(
             onBehalfOfUser = if (loginSupported) dataSyncId else null
         ),
     )
+
     companion object {
+        
         const val USER_AGENT_WEB = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"
-        const val ORIGIN_YOUTUBE_MUSIC = "https:
+
+        const val ORIGIN_YOUTUBE_MUSIC = "https://music.youtube.com"
         const val REFERER_YOUTUBE_MUSIC = "$ORIGIN_YOUTUBE_MUSIC/"
         const val API_URL_YOUTUBE_MUSIC = "$ORIGIN_YOUTUBE_MUSIC/youtubei/v1/"
+
         val WEB = YouTubeClient(
             clientName = "WEB",
             clientVersion = "2.20260114.00.00",
             clientId = "1",
             userAgent = USER_AGENT_WEB,
         )
+
         val WEB_REMIX = YouTubeClient(
             clientName = "WEB_REMIX",
             clientVersion = "1.20260114.01.00",
@@ -56,6 +63,7 @@ data class YouTubeClient(
             loginSupported = true,
             useSignatureTimestamp = true,
         )
+
         val WEB_CREATOR = YouTubeClient(
             clientName = "WEB_CREATOR",
             clientVersion = "1.20260114.00.00",
@@ -65,6 +73,7 @@ data class YouTubeClient(
             loginRequired = true,
             useSignatureTimestamp = true,
         )
+
         val TVHTML5 = YouTubeClient(
             clientName = "TVHTML5",
             clientVersion = "7.20260114.00.00",
@@ -74,6 +83,7 @@ data class YouTubeClient(
             loginRequired = true,
             useSignatureTimestamp = true
         )
+
         val TVHTML5_SIMPLY_EMBEDDED_PLAYER = YouTubeClient(
             clientName = "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
             clientVersion = "2.0",
@@ -84,6 +94,7 @@ data class YouTubeClient(
             useSignatureTimestamp = true,
             isEmbedded = true,
         )
+
         val IOS = YouTubeClient(
             clientName = "IOS",
             clientVersion = "21.02.1",
@@ -91,6 +102,7 @@ data class YouTubeClient(
             userAgent = "com.google.ios.youtube/21.02.1 (iPhone16,2; U; CPU iOS 18_2 like Mac OS X;)",
             osVersion = "18.2.22C152",
         )
+
         val MOBILE = YouTubeClient(
             clientName = "ANDROID",
             clientVersion = "21.02.38",
@@ -99,6 +111,7 @@ data class YouTubeClient(
             loginSupported = true,
             useSignatureTimestamp = true
         )
+
         val ANDROID_VR_NO_AUTH = YouTubeClient(
             clientName = "ANDROID_VR",
             clientVersion = "1.61.48",
@@ -107,6 +120,7 @@ data class YouTubeClient(
             loginSupported = false,
             useSignatureTimestamp = false
         )
+
         val ANDROID_VR_1_61_48 = YouTubeClient(
             clientName = "ANDROID_VR",
             clientVersion = "1.61.48",
@@ -124,6 +138,7 @@ data class YouTubeClient(
             loginSupported = false,
             useSignatureTimestamp = false
         )
+
         val ANDROID_VR_1_43_32 = YouTubeClient(
             clientName = "ANDROID_VR",
             clientVersion = "1.43.32",
@@ -141,6 +156,7 @@ data class YouTubeClient(
             loginSupported = false,
             useSignatureTimestamp = false
         )
+
         val ANDROID_CREATOR = YouTubeClient(
             clientName = "ANDROID_CREATOR",
             clientVersion = "23.47.101",
@@ -158,6 +174,7 @@ data class YouTubeClient(
             loginSupported = true,
             useSignatureTimestamp = true
         )
+
         val VISIONOS = YouTubeClient(
             clientName = "VISIONOS",
             clientVersion = "0.1",
@@ -171,6 +188,7 @@ data class YouTubeClient(
             loginSupported = false,
             useSignatureTimestamp = false
         )
+
         val IPADOS = YouTubeClient(
             clientName = "IOS",
             clientVersion = "19.22.3",

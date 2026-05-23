@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.menu
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
@@ -85,6 +86,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun YouTubeSongMenu(
@@ -107,9 +109,11 @@ fun YouTubeSongMenu(
             }
         }
     }
+
     var showChoosePlaylistDialog by rememberSaveable {  
         mutableStateOf(false)  
     }  
+
     AddToPlaylistDialog(  
         isVisible = showChoosePlaylistDialog,  
         onGetSong = { playlist ->  
@@ -125,9 +129,11 @@ fun YouTubeSongMenu(
         },  
         onDismiss = { showChoosePlaylistDialog = false }  
     )  
+
     var showSelectArtistDialog by rememberSaveable {  
         mutableStateOf(false)  
     }  
+
     if (showSelectArtistDialog) {  
         ListDialog(  
             onDismiss = { showSelectArtistDialog = false },  
@@ -170,6 +176,7 @@ fun YouTubeSongMenu(
             }  
         }  
     }  
+
     ListItem(  
         headlineContent = {
             Text(
@@ -229,11 +236,15 @@ fun YouTubeSongMenu(
             }  
         },  
     )  
+
     HorizontalDivider()
+
     Spacer(modifier = Modifier.height(12.dp))
+
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     LazyColumn(
         contentPadding = PaddingValues(
             start = 0.dp,
@@ -278,6 +289,7 @@ fun YouTubeSongMenu(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -298,7 +310,9 @@ fun YouTubeSongMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {
@@ -339,11 +353,13 @@ fun YouTubeSongMenu(
                                 val isInLibrary = librarySong?.song?.inLibrary != null
                                 val token =
                                     if (isInLibrary) song.libraryRemoveToken else song.libraryAddToken
+
                                 token?.let {
                                     coroutineScope.launch {
                                         YouTube.feedback(listOf(it))
                                     }
                                 }
+
                                 if (isInLibrary) {
                                     database.query {
                                         inLibrary(song.id, null)
@@ -365,7 +381,9 @@ fun YouTubeSongMenu(
                 }
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -444,7 +462,9 @@ fun YouTubeSongMenu(
                 )
             )
         }
+
         item { Spacer(modifier = Modifier.height(12.dp)) }
+
         item {
             Material3MenuGroup(
                 items = buildList {

@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class MusicQueueRenderer(
     val content: Content?,
@@ -9,6 +11,7 @@ data class MusicQueueRenderer(
     data class Content(
         val playlistPanelRenderer: PlaylistPanelRenderer,
     )
+
     @Serializable
     data class Header(
         val musicQueueHeaderRenderer: MusicQueueHeaderRenderer?,

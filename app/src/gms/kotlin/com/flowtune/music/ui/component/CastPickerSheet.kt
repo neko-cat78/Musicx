@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.mediarouter.media.MediaRouter
 import com.flowtune.music.R
+
 @Composable
 fun CastPickerSheet(
     routes: List<MediaRouter.RouteInfo>,
@@ -36,6 +38,7 @@ fun CastPickerSheet(
             .fillMaxWidth()
             .padding(bottom = 24.dp)
     ) {
+        
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -53,6 +56,7 @@ fun CastPickerSheet(
                 fontWeight = FontWeight.Bold
             )
         }
+        
         if (isConnecting) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -71,6 +75,7 @@ fun CastPickerSheet(
                 )
             }
         } else if (currentlyConnectedRoute != null) {
+            
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -104,6 +109,7 @@ fun CastPickerSheet(
                 )
             }
         } else if (routes.isEmpty()) {
+            
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,6 +136,7 @@ fun CastPickerSheet(
                 )
             }
         } else {
+            
             LazyColumn {
                 items(routes) { route ->
                     Row(

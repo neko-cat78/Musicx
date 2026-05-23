@@ -1,4 +1,5 @@
 package com.flowtune.music.ui.component
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import com.flowtune.music.R
 import com.flowtune.music.constants.EnableGoogleCastKey
 import com.flowtune.music.utils.rememberPreference
 import timber.log.Timber
+
 @Composable
 fun CastButton(
     modifier: Modifier = Modifier,
@@ -41,21 +43,27 @@ fun CastButton(
     val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current
     val menuState = LocalMenuState.current
+    
     var castAvailable by remember { mutableStateOf(false) }
     var mediaRouter by remember { mutableStateOf<MediaRouter?>(null) }
     var routeSelector by remember { mutableStateOf<MediaRouteSelector?>(null) }
     var availableRoutes by remember { mutableStateOf<List<MediaRouter.RouteInfo>>(emptyList()) }
+    
     val (enableGoogleCast) = rememberPreference(
         key = EnableGoogleCastKey,
         defaultValue = true
     )
+    
     val castHandler = playerConnection?.service?.castConnectionHandler
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
     val isConnecting by castHandler?.isConnecting?.collectAsState() ?: remember { mutableStateOf(false) }
     val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf(null) }
+    
     val currentMetadata by playerConnection?.mediaMetadata?.collectAsState() ?: remember { mutableStateOf(null) }
+
     LaunchedEffect(enableGoogleCast) {
         if (!enableGoogleCast) {
+            
             if (isCasting) {
                 playerConnection?.service?.castConnectionHandler?.disconnect()
             }
@@ -71,6 +79,7 @@ fun CastButton(
             routeSelector = MediaRouteSelector.Builder()
                 .addControlCategory(CastMediaControlIntent.categoryForCast(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID))
                 .build()
+            
             playerConnection?.service?.castConnectionHandler?.initialize()
             castAvailable = true
         } catch (e: Exception) {
@@ -78,30 +87,38 @@ fun CastButton(
             castAvailable = false
         }
     }
+    
     DisposableEffect(mediaRouter, routeSelector) {
         val callback = object : MediaRouter.Callback() {
             override fun onRouteAdded(router: MediaRouter, route: MediaRouter.RouteInfo) {
                 updateRoutes(router, routeSelector) { availableRoutes = it }
             }
+            
             override fun onRouteRemoved(router: MediaRouter, route: MediaRouter.RouteInfo) {
                 updateRoutes(router, routeSelector) { availableRoutes = it }
             }
+            
             override fun onRouteChanged(router: MediaRouter, route: MediaRouter.RouteInfo) {
                 updateRoutes(router, routeSelector) { availableRoutes = it }
             }
         }
+        
         routeSelector?.let { selector ->
             mediaRouter?.addCallback(selector, callback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY)
+            
             updateRoutes(mediaRouter, selector) { availableRoutes = it }
         }
+        
         onDispose {
             mediaRouter?.removeCallback(callback)
         }
     }
+
     if (enableGoogleCast && castAvailable) {
         Box(
             modifier = modifier
         ) {
+            
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -115,6 +132,7 @@ fun CastButton(
                         )
                     )
             )
+            
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -126,6 +144,7 @@ fun CastButton(
                         Toast.makeText(context, "Play a song first to cast", Toast.LENGTH_SHORT).show()
                         return@clickable
                     }
+                    
                     val currentRoute = if (isCasting) {
                         mediaRouter?.routes?.find { route ->
                             routeSelector?.let { selector -> 
@@ -133,6 +152,7 @@ fun CastButton(
                             } == true
                         }
                     } else null
+                    
                     menuState.show {
                         CastPickerSheet(
                             routes = availableRoutes,
@@ -164,6 +184,7 @@ fun CastButton(
         }
     }
 }
+
 private fun updateRoutes(
     router: MediaRouter?,
     selector: MediaRouteSelector?,

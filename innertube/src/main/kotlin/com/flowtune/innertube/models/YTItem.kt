@@ -1,5 +1,7 @@
 package com.flowtune.innertube.models
+
 import com.flowtune.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
+
 sealed class YTItem {
     abstract val id: String
     abstract val title: String
@@ -7,14 +9,17 @@ sealed class YTItem {
     abstract val explicit: Boolean
     abstract val shareLink: String
 }
+
 data class Artist(
     val name: String,
     val id: String?,
 )
+
 data class Album(
     val name: String,
     val id: String,
 )
+
 data class SongItem(
     override val id: String,
     override val title: String,
@@ -34,9 +39,11 @@ data class SongItem(
 ) : YTItem() {
     val isVideoSong: Boolean
         get() = musicVideoType != null && musicVideoType != MUSIC_VIDEO_TYPE_ATV
+
     override val shareLink: String
-        get() = "https:
+        get() = "https://music.youtube.com/watch?v=$id"
 }
+
 data class AlbumItem(
     val browseId: String,
     val playlistId: String,
@@ -48,8 +55,9 @@ data class AlbumItem(
     override val explicit: Boolean = false,
 ) : YTItem() {
     override val shareLink: String
-        get() = "https:
+        get() = "https://music.youtube.com/playlist?list=$playlistId"
 }
+
 data class PlaylistItem(
     override val id: String,
     override val title: String,
@@ -64,8 +72,9 @@ data class PlaylistItem(
     override val explicit: Boolean
         get() = false
     override val shareLink: String
-        get() = "https:
+        get() = "https://music.youtube.com/playlist?list=$id"
 }
+
 data class ArtistItem(
     override val id: String,
     override val title: String,
@@ -78,14 +87,16 @@ data class ArtistItem(
     override val explicit: Boolean
         get() = false
     override val shareLink: String
-        get() = "https:
+        get() = "https://music.youtube.com/channel/$id"
 }
+
 fun <T : YTItem> List<T>.filterExplicit(enabled: Boolean = true) =
     if (enabled) {
         filter { !it.explicit }
     } else {
         this
     }
+
 fun <T : YTItem> List<T>.filterVideoSongs(disableVideos: Boolean = false) =
     if (disableVideos) {
         filterNot { it is SongItem && it.isVideoSong }

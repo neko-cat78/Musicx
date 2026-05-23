@@ -1,4 +1,5 @@
 package com.flowtune.music.widget
+
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -42,8 +43,11 @@ import com.flowtune.music.R
 import com.flowtune.music.playback.MusicService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 class TurntableWidget : GlanceAppWidget() {
+
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             GlanceTheme {
@@ -51,18 +55,22 @@ class TurntableWidget : GlanceAppWidget() {
             }
         }
     }
+
     @Composable
     private fun TurntableWidgetContent(context: Context) {
         val prefs = currentState<Preferences>()
         val isPlaying = prefs[PREF_IS_PLAYING] ?: false
         val isLiked = prefs[PREF_IS_LIKED] ?: false
+        
         val albumArtBitmap = cachedAlbumArtBitmap
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
+            
             Box(
                 modifier = GlanceModifier
                     .size(120.dp)
@@ -86,6 +94,7 @@ class TurntableWidget : GlanceAppWidget() {
                     )
                 }
             }
+
             Box(
                 modifier = GlanceModifier
                     .fillMaxSize()
@@ -109,6 +118,7 @@ class TurntableWidget : GlanceAppWidget() {
                     )
                 }
             }
+
             Box(
                 modifier = GlanceModifier
                     .fillMaxSize()
@@ -134,18 +144,22 @@ class TurntableWidget : GlanceAppWidget() {
             }
         }
     }
+
     private fun getServiceAction(context: Context, action: String): Action {
         val intent = Intent(context, MusicService::class.java).apply {
             this.action = action
         }
         return actionStartService(intent)
     }
+
     companion object {
         private val PREF_IS_PLAYING = booleanPreferencesKey("is_playing")
         private val PREF_IS_LIKED = booleanPreferencesKey("is_liked")
         private val PREF_ALBUM_ART_URL = stringPreferencesKey("album_art_url")
+        
         private var cachedAlbumArtBitmap: Bitmap? = null
         private var cachedAlbumArtUrl: String? = null
+
         suspend fun updateWidget(
             context: Context,
             isPlaying: Boolean,
@@ -155,6 +169,7 @@ class TurntableWidget : GlanceAppWidget() {
             try {
                 val manager = GlanceAppWidgetManager(context)
                 val glanceIds = manager.getGlanceIds(TurntableWidget::class.java)
+                
                 if (albumArtUrl != null && albumArtUrl != cachedAlbumArtUrl) {
                     try {
                         val bitmap = withContext(Dispatchers.IO) {
@@ -178,8 +193,10 @@ class TurntableWidget : GlanceAppWidget() {
                             cachedAlbumArtUrl = albumArtUrl
                         }
                     } catch (e: Exception) {
+                        
                     }
                 }
+
                 glanceIds.forEach { glanceId ->
                     updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
                         prefs.toMutablePreferences().apply {
@@ -191,10 +208,12 @@ class TurntableWidget : GlanceAppWidget() {
                     TurntableWidget().update(context, glanceId)
                 }
             } catch (e: Exception) {
+                
             }
         }
     }
 }
+
 class TurntableWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = TurntableWidget()
 }

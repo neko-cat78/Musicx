@@ -1,4 +1,5 @@
 package com.flowtune.music
+
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -43,23 +44,29 @@ import java.net.PasswordAuthentication
 import java.net.Proxy
 import java.util.Locale
 import javax.inject.Inject
+
 @HiltAndroidApp
 class App : Application(), SingletonImageLoader.Factory {
+
     @Inject
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
+
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
+
         applicationScope.launch {
             initializeSettings()
             observeSettingsChanges()
         }
     }
+
     private suspend fun initializeSettings() {
         val settings = dataStore.data.first()
         val locale = Locale.getDefault()
         val languageTag = locale.language
+
         YouTube.locale = YouTubeLocale(
             gl = settings[ContentCountryKey]?.takeIf { it != SYSTEM_DEFAULT }
                 ?: locale.country.takeIf { it in CountryCodeToName }
@@ -69,17 +76,21 @@ class App : Application(), SingletonImageLoader.Factory {
                 ?: languageTag.takeIf { it in LanguageCodeToName }
                 ?: "en"
         )
+
         if (languageTag == "zh-TW") {
             KuGou.useTraditionalChinese = true
         }
+
         LastFM.initialize(
             apiKey = BuildConfig.LASTFM_API_KEY.takeIf { it.isNotEmpty() } ?: "",
             secret = BuildConfig.LASTFM_SECRET.takeIf { it.isNotEmpty() } ?: ""
         )
+
         if (settings[ProxyEnabledKey] == true) {
             val username = settings[ProxyUsernameKey].orEmpty()
             val password = settings[ProxyPasswordKey].orEmpty()
             val type = settings[ProxyTypeKey].toEnum(defaultValue = Proxy.Type.HTTP)
+
             if (username.isNotEmpty() || password.isNotEmpty()) {
                 if (type == Proxy.Type.HTTP) {
                     YouTube.proxyAuth = Credentials.basic(username, password)
@@ -101,7 +112,9 @@ class App : Application(), SingletonImageLoader.Factory {
                 reportException(e)
             }
         }
+
         YouTube.useLoginForBrowse = settings[UseLoginForBrowse] ?: true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "updates",
@@ -114,6 +127,7 @@ class App : Application(), SingletonImageLoader.Factory {
             nm.createNotificationChannel(channel)
         }
     }
+
     private fun observeSettingsChanges() {
         applicationScope.launch(Dispatchers.IO) {
             dataStore.data
@@ -128,6 +142,7 @@ class App : Application(), SingletonImageLoader.Factory {
                         }
                 }
         }
+
         applicationScope.launch(Dispatchers.IO) {
             dataStore.data
                 .map { it[DataSyncIdKey] }
@@ -140,6 +155,7 @@ class App : Application(), SingletonImageLoader.Factory {
                     }
                 }
         }
+
         applicationScope.launch(Dispatchers.IO) {
             dataStore.data
                 .map { it[InnerTubeCookieKey] }
@@ -153,6 +169,7 @@ class App : Application(), SingletonImageLoader.Factory {
                     }
                 }
         }
+
         applicationScope.launch(Dispatchers.IO) {
             dataStore.data
                 .map { it[LastFMSessionKey] }
@@ -166,6 +183,7 @@ class App : Application(), SingletonImageLoader.Factory {
                 }
         }
     }
+
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         val cacheSize = runBlocking {
             dataStore.data.map { it[MaxImageCacheSizeKey] ?: 512 }.first()
@@ -173,6 +191,7 @@ class App : Application(), SingletonImageLoader.Factory {
         return ImageLoader.Builder(this).apply {
             crossfade(true)
             allowHardware(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            
             memoryCache {
                 MemoryCache.Builder()
                     .maxSizePercent(context, 0.25)
@@ -190,6 +209,7 @@ class App : Application(), SingletonImageLoader.Factory {
             }
         }.build()
     }
+
     companion object {
         suspend fun forgetAccount(context: Context) {
             context.dataStore.edit { settings ->

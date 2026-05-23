@@ -1,5 +1,7 @@
 package com.flowtune.music.db.entities
+
 import androidx.compose.runtime.Immutable
+
 @Immutable
 data class SongWithStats(
     val id: String,
