@@ -362,11 +362,11 @@
     <string name="wrapped_intro_title">FLOWTUNE</string>
     <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to</string>
     <string name="wrapped_intro_button">let\'s go!</string>
-    <string name="wrapped_end_thanks">Thanks for listening with flowtune!</string>
+    <string name="wrapped_end_thanks">Thanks for listening with Flowtune!</string>
     <string name="wrapped_end_create_playlist">Create Your Wrapped Playlist</string>
     <string name="wrapped_end_creating_playlist">Creating...</string>
     <string name="wrapped_end_playlist_saved">Playlist Saved</string>
-    <string name="wrapped_logo_content_description">flowtune Logo</string>
+    <string name="wrapped_logo_content_description">Flowtune Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">YOUR WRAPPED IS READY!</string>
     <string name="wrapped_ready_subtitle">Time to see what you loved this year.</string>
@@ -402,9 +402,9 @@
 
     <string name="casting_to">Casting to %s</string>
     <string name="progress_percent">Progress %s%%</string>
-    <string name="listening_to_flowtune">Listening to flowtune</string>
+    <string name="listening_to_flowtune">Listening to Flowtune</string>
     <string name="listen_on_youtube_music">Listen on YouTube Music</string>
-    <string name="visit_flowtune">Visit flowtune</string>
+    <string name="visit_flowtune">Visit Flowtune</string>
     <string name="open">Open</string>
     <string name="failed_to_create_image">Failed to create image: %s</string>
     <string name="copied_title">Copied Title</string>
