@@ -118,7 +118,6 @@ import com.flowtune.innertube.YouTube
 import com.flowtune.innertube.models.SongItem
 import com.flowtune.innertube.models.WatchEndpoint
 import com.flowtune.music.constants.AppBarHeight
-import com.flowtune.music.constants.AppLanguageKey
 import com.flowtune.music.constants.CheckForUpdatesKey
 import com.flowtune.music.constants.DarkModeKey
 import com.flowtune.music.constants.DefaultOpenTabKey
@@ -130,7 +129,6 @@ import com.flowtune.music.constants.NavigationBarAnimationSpec
 import com.flowtune.music.constants.NavigationBarHeight
 import com.flowtune.music.constants.PauseSearchHistoryKey
 import com.flowtune.music.constants.PureBlackKey
-import com.flowtune.music.constants.SYSTEM_DEFAULT
 import com.flowtune.music.constants.SlimNavBarHeight
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
@@ -176,7 +174,6 @@ import com.flowtune.music.utils.get
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import com.flowtune.music.utils.reportException
-import com.flowtune.music.utils.setAppLocale
 import com.flowtune.music.viewmodels.HomeViewModel
 import com.valentinilk.shimmer.LocalShimmerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -188,7 +185,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import androidx.compose.ui.graphics.Brush
@@ -277,14 +273,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            val locale = dataStore[AppLanguageKey]
-                ?.takeUnless { it == SYSTEM_DEFAULT }
-                ?.let { Locale.forLanguageTag(it) }
-                ?: Locale.getDefault()
-            setAppLocale(this, locale)
-        }
 
         lifecycleScope.launch {
             dataStore.data
