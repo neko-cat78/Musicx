@@ -324,9 +324,9 @@
     <string name="wrapped_playlist_saved">Плейлист сохранён</string>
     <string name="casting_to">Трансляция на %s</string>
     <string name="progress_percent">Прогресс %s%%</string>
-    <string name="listening_to_metrolist">Вы слушаете flowtune</string>
+    <string name="listening_to_flowtune">Вы слушаете flowtune</string>
     <string name="listen_on_youtube_music">Слушать в YouTube Music</string>
-    <string name="visit_metrolist">Посетить flowtune</string>
+    <string name="visit_flowtune">Посетить flowtune</string>
     <string name="open">Открыть</string>
     <string name="failed_to_create_image">Не удалось создать изображение: %s</string>
     <string name="copied_title">Название скопировано</string>

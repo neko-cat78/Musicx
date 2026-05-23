@@ -312,9 +312,9 @@
     <string name="wrapped_playlist_saved">Playlist gespeichert</string>
     <string name="casting_to">Übertragung auf %s</string>
     <string name="progress_percent">Fortschritt %s%%</string>
-    <string name="listening_to_metrolist">flowtune hören</string>
+    <string name="listening_to_flowtune">flowtune hören</string>
     <string name="listen_on_youtube_music">Auf YouTube Music anhören</string>
-    <string name="visit_metrolist">Besuchen Sie flowtune</string>
+    <string name="visit_flowtune">Besuchen Sie flowtune</string>
     <string name="open">Öffnen</string>
     <string name="failed_to_create_image">Bild konnte nicht erstellt werden: %s</string>
     <string name="copied_title">Kopierter Titel</string>

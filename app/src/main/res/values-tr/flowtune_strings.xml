@@ -316,9 +316,9 @@
     <string name="wrapped_playlist_saved">Çalma listesi kaydedildi</string>
     <string name="casting_to">%s cihazına yansıtılıyor</string>
     <string name="progress_percent">İlerleme %s%%</string>
-    <string name="listening_to_metrolist">flowtune dinleniyor</string>
+    <string name="listening_to_flowtune">flowtune dinleniyor</string>
     <string name="listen_on_youtube_music">YouTube Music\'te dinle</string>
-    <string name="visit_metrolist">flowtune\'i ziyaret et</string>
+    <string name="visit_flowtune">flowtune\'i ziyaret et</string>
     <string name="open">Aç</string>
     <string name="failed_to_create_image">Görsel oluşturulamadı: %s</string>
     <string name="copied_title">Başlık kopyalandı</string>

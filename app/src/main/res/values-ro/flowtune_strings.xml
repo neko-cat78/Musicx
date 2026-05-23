@@ -320,9 +320,9 @@
     <string name="wrapped_playlist_saved">Playlist salvat</string>
     <string name="casting_to">Se difuzează către %s</string>
     <string name="progress_percent">Progres: %s%%</string>
-    <string name="listening_to_metrolist">Ascultă pe flowtune</string>
+    <string name="listening_to_flowtune">Ascultă pe flowtune</string>
     <string name="listen_on_youtube_music">Ascultă pe YouTube Music</string>
-    <string name="visit_metrolist">Vizitează flowtune</string>
+    <string name="visit_flowtune">Vizitează flowtune</string>
     <string name="open">Deschide</string>
     <string name="failed_to_create_image">Nu s-a putut crea imaginea: %s</string>
     <string name="copied_title">Titlul a fost copiat</string>

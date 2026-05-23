@@ -316,9 +316,9 @@
     <string name="wrapped_playlist_saved">Llista de reproducció desada</string>
     <string name="casting_to">Transmetent a %s</string>
     <string name="progress_percent">Progrés %s%%</string>
-    <string name="listening_to_metrolist">Escoltant flowtune</string>
+    <string name="listening_to_flowtune">Escoltant flowtune</string>
     <string name="listen_on_youtube_music">Escoltar a YouTube Music</string>
-    <string name="visit_metrolist">Visita flowtune</string>
+    <string name="visit_flowtune">Visita flowtune</string>
     <string name="open">Obrir</string>
     <string name="failed_to_create_image">No s\'ha pogut generar la imatge: %s</string>
     <string name="copied_title">Títol copiat</string>

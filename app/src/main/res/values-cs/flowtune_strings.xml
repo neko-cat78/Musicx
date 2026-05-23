@@ -324,9 +324,9 @@
     <string name="wrapped_playlist_saved">Playlist uložen</string>
     <string name="casting_to">Přehrávání přes %s</string>
     <string name="progress_percent">Postup %s%%</string>
-    <string name="listening_to_metrolist">Poslouchá flowtune</string>
+    <string name="listening_to_flowtune">Poslouchá flowtune</string>
     <string name="listen_on_youtube_music">Poslouchat na YouTube Music</string>
-    <string name="visit_metrolist">Navštívit flowtune</string>
+    <string name="visit_flowtune">Navštívit flowtune</string>
     <string name="open">Otevřít</string>
     <string name="failed_to_create_image">Nepodařilo se vytvořit obrázek: %s</string>
     <string name="copied_title">Název zkopírován</string>

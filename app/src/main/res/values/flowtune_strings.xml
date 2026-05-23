@@ -402,9 +402,9 @@
 
     <string name="casting_to">Casting to %s</string>
     <string name="progress_percent">Progress %s%%</string>
-    <string name="listening_to_metrolist">Listening to flowtune</string>
+    <string name="listening_to_flowtune">Listening to flowtune</string>
     <string name="listen_on_youtube_music">Listen on YouTube Music</string>
-    <string name="visit_metrolist">Visit flowtune</string>
+    <string name="visit_flowtune">Visit flowtune</string>
     <string name="open">Open</string>
     <string name="failed_to_create_image">Failed to create image: %s</string>
     <string name="copied_title">Copied Title</string>

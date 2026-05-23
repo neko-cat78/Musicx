@@ -294,9 +294,9 @@
     <string name="wrapped_playlist_saved">Playlist tersimpan</string>
     <string name="casting_to">Casting ke %s</string>
     <string name="progress_percent">Progres %s%%</string>
-    <string name="listening_to_metrolist">Mendengarkan flowtune</string>
+    <string name="listening_to_flowtune">Mendengarkan flowtune</string>
     <string name="listen_on_youtube_music">Dengarkan di YouTube Music</string>
-    <string name="visit_metrolist">Kunjungi flowtune</string>
+    <string name="visit_flowtune">Kunjungi flowtune</string>
     <string name="open">Buka</string>
     <string name="failed_to_create_image">Gagal membuat gambar: %s</string>
     <string name="copied_title">Judul Disalin</string>

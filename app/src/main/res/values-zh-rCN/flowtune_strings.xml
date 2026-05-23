@@ -315,9 +315,9 @@
     <string name="wrapped_playlist_saved">播放列表已保存</string>
     <string name="casting_to">转换为 %s</string>
     <string name="progress_percent">进度%s%%</string>
-    <string name="listening_to_metrolist">收听 flowtune</string>
+    <string name="listening_to_flowtune">收听 flowtune</string>
     <string name="listen_on_youtube_music">在 YouTube Music 上收听</string>
-    <string name="visit_metrolist">访问 flowtune</string>
+    <string name="visit_flowtune">访问 flowtune</string>
     <string name="open">打开</string>
     <string name="failed_to_create_image">创建图片失败:%s</string>
     <string name="copied_title">已复制标题</string>

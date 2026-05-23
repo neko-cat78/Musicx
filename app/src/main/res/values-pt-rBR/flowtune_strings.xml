@@ -342,9 +342,9 @@
     <string name="import_error_title">Erro ao importar</string>
     <string name="casting_to">Transmitir para %s</string>
     <string name="progress_percent">Progresso %s%%</string>
-    <string name="listening_to_metrolist">Ouvindo flowtune</string>
+    <string name="listening_to_flowtune">Ouvindo flowtune</string>
     <string name="listen_on_youtube_music">Ouça no YouTube Music</string>
-    <string name="visit_metrolist">Visite flowtune</string>
+    <string name="visit_flowtune">Visite flowtune</string>
     <string name="open">Abrir</string>
     <string name="failed_to_create_image">Falha ao criar a imagem: %s</string>
     <string name="copied_title">Título Copiado</string>
