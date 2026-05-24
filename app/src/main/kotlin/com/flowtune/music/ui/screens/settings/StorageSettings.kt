@@ -1,10 +1,7 @@
 package com.flowtune.music.ui.screens.settings
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -13,10 +10,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -30,22 +25,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil3.SingletonImageLoader
 import coil3.annotation.DelicateCoilApi
-import coil3.annotation.ExperimentalCoilApi
 import coil3.imageLoader
 import com.flowtune.music.LocalPlayerAwareWindowInsets
 import com.flowtune.music.LocalPlayerConnection
 import com.flowtune.music.R
-import com.flowtune.music.constants.MaxImageCacheSizeKey
-import com.flowtune.music.constants.MaxSongCacheSizeKey
 import com.flowtune.music.extensions.tryOrNull
 import com.flowtune.music.ui.component.ActionPromptDialog
 import com.flowtune.music.ui.component.IconButton
@@ -53,14 +43,12 @@ import com.flowtune.music.ui.component.Material3SettingsGroup
 import com.flowtune.music.ui.component.Material3SettingsItem
 import com.flowtune.music.ui.utils.backToMain
 import com.flowtune.music.ui.utils.formatFileSize
-import com.flowtune.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalMaterial3Api::class, DelicateCoilApi::class)
+@OptIn(ExperimentalMaterial3Api::class, DelicateCoilApi::class)
 @Composable
 fun StorageSettings(
     navController: NavController,
@@ -72,16 +60,6 @@ fun StorageSettings(
     val downloadCache = LocalPlayerConnection.current?.service?.downloadCache ?: return
 
     val coroutineScope = rememberCoroutineScope()
-    val songCacheString = stringResource(R.string.song_cache).lowercase()
-    val imageCacheString = stringResource(R.string.image_cache).lowercase()
-    val (maxImageCacheSize, onMaxImageCacheSizeChange) = rememberPreference(
-        key = MaxImageCacheSizeKey,
-        defaultValue = 512
-    )
-    val (maxSongCacheSize, onMaxSongCacheSizeChange) = rememberPreference(
-        key = MaxSongCacheSizeKey,
-        defaultValue = 1024
-    )
 
     var clearDownloads by remember { mutableStateOf(false) }
     var clearCacheDialog by remember { mutableStateOf(false) }
@@ -100,38 +78,6 @@ fun StorageSettings(
     }
     var downloadCacheSize by remember {
         mutableStateOf(tryOrNull { downloadCache.cacheSpace } ?: 0)
-    }
-    val imageCacheProgress by animateFloatAsState(
-        targetValue = (imageCacheSize.toFloat() / (maxImageCacheSize * 1024 * 1024L)).coerceIn(
-            0f,
-            1f
-        ),
-        label = "imageCacheProgress",
-    )
-    val playerCacheProgress by animateFloatAsState(
-        targetValue = (playerCacheSize.toFloat() / (maxSongCacheSize * 1024 * 1024L)).coerceIn(
-            0f,
-            1f
-        ),
-        label = "playerCacheProgress",
-    )
-
-    LaunchedEffect(maxImageCacheSize) {
-        SingletonImageLoader.reset()
-        if (maxImageCacheSize == 0) {
-            coroutineScope.launch(Dispatchers.IO) {
-                imageDiskCache.clear()
-            }
-        }
-    }
-    LaunchedEffect(maxSongCacheSize) {
-        if (maxSongCacheSize == 0) {
-            coroutineScope.launch(Dispatchers.IO) {
-                playerCache.keys.forEach { key ->
-                    playerCache.removeResource(key)
-                }
-            }
-        }
     }
 
     LaunchedEffect(imageDiskCache) {
@@ -272,7 +218,6 @@ fun StorageSettings(
                 .padding(horizontal = 16.dp),
         ) {
             Material3SettingsGroup(
-                title = stringResource(R.string.storage),
                 items = listOf(
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.storage),
@@ -287,129 +232,12 @@ fun StorageSettings(
                         onClick = {
                             clearDownloads = true
                         }
-                    )
-                )
-            )
-
-            Material3SettingsGroup(
-                title = stringResource(R.string.song_cache),
-                items = listOf(
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.cached),
-                        title = { Text(stringResource(R.string.max_song_cache_size)) },
-                        description = {
-                            val songCacheValues =
-                                remember { listOf(0, 128, 256, 512, 1024, 2048, 4096, 8192, -1) }
-                            Column {
-                                Text(
-                                    text = when (maxSongCacheSize) {
-                                        0 -> stringResource(R.string.disable)
-                                        -1 -> stringResource(R.string.unlimited)
-                                        else -> formatFileSize(maxSongCacheSize * 1024 * 1024L)
-                                    }
-                                )
-                                Slider(
-                                    value = songCacheValues.indexOf(maxSongCacheSize).toFloat(),
-                                    onValueChange = {
-                                        val newValue = songCacheValues[it.roundToInt()]
-                                        val newLimitInBytes = if (newValue == -1) {
-                                            Long.MAX_VALUE
-                                        } else {
-                                            newValue * 1024 * 1024L
-                                        }
-
-                                        if (newLimitInBytes < playerCacheSize) {
-                                            cacheUsage = playerCacheSize
-                                            cacheType = songCacheString
-                                            onConfirmAction = { onMaxSongCacheSizeChange(newValue) }
-                                            showCacheWarningDialog = true
-                                        } else {
-                                            onMaxSongCacheSizeChange(newValue)
-                                        }
-                                    },
-                                    steps = songCacheValues.size - 2,
-                                    valueRange = 0f..(songCacheValues.size - 1).toFloat()
-                                )
-                                LinearProgressIndicator(
-                                    progress = { playerCacheProgress },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    strokeCap = StrokeCap.Round
-                                )
-                                Spacer(modifier = Modifier.padding(2.dp))
-                                Text(
-                                    text = if (maxSongCacheSize == -1) {
-                                        formatFileSize(playerCacheSize)
-                                    } else {
-                                        "${formatFileSize(playerCacheSize)} / ${
-                                            formatFileSize(
-                                                maxSongCacheSize * 1024 * 1024L
-                                            )
-                                        }"
-                                    },
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
-                        }
                     ),
                     Material3SettingsItem(
-                        icon = painterResource(R.drawable.clear_all),
+                        icon = painterResource(R.drawable.cached),
                         title = { Text(stringResource(R.string.clear_song_cache)) },
                         onClick = {
                             clearCacheDialog = true
-                        }
-                    )
-                )
-            )
-
-            Material3SettingsGroup(
-                title = stringResource(R.string.image_cache),
-                items = listOf(
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.manage_search),
-                        title = { Text(stringResource(R.string.max_image_cache_size)) },
-                        description = {
-                            val imageCacheValues =
-                                remember { listOf(0, 128, 256, 512, 1024, 2048, 4096, 8192) }
-                            Column {
-                                Text(
-                                    text = when (maxImageCacheSize) {
-                                        0 -> stringResource(R.string.disable)
-                                        else -> formatFileSize(maxImageCacheSize * 1024 * 1024L)
-                                    }
-                                )
-                                Slider(
-                                    value = imageCacheValues.indexOf(maxImageCacheSize).toFloat(),
-                                    onValueChange = {
-                                        val newValue = imageCacheValues[it.roundToInt()]
-                                        val newLimitInBytes = newValue * 1024 * 1024L
-
-                                        if (newLimitInBytes < imageCacheSize) {
-                                            cacheUsage = imageCacheSize
-                                            cacheType = imageCacheString
-                                            onConfirmAction = { onMaxImageCacheSizeChange(newValue) }
-                                            showCacheWarningDialog = true
-                                        } else {
-                                            onMaxImageCacheSizeChange(newValue)
-                                        }
-                                    },
-                                    steps = imageCacheValues.size - 2,
-                                    valueRange = 0f..(imageCacheValues.size - 1).toFloat()
-                                )
-                                LinearProgressIndicator(
-                                    progress = { imageCacheProgress },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    strokeCap = StrokeCap.Round
-                                )
-                                Spacer(modifier = Modifier.padding(2.dp))
-                                Text(
-                                    text = "${formatFileSize(imageCacheSize)} / ${
-                                        formatFileSize(
-                                            maxImageCacheSize * 1024 * 1024L
-                                        )
-                                    }",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
                         }
                     ),
                     Material3SettingsItem(

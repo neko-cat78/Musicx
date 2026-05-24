@@ -167,7 +167,7 @@ class App : Application(), SingletonImageLoader.Factory {
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         val cacheSize = runBlocking {
-            dataStore.data.map { it[MaxImageCacheSizeKey] ?: 512 }.first()
+            dataStore.data.map { it[MaxImageCacheSizeKey] ?: 8192 }.first()
         }
         return ImageLoader.Builder(this).apply {
             crossfade(true)
