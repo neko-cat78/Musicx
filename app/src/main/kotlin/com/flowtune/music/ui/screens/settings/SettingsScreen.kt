@@ -50,7 +50,6 @@ fun SettingsScreen(
         )
 
         Material3SettingsGroup(
-            title = stringResource(R.string.settings_section_storage),
             items = listOf(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.storage),
@@ -63,7 +62,6 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
-            title = stringResource(R.string.settings_section_system),
             items = buildList {
                 add(
                     Material3SettingsItem(
