@@ -44,10 +44,7 @@ import com.flowtune.music.LocalDatabase
 import com.flowtune.music.LocalPlayerAwareWindowInsets
 import com.flowtune.music.R
 import com.flowtune.music.constants.PauseSearchHistoryKey
-import com.flowtune.music.constants.SearchSource
-import com.flowtune.music.constants.SearchSourceKey
 import com.flowtune.music.db.entities.SearchHistory
-import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,7 +61,6 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     
-    var searchSource by rememberEnumPreference(SearchSourceKey, SearchSource.ONLINE)
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -127,12 +123,7 @@ fun SearchScreen(
                             decorationBox = { innerTextField ->
                                 if (query.text.isEmpty()) {
                                     Text(
-                                        text = stringResource(
-                                            when (searchSource) {
-                                                SearchSource.LOCAL -> R.string.search_library
-                                                SearchSource.ONLINE -> R.string.search_yt_music
-                                            }
-                                        ),
+                                        text = stringResource(R.string.search_yt_music),
                                         style = TextStyle(
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                             fontSize = 16.sp
@@ -149,29 +140,10 @@ fun SearchScreen(
                             )
                         )
                         
-                        Row {
-                            if (query.text.isNotEmpty()) {
-                                IconButton(onClick = { query = TextFieldValue("") }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.close),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            }
-                            IconButton(
-                                onClick = {
-                                    searchSource = if (searchSource == SearchSource.ONLINE) 
-                                        SearchSource.LOCAL else SearchSource.ONLINE
-                                }
-                            ) {
+                        if (query.text.isNotEmpty()) {
+                            IconButton(onClick = { query = TextFieldValue("") }) {
                                 Icon(
-                                    painter = painterResource(
-                                        when (searchSource) {
-                                            SearchSource.LOCAL -> R.drawable.library_music
-                                            SearchSource.ONLINE -> R.drawable.language
-                                        }
-                                    ),
+                                    painter = painterResource(R.drawable.close),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
@@ -203,22 +175,14 @@ fun SearchScreen(
                 .padding(bottom = bottomPadding)
                 .fillMaxSize()
         ) {
-            when (searchSource) {
-                SearchSource.LOCAL -> LocalSearchScreen(
-                    query = query.text,
-                    navController = navController,
-                    onDismiss = { navController.navigateUp() },
-                    pureBlack = pureBlack
-                )
-                SearchSource.ONLINE -> OnlineSearchScreen(
-                    query = query.text,
-                    onQueryChange = { query = it },
-                    navController = navController,
-                    onSearch = onSearchFromSuggestion,
-                    onDismiss = {  },
-                    pureBlack = pureBlack
-                )
-            }
+            OnlineSearchScreen(
+                query = query.text,
+                onQueryChange = { query = it },
+                navController = navController,
+                onSearch = onSearchFromSuggestion,
+                onDismiss = {  },
+                pureBlack = pureBlack
+            )
         }
     }
 
