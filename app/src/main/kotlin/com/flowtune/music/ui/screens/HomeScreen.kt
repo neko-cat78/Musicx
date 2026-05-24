@@ -248,14 +248,11 @@ fun HomeScreen(
     val similarRecommendations by viewModel.similarRecommendations.collectAsState()
     val accountPlaylists by viewModel.accountPlaylists.collectAsState()
     val homePage by viewModel.homePage.collectAsState()
-    val explorePage by viewModel.explorePage.collectAsState()
-
     val allLocalItems by viewModel.allLocalItems.collectAsState()
     val allYtItems by viewModel.allYtItems.collectAsState()
     val selectedChip by viewModel.selectedChip.collectAsState()
 
     val isLoading: Boolean by viewModel.isLoading.collectAsState()
-    val isMoodAndGenresLoading = isLoading && explorePage?.moodAndGenres == null
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
 
@@ -965,69 +962,7 @@ fun HomeScreen(
                 }
             }
 
-            if (selectedChip == null) {
-                explorePage?.moodAndGenres?.let { moodAndGenres ->
-                    item(key = "mood_and_genres_title") {
-                        NavigationTitle(
-                            title = stringResource(R.string.mood_and_genres),
-                            onClick = {
-                                navController.navigate("mood_and_genres")
-                            },
-                            modifier = Modifier.animateItem()
-                        )
-                    }
-                    item(key = "mood_and_genres_list") {
-                        LazyHorizontalGrid(
-                            rows = GridCells.Fixed(4),
-                            contentPadding = PaddingValues(6.dp),
-                            modifier = Modifier
-                                .height((MoodAndGenresButtonHeight + 12.dp) * 4 + 12.dp)
-                                .animateItem()
-                        ) {
-                            items(moodAndGenres) {
-                                MoodAndGenresButton(
-                                    title = it.title,
-                                    onClick = {
-                                        navController.navigate("youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}")
-                                    },
-                                    modifier = Modifier
-                                        .padding(6.dp)
-                                        .width(180.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (isMoodAndGenresLoading) {
-                    item(key = "mood_and_genres_shimmer") {
-                        ShimmerHost(
-                            modifier = Modifier.animateItem()
-                        ) {
-                            TextPlaceholder(
-                                height = 36.dp,
-                                modifier = Modifier
-                                    .padding(vertical = 12.dp, horizontal = 12.dp)
-                                    .width(250.dp),
-                            )
-
-                            repeat(4) {
-                                Row {
-                                    repeat(2) {
-                                        TextPlaceholder(
-                                            height = MoodAndGenresButtonHeight,
-                                            shape = RoundedCornerShape(6.dp),
-                                            modifier = Modifier
-                                                .padding(horizontal = 12.dp)
-                                                .width(200.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            
         }
 
         Indicator(
