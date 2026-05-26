@@ -71,7 +71,6 @@ import com.flowtune.music.constants.ListItemHeight
 import com.flowtune.music.models.MediaMetadata
 import com.flowtune.music.playback.ExoDownloadService
 import com.flowtune.music.playback.queues.YouTubeQueue
-import com.flowtune.music.ui.component.BigSeekBar
 import com.flowtune.music.ui.component.BottomSheetState
 import com.flowtune.music.ui.component.ListDialog
 import com.flowtune.music.ui.component.Material3MenuItemData
