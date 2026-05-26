@@ -140,8 +140,8 @@ import com.flowtune.music.models.MediaMetadata
 import com.flowtune.music.ui.component.BottomSheet
 import com.flowtune.music.ui.component.BottomSheetState
 import com.flowtune.music.ui.component.LocalBottomSheetPageState
-import com.kyant.backdrop.Backdrop
 import com.flowtune.music.ui.component.LocalMenuState
+import com.flowtune.music.ui.component.Lyrics
 import com.flowtune.music.ui.menu.PlayerMenu
 import com.flowtune.music.ui.component.PlayerSliderTrack
 import com.flowtune.music.ui.component.ResizableIconButton
@@ -151,7 +151,6 @@ import com.flowtune.music.ui.screens.settings.DarkMode
 import com.flowtune.music.ui.utils.ShowMediaInfo
 import com.flowtune.music.ui.theme.PlayerColorExtractor
 import com.flowtune.music.ui.theme.PlayerSliderColors
-import com.flowtune.music.ui.utils.ShowOffsetDialog
 import com.flowtune.music.utils.makeTimeString
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
