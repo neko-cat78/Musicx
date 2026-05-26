@@ -52,10 +52,47 @@ fun SettingsScreen(
         Material3SettingsGroup(
             items = listOf(
                 Material3SettingsItem(
+                    icon = painterResource(R.drawable.music_note),
+                    title = { Text(stringResource(R.string.player)) },
+                    onClick = { navController.navigate("settings/player") }
+                )
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(
+            items = listOf(
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.palette),
+                    title = { Text(stringResource(R.string.appearance)) },
+                    onClick = { navController.navigate("settings/appearance") }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.language),
+                    title = { Text(stringResource(R.string.content)) },
+                    onClick = { navController.navigate("settings/content") }
+                ),
+                Material3SettingsItem(
                     icon = painterResource(R.drawable.storage),
                     title = { Text(stringResource(R.string.storage)) },
                     onClick = { navController.navigate("settings/storage") }
-                )
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.security),
+                    title = { Text(stringResource(R.string.privacy)) },
+                    onClick = { navController.navigate("settings/privacy") }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.restore),
+                    title = { Text(stringResource(R.string.backup_restore)) },
+                    onClick = { navController.navigate("settings/backup_restore") }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.integration),
+                    title = { Text(stringResource(R.string.integrations)) },
+                    onClick = { navController.navigate("settings/integrations") }
+                ),
             )
         )
 

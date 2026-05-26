@@ -39,12 +39,6 @@ android {
             isDefault = true
             buildConfigField("Boolean", "CAST_AVAILABLE", "false")
         }
-        
-        create("gms") {
-            dimension = "variant"
-            buildConfigField("Boolean", "CAST_AVAILABLE", "true")
-        }
-        
         create("universal") {
             dimension = "abi"
             ndk {
@@ -219,20 +213,12 @@ dependencies {
     implementation(libs.media3.session)
     implementation(libs.media3.okhttp)
 
-    "gmsImplementation"(libs.media3.cast)
-    "gmsImplementation"(libs.mediarouter)
-    "gmsImplementation"(libs.cast.framework)
-
     implementation(libs.room.runtime)
     implementation(libs.kuromoji.ipadic)
     implementation(libs.tinypinyin)
     implementation(libs.squigglyslider)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
-
-    implementation(libs.glance)
-    implementation(libs.glance.appwidget)
-    implementation(libs.glance.material3)
 
     implementation(libs.apache.lang3)
 

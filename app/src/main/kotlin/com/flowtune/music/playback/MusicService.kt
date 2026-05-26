@@ -8,14 +8,9 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.toBitmap
 import kotlinx.coroutines.launch
-import com.flowtune.music.widget.MusicWidget
-import com.flowtune.music.widget.MusicWidgetActions
-import com.flowtune.music.widget.TurntableWidget
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.appwidget.AppWidgetManager
-import android.widget.RemoteViews
 import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -25,8 +20,7 @@ import android.content.Intent
 import android.database.SQLException
 import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.media.audiofx.AudioEffect
-import android.media.audiofx.LoudnessEnhancer
+
 import android.net.ConnectivityManager
 import android.os.Binder
 import android.util.Log
@@ -114,9 +108,6 @@ import com.flowtune.music.db.entities.LyricsEntity
 import com.flowtune.music.db.entities.RelatedSongMap
 import com.flowtune.music.di.DownloadCache
 import com.flowtune.music.di.PlayerCache
-import com.flowtune.music.eq.EqualizerService
-import com.flowtune.music.eq.audio.CustomEqualizerAudioProcessor
-import com.flowtune.music.eq.data.EQProfileRepository
 import com.flowtune.music.extensions.SilentHandler
 import com.flowtune.music.extensions.collect
 import com.flowtune.music.extensions.collectLatest
@@ -198,12 +189,6 @@ class MusicService :
     @Inject
     lateinit var mediaLibrarySessionCallback: MediaLibrarySessionCallback
 
-    @Inject
-    lateinit var equalizerService: EqualizerService
-
-    @Inject
-    lateinit var eqProfileRepository: EQProfileRepository
-
     private lateinit var audioManager: AudioManager
     private var audioFocusRequest: AudioFocusRequest? = null
     private var lastAudioFocusState = AudioManager.AUDIOFOCUS_NONE
@@ -232,11 +217,6 @@ class MusicService :
             .flatMapLatest { mediaMetadata ->
                 database.song(mediaMetadata?.id)
             }.stateIn(scope, SharingStarted.Lazily, null)
-    private val currentFormat =
-        currentMediaMetadata.flatMapLatest { mediaMetadata ->
-            database.format(mediaMetadata?.id)
-        }
-
     lateinit var playerVolume: MutableStateFlow<Float>
 
     lateinit var sleepTimer: SleepTimer
@@ -252,15 +232,10 @@ class MusicService :
     lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
 
-    private val customEqualizerAudioProcessor = CustomEqualizerAudioProcessor()
     private val silenceDetectorAudioProcessor =
         SilenceDetectorAudioProcessor { handleLongSilenceDetected() }
 
     private val instantSilenceSkipEnabled = MutableStateFlow(false)
-
-    private var isAudioEffectSessionOpened = false
-    private var loudnessEnhancer: LoudnessEnhancer? = null
-
 
 
     val automixItems = MutableStateFlow<List<MediaItem>>(emptyList())
@@ -279,8 +254,6 @@ class MusicService :
 
     override fun onCreate() {
         super.onCreate()
-
-        equalizerService.setAudioProcessor(customEqualizerAudioProcessor)
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -386,26 +359,6 @@ class MusicService :
         initializeCast()
 
         scope.launch {
-            eqProfileRepository.activeProfile.collect { profile ->
-                if (profile != null) {
-                    val result = equalizerService.applyProfile(profile)
-                    if (result.isSuccess && player.playbackState == Player.STATE_READY && player.isPlaying) {
-                        
-                        customEqualizerAudioProcessor.flush()
-                        
-                        player.seekTo(player.currentPosition) 
-                    }
-                } else {
-                    equalizerService.disable()
-                    if (player.playbackState == Player.STATE_READY && player.isPlaying) {
-                        customEqualizerAudioProcessor.flush()
-                        player.seekTo(player.currentPosition)
-                    }
-                }
-            }
-        }
-
-        scope.launch {
             connectivityObserver.networkStatus.collect { isConnected ->
                 isNetworkConnected.value = isConnected
                 if (isConnected && waitingForNetworkConnection.value) {
@@ -427,7 +380,6 @@ class MusicService :
 
         currentSong.debounce(1000).collect(scope) { song ->
             updateNotification()
-            updateWidgetUI(player.isPlaying)
         }
 
         combine(
@@ -467,15 +419,6 @@ class MusicService :
                     silenceSkipJob?.cancel()
                 }
             }
-
-        combine(
-            currentFormat,
-            dataStore.data
-                .map { it[AudioNormalizationKey] ?: true }
-                .distinctUntilChanged(),
-        ) { format, normalizeAudio ->
-            format to normalizeAudio
-        }.collectLatest(scope) { (format, normalizeAudio) -> setupLoudnessEnhancer()}
 
         if (dataStore.get(PersistentQueueKey, true)) {
             runCatching {
@@ -1164,123 +1107,10 @@ class MusicService :
         startRadioSeamlessly()
     }
 
-    private fun setupLoudnessEnhancer() {
-        val audioSessionId = player.audioSessionId
-
-        if (audioSessionId == C.AUDIO_SESSION_ID_UNSET || audioSessionId <= 0) {
-            Log.w(TAG, "setupLoudnessEnhancer: invalid audioSessionId ($audioSessionId), cannot create effect yet")
-            return
-        }
-
-        if (loudnessEnhancer == null) {
-            try {
-                loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-                Log.d(TAG, "LoudnessEnhancer created for sessionId=$audioSessionId")
-            } catch (e: Exception) {
-                reportException(e)
-                loudnessEnhancer = null
-                return
-            }
-        }
-
-        scope.launch {
-            try {
-                val currentMediaId = withContext(Dispatchers.Main) {
-                    player.currentMediaItem?.mediaId
-                }
-
-                val normalizeAudio = withContext(Dispatchers.IO) {
-                    dataStore.data.map { it[AudioNormalizationKey] ?: true }.first()
-                }
-
-                if (normalizeAudio && currentMediaId != null) {
-                    val format = withContext(Dispatchers.IO) {
-                        database.format(currentMediaId).first()
-                    }
-
-                    Log.d(TAG, "Audio normalization enabled: $normalizeAudio")
-                    Log.d(TAG, "Format loudnessDb: ${format?.loudnessDb}, perceptualLoudnessDb: ${format?.perceptualLoudnessDb}")
-
-                    val loudness = format?.loudnessDb ?: format?.perceptualLoudnessDb
-
-                    withContext(Dispatchers.Main) {
-                        if (loudness != null) {
-                            val loudnessDb = loudness.toFloat()
-                            val targetGain = (-loudnessDb * 100).toInt()
-                            val clampedGain = targetGain.coerceIn(MIN_GAIN_MB, MAX_GAIN_MB)
-                            
-                            Log.d(TAG, "Calculated raw normalization gain: $targetGain mB (from loudness: $loudnessDb)")
-                            
-                            try {
-                                loudnessEnhancer?.setTargetGain(clampedGain)
-                                loudnessEnhancer?.enabled = true
-                                Log.i(TAG, "LoudnessEnhancer gain applied: $clampedGain mB")
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Failed to apply loudness enhancement", e)
-                                reportException(e)
-                                releaseLoudnessEnhancer()
-                            }
-                        } else {
-                            loudnessEnhancer?.enabled = false
-                            Log.w(TAG, "Normalization enabled but no loudness data available - no normalization applied")
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        loudnessEnhancer?.enabled = false
-                        Log.d(TAG, "setupLoudnessEnhancer: normalization disabled or mediaId unavailable")
-                    }
-                }
-            } catch (e: Exception) {
-                reportException(e)
-                releaseLoudnessEnhancer()
-            }
-        }
-    }
-
-    private fun releaseLoudnessEnhancer() {
-        try {
-            loudnessEnhancer?.release()
-            Log.d(TAG, "LoudnessEnhancer released")
-        } catch (e: Exception) {
-            reportException(e)
-            Log.e(TAG, "Error releasing LoudnessEnhancer: ${e.message}")
-        } finally {
-            loudnessEnhancer = null
-        }
-    }
-
-    private fun openAudioEffectSession() {
-        if (isAudioEffectSessionOpened) return
-        isAudioEffectSessionOpened = true
-        setupLoudnessEnhancer()
-        sendBroadcast(
-            Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
-                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
-                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-                putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-            },
-        )
-    }
-
-    private fun closeAudioEffectSession() {
-        if (!isAudioEffectSessionOpened) return
-        isAudioEffectSessionOpened = false
-        releaseLoudnessEnhancer()
-        sendBroadcast(
-            Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
-                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
-                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-            },
-        )
-    }
-
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        setupLoudnessEnhancer()
-
         if (castConnectionHandler?.isCasting?.value == true && 
             castConnectionHandler?.isSyncingFromCast != true && 
             mediaItem != null) {
@@ -1352,9 +1182,6 @@ class MusicService :
             }
         }
 
-        if (playWhenReady) {
-            setupLoudnessEnhancer()
-        }
     }
 
     override fun onEvents(
@@ -1369,12 +1196,7 @@ class MusicService :
             val isBufferingOrReady =
                 player.playbackState == Player.STATE_BUFFERING || player.playbackState == Player.STATE_READY
             if (isBufferingOrReady && player.playWhenReady) {
-                val focusGranted = requestAudioFocus()
-                if (focusGranted) {
-                    openAudioEffectSession()
-                }
-            } else {
-                closeAudioEffectSession()
+                requestAudioFocus()
             }
         }
         if (events.containsAny(EVENT_TIMELINE_CHANGED, EVENT_POSITION_DISCONTINUITY)) {
@@ -1382,7 +1204,6 @@ class MusicService :
         }
 
         if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            updateWidgetUI(player.isPlaying)
         }
 
     }
@@ -1737,7 +1558,6 @@ class MusicService :
                     DefaultAudioSink.DefaultAudioProcessorChain(
                         
                         arrayOf(
-                            customEqualizerAudioProcessor,
                             silenceDetectorAudioProcessor,
                         ),
                         SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
@@ -1866,7 +1686,6 @@ class MusicService :
         }
         connectivityObserver.unregister()
         abandonAudioFocus()
-        releaseLoudnessEnhancer()
         mediaSession.release()
         player.removeListener(this)
         player.removeListener(sleepTimer)
@@ -1888,74 +1707,7 @@ class MusicService :
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        
-        when (intent?.action) {
-            MusicWidgetActions.ACTION_PLAY_PAUSE -> {
-                if (player.isPlaying) player.pause() else player.play()
-                updateWidgetUI(player.isPlaying) 
-            }
-            MusicWidgetActions.ACTION_NEXT -> {
-                player.seekToNext()
-                updateWidgetUI(player.isPlaying)
-            }
-            MusicWidgetActions.ACTION_PREV -> {
-                player.seekToPrevious()
-                updateWidgetUI(player.isPlaying)
-            }
-            MusicWidgetActions.ACTION_LIKE -> {
-                toggleLike()
-                updateWidgetUI(player.isPlaying)
-            }
-            MusicWidgetActions.ACTION_SHARE -> {
-                shareSong()
-            }
-            MusicWidgetActions.ACTION_UPDATE_WIDGET -> {
-                updateWidgetUI(player.isPlaying)
-            }
-        }
-
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    private fun updateWidgetUI(isPlaying: Boolean) {
-        try {
-            val context = this
-
-            scope.launch(Dispatchers.IO) {
-                val songData = currentSong.value
-                val song = songData?.song
-                val songTitle = song?.title ?: getString(R.string.no_song_playing)
-                val artistName = songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open)
-                val isLiked = songData?.song?.liked == true
-
-                try {
-                    MusicWidget.updateWidget(
-                        context = context,
-                        title = songTitle,
-                        artist = artistName,
-                        isPlaying = isPlaying,
-                        albumArtUrl = song?.thumbnailUrl,
-                        isLiked = isLiked
-                    )
-                } catch (e: Exception) {
-                    
-                }
-
-                try {
-                    TurntableWidget.updateWidget(
-                        context = context,
-                        isPlaying = isPlaying,
-                        albumArtUrl = song?.thumbnailUrl,
-                        isLiked = isLiked
-                    )
-                } catch (e: Exception) {
-                    
-                }
-            }
-        } catch (e: Exception) {
-            
-            reportException(e)
-        }
     }
 
     private fun shareSong() {
@@ -2019,9 +1771,6 @@ class MusicService :
         const val MAX_CONSECUTIVE_ERR = 5
         const val MAX_RETRY_COUNT = 10
         
-        private const val MAX_GAIN_MB = 300 
-        private const val MIN_GAIN_MB = -1500 
-
         private const val TAG = "MusicService"
     }
 }

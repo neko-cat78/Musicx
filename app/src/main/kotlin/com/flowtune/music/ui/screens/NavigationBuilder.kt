@@ -20,12 +20,10 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.flowtune.music.constants.DarkModeKey
 import com.flowtune.music.constants.PureBlackKey
-import com.flowtune.music.eq.data.EQProfileRepository
 import com.flowtune.music.ui.screens.artist.ArtistAlbumsScreen
 import com.flowtune.music.ui.screens.artist.ArtistItemsScreen
 import com.flowtune.music.ui.screens.artist.ArtistScreen
 import com.flowtune.music.ui.screens.artist.ArtistSongsScreen
-import com.flowtune.music.ui.screens.equalizer.EqScreen
 import com.flowtune.music.ui.screens.library.LibraryScreen
 import com.flowtune.music.ui.screens.playlist.AutoPlaylistScreen
 import com.flowtune.music.ui.screens.playlist.CachePlaylistScreen
@@ -46,8 +44,7 @@ import com.flowtune.music.ui.screens.settings.RomanizationSettings
 import com.flowtune.music.ui.screens.settings.SettingsScreen
 import com.flowtune.music.ui.screens.settings.StorageSettings
 import com.flowtune.music.ui.screens.settings.UpdaterScreen
-import com.flowtune.music.ui.screens.settings.integrations.IntegrationScreen
-import com.flowtune.music.ui.screens.wrapped.WrappedScreen
+import com.flowtune.music.ui.screens.settings.IntegrationScreen
 import com.flowtune.music.utils.rememberEnumPreference
 import com.flowtune.music.utils.rememberPreference
 
@@ -60,7 +57,7 @@ fun NavGraphBuilder.navigationBuilder(
     snackbarHostState: SnackbarHostState
 ) {
     composable(Screens.Home.route) {
-        HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+        HomeScreen(navController = navController)
     }
 
     composable(Screens.Search.route) {
@@ -89,10 +86,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("stats") {
         StatsScreen(navController)
-    }
-
-    composable("mood_and_genres") {
-        MoodAndGenresScreen(navController, scrollBehavior)
     }
 
     composable("account") {
@@ -331,15 +324,4 @@ fun NavGraphBuilder.navigationBuilder(
         AboutScreen(navController, scrollBehavior)
     }
 
-    composable("login") {
-        LoginScreen(navController)
-    }
-
-    composable("wrapped") {
-        WrappedScreen(navController)
-    }
-
-    dialog("equalizer") {
-        EqScreen()
-    }
 }

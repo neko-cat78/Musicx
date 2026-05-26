@@ -31,21 +31,15 @@ import com.flowtune.music.utils.reportException
 import com.flowtune.music.utils.SyncUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import com.flowtune.music.constants.ShowWrappedCardKey
-import com.flowtune.music.constants.WrappedSeenKey
-import com.flowtune.music.ui.screens.wrapped.WrappedAudioService
-import com.flowtune.music.ui.screens.wrapped.WrappedManager
-import java.time.LocalDate
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+
+
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,8 +48,6 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val database: MusicDatabase,
     val syncUtils: SyncUtils,
-    val wrappedManager: WrappedManager,
-    private val wrappedAudioService: WrappedAudioService,
 ) : ViewModel() {
     val isRefreshing = MutableStateFlow(false)
     val isLoading = MutableStateFlow(false)
@@ -80,26 +72,6 @@ class HomeViewModel @Inject constructor(
     val accountName = MutableStateFlow("Guest")
     val accountImageUrl = MutableStateFlow<String?>(null)
 
-	val showWrappedCard: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        val showWrappedPref = prefs[ShowWrappedCardKey] ?: false
-        val seen = prefs[WrappedSeenKey] ?: false
-        val isBeforeDate = LocalDate.now().isBefore(LocalDate.of(2026, 2, 1))
-
-        isBeforeDate && (!seen || showWrappedPref)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val wrappedSeen: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[WrappedSeenKey] ?: false
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    fun markWrappedAsSeen() {
-        viewModelScope.launch(Dispatchers.IO) {
-            context.dataStore.edit {
-                it[WrappedSeenKey] = true
-            }
-        }
-    }
-    
     private var lastProcessedCookie: String? = null
     
     private var isProcessingAccountData = false
@@ -342,24 +314,6 @@ class HomeViewModel @Inject constructor(
         
         viewModelScope.launch(Dispatchers.IO) {
             syncUtils.tryAutoSync()
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            showWrappedCard.collect { shouldShow ->
-                if (shouldShow && !wrappedManager.state.value.isDataReady) {
-                    try {
-                        wrappedManager.prepare()
-                        val state = wrappedManager.state.first { it.isDataReady }
-                        val trackMap = state.trackMap
-                        if (trackMap.isNotEmpty()) {
-                            val firstTrackId = trackMap.entries.first().value
-                            wrappedAudioService.prepareTrack(firstTrackId)
-                        }
-                    } catch (e: Exception) {
-                        reportException(e)
-                    }
-                }
-            }
         }
 
         viewModelScope.launch(Dispatchers.IO) {

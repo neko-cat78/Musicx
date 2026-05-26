@@ -38,12 +38,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ContainedLoadingIndicator
+
+
+
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -66,16 +63,11 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.Font
-import java.time.LocalDate
+
 import com.flowtune.music.R
-import com.flowtune.music.constants.WrappedSeenKey
-import androidx.compose.material3.SnackbarHostState
+
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.flowtune.music.constants.ShowWrappedCardKey
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
@@ -145,9 +137,7 @@ import kotlin.math.min
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.alpha
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.toArgb
 import androidx.palette.graphics.Palette
@@ -162,7 +152,6 @@ import com.flowtune.music.ui.theme.PlayerColorExtractor
 @Composable
 fun HomeScreen(
     navController: NavController,
-    snackbarHostState: SnackbarHostState,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val menuState = LocalMenuState.current
@@ -261,10 +250,6 @@ fun HomeScreen(
     val accountImageUrl by viewModel.accountImageUrl.collectAsState()
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
 
-    val shouldShowWrappedCard by viewModel.showWrappedCard.collectAsState()
-    val wrappedState by viewModel.wrappedManager.state.collectAsState()
-    val isWrappedDataReady = wrappedState.isDataReady
-
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
     }
@@ -280,19 +265,6 @@ fun HomeScreen(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
-
-    val wrappedDismissed by backStackEntry?.savedStateHandle?.getStateFlow("wrapped_seen", false)
-        ?.collectAsState() ?: remember { mutableStateOf(false) }
-
-    LaunchedEffect(wrappedDismissed) {
-        if (wrappedDismissed) {
-            viewModel.markWrappedAsSeen()
-            scope.launch {
-                snackbarHostState.showSnackbar("Found in Settings > Content")
-            }
-            backStackEntry?.savedStateHandle?.set("wrapped_seen", false) 
-        }
-    }
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
@@ -521,60 +493,6 @@ fun HomeScreen(
             }
 
             if (selectedChip == null) {
-                item(key = "wrapped_card") {
-                    AnimatedVisibility(visible = shouldShowWrappedCard) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            ),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isWrappedDataReady) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-                                    ) {
-                                        val bbhFont = try {
-                                            FontFamily(Font(R.font.bbh_bartle_regular))
-                                        } catch (e: Exception) {
-                                            FontFamily.Default
-                                        }
-                                        Text(
-                                            text = stringResource(R.string.wrapped_ready_title),
-                                            style = MaterialTheme.typography.headlineLarge.copy(
-                                                fontFamily = bbhFont,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Text(
-                                            text = stringResource(R.string.wrapped_ready_subtitle),
-                                            style = MaterialTheme.typography.bodyLarge.copy(
-                                                textAlign = TextAlign.Center
-                                            )
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Button(onClick = {
-                                            navController.navigate("wrapped")
-                                        }) {
-                                            Text(stringResource(R.string.open))
-                                        }
-                                    }
-                                } else {
-                                    ContainedLoadingIndicator()
-                                }
-                            }
-                        }
-                    }
-                }
                 keepListening?.takeIf { it.isNotEmpty() }?.let { keepListening ->
                     item(key = "keep_listening_title") {
                         NavigationTitle(

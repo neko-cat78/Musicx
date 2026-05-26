@@ -16,13 +16,9 @@ permissions:
 
 jobs:
   build_release:
-    name: Build Release (${{ matrix.variant }})
+    name: Build Release
     if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        variant: ["foss", "gms"]
 
     steps:
       - uses: actions/checkout@v6
@@ -35,12 +31,12 @@ jobs:
 
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@v5
-       
+        
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build Universal Release APK and Run Lint
-        run: ./gradlew --console=plain assembleUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Release :app:lintUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Release --warning-mode summary
+        run: ./gradlew --console=plain assembleUniversalFossRelease :app:lintUniversalFossRelease --warning-mode summary
         env:
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -48,7 +44,7 @@ jobs:
       - name: Sign APK
         uses: ilharp/sign-android-release@v2.0.0
         with:
-          releaseDir: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release/
+          releaseDir: app/build/outputs/apk/universalFoss/release/
           signingKey: ${{ secrets.KEYSTORE }}
           keyAlias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -57,29 +53,21 @@ jobs:
 
       - name: Move signed APK
         run: |
-          OUTPUT_DIR="app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release"
+          OUTPUT_DIR="app/build/outputs/apk/universalFoss/release"
           mkdir -p "$OUTPUT_DIR/out"
-          if [ "${{ matrix.variant }}" = "gms" ]; then
-            TARGET_NAME="app-universal-with-Google-Cast.apk"
-          else
-            TARGET_NAME="app-universal-release.apk"
-          fi
+          TARGET_NAME="app-universal-release.apk"
           find "$OUTPUT_DIR" -name "*-signed.apk" -o -name "*-unsigned-signed.apk" | xargs -I{} mv {} "$OUTPUT_DIR/out/$TARGET_NAME"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.variant == 'gms' && 'app-universal-with-Google-Cast' || 'app-universal-release' }}
-          path: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release/out/*
+          name: app-universal-release
+          path: app/build/outputs/apk/universalFoss/release/out/*
 
   build_debug:
-    name: Build Debug (${{ matrix.variant }})
+    name: Build Debug
     if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        variant: ["foss", "gms"]
 
     steps:
       - uses: actions/checkout@v6
@@ -101,7 +89,7 @@ jobs:
           echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > ./app/persistent-debug.keystore
 
       - name: Build Universal Debug APK and Run Lint
-        run: ./gradlew --console=plain assembleUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug :app:lintUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug --warning-mode summary
+        run: ./gradlew --console=plain assembleUniversalFossDebug :app:lintUniversalFossDebug --warning-mode summary
         env:
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -109,5 +97,5 @@ jobs:
       - name: Upload Debug APK
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.variant == 'gms' && 'app-universal-debug-gms' || 'app-universal-debug' }}
-          path: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/debug/*.apk
+          name: app-universal-debug
+          path: app/build/outputs/apk/universalFoss/debug/*.apk
