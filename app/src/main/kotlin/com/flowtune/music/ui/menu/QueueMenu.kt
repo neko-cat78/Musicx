@@ -1,9 +1,6 @@
 package com.flowtune.music.ui.menu
 
-import android.content.Intent
 import android.content.res.Configuration
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -65,7 +60,6 @@ import com.flowtune.music.extensions.toMediaItem
 import com.flowtune.music.models.MediaMetadata
 import com.flowtune.music.models.toMediaMetadata
 import com.flowtune.music.playback.ExoDownloadService
-import com.flowtune.music.playback.queues.YouTubeQueue
 import com.flowtune.music.ui.component.BottomSheetState
 import com.flowtune.music.ui.component.ListDialog
 import com.flowtune.music.ui.component.Material3MenuGroup
@@ -95,13 +89,6 @@ fun QueueMenu(
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
-
-    var refetchIconDegree by remember { mutableFloatStateOf(0f) }
-    val rotationAnimation by animateFloatAsState(
-        targetValue = refetchIconDegree,
-        animationSpec = tween(durationMillis = 800),
-        label = "",
-    )
 
     val artists = remember(mediaMetadata.artists) {
         mediaMetadata.artists.filter { it.id != null }
@@ -232,23 +219,6 @@ fun QueueMenu(
                     NewAction(
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.radio),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        text = stringResource(R.string.start_radio),
-                        onClick = {
-                            onDismiss()
-                            playerConnection.playQueue(
-                                YouTubeQueue.radio(mediaMetadata)
-                            )
-                        }
-                    ),
-                    NewAction(
-                        icon = {
-                            Icon(
                                 painter = painterResource(R.drawable.playlist_add),
                                 contentDescription = null,
                                 modifier = Modifier.size(28.dp),
@@ -257,29 +227,6 @@ fun QueueMenu(
                         },
                         text = stringResource(R.string.add_to_playlist),
                         onClick = { showChoosePlaylistDialog = true }
-                    ),
-                    NewAction(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.share),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        text = stringResource(R.string.share),
-                        onClick = {
-                            onDismiss()
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                putExtra(
-                                    Intent.EXTRA_TEXT,
-                                    "https://music.youtube.com/watch?v=${mediaMetadata.id}"
-                                )
-                            }
-                            context.startActivity(Intent.createChooser(intent, null))
-                        }
                     )
                 ),
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
@@ -304,24 +251,6 @@ fun QueueMenu(
                                 playerConnection.playNext(it.toMediaItem())
                             } ?: run {
                                 playerConnection.playNext(mediaMetadata.toMediaItem())
-                            }
-                        }
-                    ),
-                    Material3MenuItemData(
-                        title = { Text(text = stringResource(R.string.add_to_queue)) },
-                        description = { Text(text = stringResource(R.string.add_to_queue_desc)) },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.queue_music),
-                                contentDescription = null,
-                            )
-                        },
-                        onClick = {
-                            onDismiss()
-                            librarySong?.let {
-                                playerConnection.addToQueue(it.toMediaItem())
-                            } ?: run {
-                                playerConnection.addToQueue(mediaMetadata.toMediaItem())
                             }
                         }
                     )
@@ -483,32 +412,7 @@ fun QueueMenu(
         item {
             Material3MenuGroup(
                 items = buildList {
-                    add(
-                        Material3MenuItemData(
-                            title = { Text(text = stringResource(R.string.refetch)) },
-                            description = { Text(text = stringResource(R.string.refetch_desc)) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.sync),
-                                    contentDescription = null,
-                                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation),
-                                )
-                            },
-                            onClick = {
-                                refetchIconDegree -= 360
-                                coroutineScope.launch(Dispatchers.IO) {
-                                    YouTube.queue(listOf(mediaMetadata.id)).onSuccess {
-                                        val newSong = it.firstOrNull()
-                                        if (newSong != null && librarySong != null) {
-                                            database.transaction {
-                                                update(librarySong!!, newSong.toMediaMetadata())
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    )
+
                     add(
                         Material3MenuItemData(
                             title = { Text(text = stringResource(R.string.details)) },
