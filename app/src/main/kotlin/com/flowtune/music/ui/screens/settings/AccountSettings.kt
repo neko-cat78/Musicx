@@ -64,7 +64,6 @@ import com.flowtune.music.constants.VisitorDataKey
 import com.flowtune.music.constants.YtmSyncKey
 import com.flowtune.music.ui.component.InfoLabel
 import com.flowtune.music.ui.component.PreferenceEntry
-import com.flowtune.music.ui.component.ReleaseNotesCard
 import com.flowtune.music.ui.component.SwitchPreference
 import com.flowtune.music.ui.component.TextFieldDialog
 import com.flowtune.music.utils.Updater
